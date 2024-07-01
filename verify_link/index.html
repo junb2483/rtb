@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirect Page</title>
+    <script>
+      window.onload = function () {
+        // Lấy tham số URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get("redirect");
+
+        // Kiểm tra nếu tham số 'redirect' tồn tại và không rỗng
+        if (redirectTo) {
+          window.location.href = redirectTo;
+        } else {
+          // Hiển thị thông báo nếu tham số 'redirect' không tồn tại hoặc rỗng
+          document.getElementById("message").textContent =
+            "Không tìm thấy tham số 'redirect'.";
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <p id="message">Đang chuyển hướng...</p>
+  </body>
+</html>
