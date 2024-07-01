@@ -48,6 +48,12 @@
       function redirectToLink() {
         if (targetURL) {
           window.open(targetURL, "_blank");
+
+          // Xử lý chuyển hướng sau khi mở TikTok
+          setTimeout(() => {
+            // Chuyển hướng về URL khác
+            window.location.href = "https://t.me/realtime_treasure_boxes";
+          }, 5000); // Thời gian chờ 2 giây (đơn vị là milliseconds)
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
