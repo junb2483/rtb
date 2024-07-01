@@ -55,10 +55,11 @@
       }
 
       function openLinkNow() {
-        redirectToLink();
         setTimeout(() => {
           window.location.href = "https://t.me/realtime_treasure_boxes";
-        }, 2000); // Thời gian chờ 2 giây (đơn vị là milliseconds)
+          window.close();
+        }, 2000);
+        redirectToLink();
       }
 
       window.onload = function () {
