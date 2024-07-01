@@ -3,15 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify link</title>
+    <title>Verify Link</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+      }
+      #message {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h2 id="message">Redirecting to live stream...</h2>
+      <button onclick="redirectToLink()">Join the live stream now!</button>
+    </div>
+
     <script>
       let targetURL;
+
       function redirectToLink() {
         if (targetURL) {
           window.open(targetURL, "_blank");
         } else {
           document.getElementById("message").textContent =
-            "URL not found, please try it again !";
+            "URL not found, please try again!";
         }
       }
 
@@ -22,13 +53,9 @@
           targetURL = `https://www.tiktok.com/share/live/${roomId}`;
           redirectToLink();
         } else {
-          document.getElementById("message").textContent = "URL not found !";
+          document.getElementById("message").textContent = "URL not found!";
         }
       };
     </script>
-  </head>
-  <body>
-    <p id="message">Redirecting to live stream</p>
-    <button onclick="redirectToLink()">Join this live now !</button>
   </body>
 </html>
