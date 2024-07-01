@@ -3,25 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirect Page 2</title>
+    <title>Verify link</title>
     <script>
       window.onload = function () {
-        // Lấy tham số URL
         const urlParams = new URLSearchParams(window.location.search);
-        const redirectTo = urlParams.get("redirect");
+        const roomId = urlParams.get("r");
 
-        // Kiểm tra nếu tham số 'redirect' tồn tại và không rỗng
         if (redirectTo) {
-          window.location.href = redirectTo;
+          window.location.href = `https://www.tiktok.com/share/live/${roomId}`;
         } else {
-          // Hiển thị thông báo nếu tham số 'redirect' không tồn tại hoặc rỗng
-          document.getElementById("message").textContent =
-            "Không tìm thấy tham số 'redirect'.";
+          document.getElementById("message").textContent = "Link is not found";
         }
       };
     </script>
   </head>
   <body>
-    <p id="message">Đang chuyển hướng...</p>
+    <p id="message">Redirecting to live stream<</p>
   </body>
 </html>
