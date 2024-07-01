@@ -8,7 +8,15 @@
       body {
         font-family: Arial, sans-serif;
         text-align: center;
-        margin: 20px;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Để làm đầy toàn bộ viewport theo chiều cao */
+      }
+      #content {
+        max-width: 80%;
+        text-align: center;
       }
       #message {
         font-size: 18px;
@@ -29,7 +37,7 @@
     </style>
   </head>
   <body>
-    <div>
+    <div id="content">
       <h2 id="message">Redirecting to live stream...</h2>
       <button onclick="redirectToLink()">Join the live stream now!</button>
     </div>
