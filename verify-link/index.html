@@ -39,7 +39,7 @@
   <body>
     <div id="content">
       <h2 id="message">Redirecting to live stream...</h2>
-      <button onclick="redirectToLink()">Join the live stream now!</button>
+      <button onclick="openLinkNow()">Join the live stream now!</button>
     </div>
 
     <script>
@@ -47,17 +47,18 @@
 
       function redirectToLink() {
         if (targetURL) {
-          window.open(targetURL, "_blank");
-
-          // Xử lý chuyển hướng sau khi mở TikTok
-          setTimeout(() => {
-            // Chuyển hướng về URL khác
-            window.location.href = "https://t.me/realtime_treasure_boxes";
-          }, 5000); // Thời gian chờ 2 giây (đơn vị là milliseconds)
+          window.open(targetURL, "_blank", "noopener,noreferrer");
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
         }
+      }
+
+      function openLinkNow() {
+        redirectToLink();
+        setTimeout(() => {
+          window.location.href = "https://t.me/realtime_treasure_boxes";
+        }, 2000); // Thời gian chờ 2 giây (đơn vị là milliseconds)
       }
 
       window.onload = function () {
