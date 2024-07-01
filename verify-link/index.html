@@ -9,7 +9,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const roomId = urlParams.get("r");
 
-        if (redirectTo) {
+        if (roomId) {
           window.location.href = `https://www.tiktok.com/share/live/${roomId}`;
         } else {
           document.getElementById("message").textContent = "Link is not found";
