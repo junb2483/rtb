@@ -5,19 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Verify link</title>
     <script>
-      window.onload = function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get("r");
+      // window.onload = function () {
+      //   const urlParams = new URLSearchParams(window.location.search);
+      //   const data = urlParams.get("r");
 
-        if (roomId) {
-          window.location.href = `https://www.tiktok.com/share/live/${roomId}`;
-        } else {
-          document.getElementById("message").textContent = "Link is not found";
-        }
-      };
+      //   if (data && data.startsWith("http")) {
+      //     window.location.href = data;
+      //   } else if (data && `${data}`.trim()) {
+      //     window.location.href = `https://www.tiktok.com/share/live/${data}`;
+      //   } else {
+      //     document.getElementById("message").textContent = "Link is not found";
+      //   }
+      // };
+
+      function redirectToLink() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const data = urlParams.get("r");
+
+        window.open(
+          `https://www.tiktok.com/share/live/7386653014798912261`,
+          "_blank"
+        );
+      }
     </script>
   </head>
   <body>
     <p id="message">Redirecting to live stream</p>
+    <button onclick="redirectToLink()">Go to Link</button>
   </body>
 </html>
