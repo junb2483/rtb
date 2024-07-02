@@ -60,9 +60,8 @@
           decodeURIComponent(escape(atob(urlParams.get("r"))))
         );
 
-        if (data.user) {
-          targetURL = `https://www.tiktok.com/@${data.user}/live`;
-          openLink();
+        if (data.room) {
+          targetURL = `snssdk1180://live?room_id=${data.room}`;
         } else {
           document.getElementById("message").textContent = "URL not found!";
         }
