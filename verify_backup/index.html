@@ -49,15 +49,16 @@
   <body>
     <div id="content">
       <h2 id="message">Redirecting to live stream...</h2>
-      <button onclick="openLinkNow()">Join the live stream now!</button>
+      <button onclick="openLink()">Join the live stream now!</button>
     </div>
 
     <script>
       let targetURL;
 
-      function openLinkNow() {
+      function openLink() {
         if (targetURL) {
-          window.open(targetURL, "_blank");
+          // window.open(targetURL, "_blank");
+          window.location = targetURL;
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
@@ -66,13 +67,11 @@
 
       window.onload = function () {
         const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get("r");
-        if (roomId) {
-          targetURL = `snssdk1180://live?room_id=7386838552605428486`;
-          // openLinkNow();
-        } else {
-          document.getElementById("message").textContent = "URL not found!";
-        }
+        const data = JSON.parse(
+          decodeURIComponent(escape(atob(urlParams.get("r"))))
+        );
+
+        targetURL = `snssdk1180://live?room_id=7386838552605428486`;
       };
     </script>
   </body>
