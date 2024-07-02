@@ -57,8 +57,16 @@
 
       function openLink() {
         if (targetURL) {
-          // window.open(targetURL, "_blank");
-          window.location = targetURL;
+          // Sử dụng iframe ẩn để mở liên kết sâu
+          var iframe = document.createElement("iframe");
+          iframe.style.display = "none";
+          iframe.src = targetURL;
+          document.body.appendChild(iframe);
+
+          // Set a timeout to redirect to a fallback URL if the app does not open
+          setTimeout(function () {
+            window.location = "https://www.yourwebsite.com/fallback";
+          }, 1500);
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
@@ -66,11 +74,6 @@
       }
 
       window.onload = function () {
-        // const urlParams = new URLSearchParams(window.location.search);
-        // const data = JSON.parse(
-        //   decodeURIComponent(escape(atob(urlParams.get("r"))))
-        // );
-
         targetURL = `snssdk1180://live?room_id=7386838552605428486`;
       };
     </script>
