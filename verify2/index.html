@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Link</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Để làm đầy toàn bộ viewport theo chiều cao */
+      }
+      #content {
+        max-width: 80%;
+        text-align: center;
+      }
+      #message {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <h2 id="message">Redirecting to live stream...</h2>
+      <button onclick="openLink()">Join the live stream now!</button>
+    </div>
+
+    <script>
+      let targetURL;
+
+      function openLink() {
+        if (targetURL) {
+          window.open(targetURL, "_blank");
+        } else {
+          document.getElementById("message").textContent =
+            "URL not found, please try again!";
+        }
+      }
+
+      window.onload = function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const data = JSON.parse(
+          decodeURIComponent(escape(atob(urlParams.get("r"))))
+        );
+
+        if (data.user) {
+          targetURL = `https://www.tiktok.com/@${data.user}/live`;
+          openLink();
+        } else {
+          document.getElementById("message").textContent = "URL not found!";
+        }
+      };
+    </script>
+  </body>
+</html>
