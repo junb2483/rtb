@@ -55,29 +55,21 @@
     <script>
       let targetURL;
 
-      function redirectToLink() {
+      function openLinkNow() {
         if (targetURL) {
-          window.open(targetURL, "_blank", "noopener,noreferrer");
+          window.open(targetURL, "_blank");
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
         }
       }
 
-      function openLinkNow() {
-        setTimeout(() => {
-          window.location.href = "https://t.me/realtime_treasure_boxes";
-          window.close();
-        }, 2000);
-        redirectToLink();
-      }
-
       window.onload = function () {
         const urlParams = new URLSearchParams(window.location.search);
         const roomId = urlParams.get("r");
         if (roomId) {
-          targetURL = `https://www.tiktok.com/share/live/${roomId}`;
-          redirectToLink();
+          targetURL = `snssdk1180://live?room_id=7386838552605428486`;
+          // openLinkNow();
         } else {
           document.getElementById("message").textContent = "URL not found!";
         }
