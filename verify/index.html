@@ -22,6 +22,11 @@
         font-size: 18px;
         margin-bottom: 20px;
       }
+      .button-container {
+        display: flex;
+        flex-direction: column; /* Sắp xếp các nút theo chiều dọc */
+        gap: 10px; /* Khoảng cách giữa các nút */
+      }
       button {
         padding: 10px 20px;
         font-size: 16px;
@@ -39,16 +44,17 @@
   <body>
     <div id="content">
       <h2 id="message">Redirecting to live stream...</h2>
-      <button onclick="openLink()">Join the live stream now!</button>
+      <div class="button-container">
+        <button onclick="openLink(1)">Join the live stream now - 1</button>
+        <button onclick="openLink(2)">Join the live stream now - 2</button>
+      </div>
     </div>
 
     <script>
-      let targetURL;
-
-      function openLink() {
-        if (targetURL) {
-          // window.open(targetURL, "_blank");
-          window.location = targetURL;
+      const targetUrls = {};
+      function openLink(index) {
+        if (targetUrls[index]) {
+          window.location = targetUrls[index];
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
@@ -62,9 +68,11 @@
         );
 
         if (data.room) {
-          targetURL = `snssdk1180://live?room_id=${data.room}`;
-        } else {
-          document.getElementById("message").textContent = "URL not found!";
+          targetUrls[1] = `snssdk1180://live?room_id=${data.room}`;
+        }
+
+        if (data.user) {
+          targetUrls[2] = `https://www.tiktok.com/@${data.user}/live`;
         }
       };
     </script>
