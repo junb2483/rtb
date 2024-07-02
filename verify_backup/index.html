@@ -39,30 +39,35 @@
   <body>
     <div id="content">
       <h2 id="message">Redirecting to live stream...</h2>
-      <button onclick="openLink()">Join the live stream now!</button>
+      <button onclick="openLinkNow()">Join the live stream now!</button>
     </div>
 
     <script>
       let targetURL;
 
-      function openLink() {
+      function redirectToLink() {
         if (targetURL) {
-          window.open(targetURL, "_blank");
+          window.open(targetURL, "_blank", "noopener,noreferrer");
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
         }
       }
 
+      function openLinkNow() {
+        setTimeout(() => {
+          window.location.href = "https://t.me/realtime_treasure_boxes";
+          window.close();
+        }, 2000);
+        redirectToLink();
+      }
+
       window.onload = function () {
         const urlParams = new URLSearchParams(window.location.search);
-        const data = JSON.parse(
-          decodeURIComponent(escape(atob(urlParams.get("r"))))
-        );
-
-        if (data.user) {
-          targetURL = `https://www.tiktok.com/@${data.user}/live`;
-          openLink();
+        const roomId = urlParams.get("r");
+        if (roomId) {
+          targetURL = `https://www.tiktok.com/share/live/${roomId}`;
+          redirectToLink();
         } else {
           document.getElementById("message").textContent = "URL not found!";
         }
