@@ -47,7 +47,8 @@
 
       function openLink() {
         if (targetURL) {
-          window.open(targetURL, "_blank");
+          // window.open(targetURL, "_blank");
+          window.location = targetURL;
         } else {
           document.getElementById("message").textContent =
             "URL not found, please try again!";
