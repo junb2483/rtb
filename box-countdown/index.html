@@ -16,7 +16,8 @@
         text-align: center;
       }
       .info,
-      .countdown {
+      .countdown,
+      .note {
         font-size: 2rem;
         padding: 5px;
         border-radius: 8px;
@@ -24,9 +25,15 @@
       .info {
         font-size: 2rem;
       }
+      .note {
+        margin-top: 5px;
+        font-size: 1.2rem;
+        font-style: italic;
+      }
       @media (max-width: 600px) {
         .info,
-        .countdown {
+        .countdown,
+        .note {
           font-size: 1.5rem;
           padding: 15px;
         }
@@ -36,6 +43,9 @@
   <body>
     <div class="info" id="info"></div>
     <div class="countdown" id="countdown">Loading...</div>
+    <div class="note">
+      (Để canh chuẩn, thiết bị cần cài đặt tự động đồng bộ thời gian)
+    </div>
 
     <script>
       const { end_time, user, room, coins, can_open, is_special } = JSON.parse(
