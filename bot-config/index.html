@@ -21,9 +21,9 @@
         overflow: hidden; /* Ngăn cuộn khi loading */
       }
       .container {
-        width: 100%;
+        width: 80%;
         max-width: 500px; /* Đặt chiều rộng tối đa */
-        height: 400px; /* Đặt chiều cao cố định */
+        height: 450px; /* Đặt chiều cao cố định */
         margin: 0 auto;
         padding: 20px;
         background: white;
@@ -124,14 +124,12 @@
           <div id="min_coins_error" class="error"></div>
         </div>
         <div class="field">
-          <label for="min_rate"
-            >Tỷ lệ tối thiểu (tỷ lệ = số xu/số người):</label
-          >
+          <label for="min_rate">Tỷ lệ tối thiểu (Số xu/Số người):</label>
           <input type="text" id="min_rate" name="min_rate" />
           <div id="min_rate_error" class="error"></div>
         </div>
         <div class="field">
-          <label for="min_secs">Gửi rương khi thời gian nhỏ hơn (giây):</label>
+          <label for="min_secs">Gửi khi thời gian nhỏ hơn (giây):</label>
           <input type="text" id="min_secs" name="min_secs" />
           <div id="min_secs_error" class="error"></div>
         </div>
@@ -139,11 +137,9 @@
           CẬP NHẬT
         </button>
       </div>
-      <div class="note">
-        - Những thay đổi của bạn, bot cần 1 đến 10 phút để áp dụng
-      </div>
+      <div class="note">- Những thay đổi cần 1 đến 10p để bot nhận</div>
       <div class="note note-important">
-        - Link này bị lộ ra ngoài thì người khác có thể can thiệp bot của bạn
+        - Link này lộ ra ngoài, bot bạn có thể hỏng
       </div>
     </div>
 
