@@ -148,7 +148,7 @@
 
         try {
           const response = await fetch(
-            "https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_bot_config&access_token=test"
+            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_bot_config&access_token=${accessToken}`
           );
           const data = await response.json();
 
