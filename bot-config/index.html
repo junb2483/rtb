@@ -135,6 +135,7 @@
     </div>
 
     <script>
+      const accessToken = getQueryParam("access_token");
       let isSubmitting = false;
 
       async function loadData() {
@@ -182,7 +183,6 @@
           const minCoins = document.getElementById("min_coins").value;
           const minRate = document.getElementById("min_rate").value;
           const minSecs = document.getElementById("min_secs").value;
-          const accessToken = "test"; // Thay thế bằng access token thực tế nếu cần
 
           try {
             const response = await fetch(
