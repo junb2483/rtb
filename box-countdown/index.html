@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canh thời gian mở rương</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        text-align: center;
+      }
+      .info,
+      .countdown {
+        font-size: 2rem;
+        padding: 5px;
+        border-radius: 8px;
+      }
+      .info {
+        font-size: 2rem;
+      }
+      @media (max-width: 600px) {
+        .info,
+        .countdown {
+          font-size: 1.5rem;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="info" id="info"></div>
+    <div class="countdown" id="countdown">Loading...</div>
+
+    <script>
+      const { end_time, user, room, coins, can_open, is_special } = JSON.parse(
+        decodeURIComponent(
+          escape(atob(new URLSearchParams(window.location.search).get("r")))
+        )
+      );
+
+      function startCountdown(endTime) {
+        const countdownElement = document.getElementById("countdown");
+        const infoElement = document.getElementById("info");
+
+        function updateCountdown() {
+          const now = new Date().getTime();
+          const distance = new Date(endTime).getTime() - now;
+
+          if (distance < 0) {
+            countdownElement.innerHTML = "Rương đã kết thúc";
+            clearInterval(interval);
+            return;
+          }
+
+          const totalSeconds = Math.floor(distance / 1000);
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+
+          countdownElement.innerHTML = minutes
+            ? `${minutes} phút ${seconds} giây`
+            : `${seconds} giây`;
+        }
+
+        // Example link and numbers, you can update this dynamically if needed
+        const current = 100;
+        const total = 200;
+        infoElement.innerHTML = `<a href="https://www.tiktok.com/@${user}/live" target="_blank" style="text-decoration: none;">${user}</a> - ${total}/${can_open} ${
+          is_special ? `🔥🔥` : ""
+        }`;
+
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+      }
+
+      if (end_time) {
+        startCountdown(end_time);
+      } else {
+        document.getElementById("countdown").innerHTML =
+          "No end_time parameter provided in the URL.";
+      }
+    </script>
+  </body>
+</html>
