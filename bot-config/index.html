@@ -111,7 +111,7 @@
       </div>
     </div>
     <div class="container">
-      <h2 class="title">Bot Config</h2>
+      <h2 id="bot-title" class="title">Bot Config</h2>
       <div class="form-content">
         <div class="field">
           <label for="min_coins">Gửi rương có xu tối thiểu:</label>
@@ -166,6 +166,11 @@
           document.getElementById("min_coins").value = data.MIN_COINS;
           document.getElementById("min_rate").value = data.MIN_RATE;
           document.getElementById("min_secs").value = data.MIN_SECS;
+
+          // Cập nhật tiêu đề với tên bot
+          document.getElementById(
+            "bot-title"
+          ).textContent = `Bot ${data.bot_name}`;
 
           // Hiển thị giao diện sau khi dữ liệu được tải xong
           loadingOverlay.style.display = "none"; // Ẩn thông báo loading
