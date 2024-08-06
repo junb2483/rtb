@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Options</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .section label {
+        display: block;
+        margin: 10px 0;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .package {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        position: relative;
+      }
+      .package:hover {
+        background-color: #f0f0f0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .package-details {
+        font-size: 14px;
+        color: #555;
+        margin-top: 10px;
+        display: none;
+      }
+      .package-1 {
+        background-color: #e8f5e9;
+      } /* Light green */
+      .package-2 {
+        background-color: #fce4ec;
+      } /* Light pink */
+      .package-3 {
+        background-color: #e3f2fd;
+      } /* Light blue */
+      .total-amount {
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #eef;
+        border-radius: 8px;
+        color: #333;
+      }
+      @media (min-width: 600px) {
+        .section label {
+          display: inline-block;
+          margin-right: 15px;
+        }
+      }
+      /* Style for package details */
+      .package-description {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="section">
+        <label>Chọn gói:</label>
+        <div
+          class="package package-1"
+          onclick="selectPackage('Gói 1', 'details1')"
+        >
+          <input type="radio" name="package" value="Gói 1" id="package1" />
+          <label for="package1">Gói 119k/ngày</label>
+          <div id="details1" class="package-details">
+            <p class="package-description">Max 500 idols đang live</p>
+            <p class="package-description">
+              Trong cùng một thời điểm bot sẽ join tối đa 500 lives để ngồi ở
+              những lives đó thu thập rương
+            </p>
+          </div>
+        </div>
+        <div
+          class="package package-2"
+          onclick="selectPackage('Gói 2', 'details2')"
+        >
+          <input
+            type="radio"
+            name="package"
+            value="Gói 2"
+            id="package2"
+            checked
+          />
+          <label for="package2">Gói 139k/ngày (đang dùng)</label>
+          <div id="details2" class="package-details">
+            <p class="package-description">Max 600 idols đang live</p>
+            <p class="package-description">
+              Trong cùng một thời điểm bot sẽ join tối đa 600 lives để ngồi ở
+              những lives đó thu thập rương
+            </p>
+          </div>
+        </div>
+        <div
+          class="package package-3"
+          onclick="selectPackage('Gói 3', 'details3')"
+        >
+          <input type="radio" name="package" value="Gói 3" id="package3" />
+          <label for="package3">Gói 179k/ngày</label>
+          <div id="details3" class="package-details">
+            <p class="package-description">Max 1000 idols đang live</p>
+            <p class="package-description">
+              Trong cùng một thời điểm bot sẽ join tối đa 1000 lives để ngồi ở
+              những lives đó thu thập rương. Từ 1001 idols trở lên, +20k/100
+              idols nếu cần thêm
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <label>Chọn thời gian:</label>
+        <label>
+          <input type="radio" name="time" value="Giữ thời gian" />
+          Giữ thời gian
+        </label>
+        <label><input type="radio" name="time" value="+1 day" /> +1 ngày</label>
+        <label><input type="radio" name="time" value="+2 day" /> +2 ngày</label>
+        <label><input type="radio" name="time" value="+3 day" /> +3 ngày</label>
+        <label><input type="radio" name="time" value="+4 day" /> +4 ngày</label>
+        <label><input type="radio" name="time" value="+5 day" /> +5 ngày</label>
+        <label><input type="radio" name="time" value="+6 day" /> +6 ngày</label>
+        <label><input type="radio" name="time" value="+7 day" /> +7 ngày</label>
+        <label><input type="radio" name="time" value="+8 day" /> +8 ngày</label>
+        <label><input type="radio" name="time" value="+9 day" /> +9 ngày</label>
+        <label
+          ><input type="radio" name="time" value="+10 day" /> +10 ngày</label
+        >
+      </div>
+
+      <div class="total-amount">Tổng số tiền cần thanh toán: 100000 vnd</div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        showDetails("details2"); // Show default checked package details
+      });
+
+      function selectPackage(packageValue, detailsId) {
+        // Set the corresponding radio button to checked
+        document.querySelector(
+          `input[name="package"][value="${packageValue}"]`
+        ).checked = true;
+        showDetails(detailsId);
+      }
+
+      function showDetails(detailsId) {
+        const details = document.querySelectorAll(".package-details");
+        details.forEach((detail) => {
+          if (detail.id === detailsId) {
+            detail.style.display = "block";
+          } else {
+            detail.style.display = "none";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
