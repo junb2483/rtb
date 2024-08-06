@@ -65,26 +65,20 @@
         )
       );
 
-      function startCountdown(endTime) {
+      const endTime = new Date(end_time).getTime();
+      function startCountdown() {
         const countdownElement = document.getElementById("countdown");
         const infoElement = document.getElementById("info");
 
         function updateCountdown() {
-          const now = new Date().getTime();
-          const distance = new Date(endTime).getTime() - now;
+          const totalSeconds = (endTime - Date.now()) / 1000;
 
-          if (distance < 0) {
-            countdownElement.innerHTML = "Đã kết thúc";
-            return;
-          }
-
-          const totalSeconds = distance / 1000;
-          const minutes = Math.floor(totalSeconds / 60);
-          const seconds = (totalSeconds % 60).toFixed(1);
-
-          countdownElement.innerHTML = minutes
-            ? `${minutes} phút ${seconds} giây`
-            : `${seconds} giây`;
+          countdownElement.innerHTML =
+            totalSeconds >= 60
+              ? `${Math.floor(totalSeconds / 60)} phút ${(
+                  totalSeconds % 60
+                ).toFixed(1)} giây`
+              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`;
 
           requestAnimationFrame(updateCountdown);
         }
