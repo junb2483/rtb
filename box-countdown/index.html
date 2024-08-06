@@ -80,7 +80,7 @@
 
           const totalSeconds = distance / 1000;
           const minutes = Math.floor(totalSeconds / 60);
-          const seconds = (totalSeconds % 60).toFixed(2);
+          const seconds = (totalSeconds % 60).toFixed(1);
 
           countdownElement.innerHTML = minutes
             ? `${minutes} phút ${seconds} giây`
