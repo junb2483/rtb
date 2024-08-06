@@ -75,26 +75,25 @@
 
           if (distance < 0) {
             countdownElement.innerHTML = "Đã kết thúc";
-            clearInterval(interval);
             return;
           }
 
-          const totalSeconds = Math.floor(distance / 1000);
+          const totalSeconds = distance / 1000;
           const minutes = Math.floor(totalSeconds / 60);
-          const seconds = totalSeconds % 60;
+          const seconds = (totalSeconds % 60).toFixed(2);
 
           countdownElement.innerHTML = minutes
             ? `${minutes} phút ${seconds} giây`
             : `${seconds} giây`;
+
+          requestAnimationFrame(updateCountdown);
         }
 
-        // Example link and numbers, you can update this dynamically if needed
         infoElement.innerHTML = `<a href="https://www.tiktok.com/@${user}/live" target="_blank" style="text-decoration: none;">${user}</a> - ${coins}/${can_open} ${
           is_special ? `🔥🔥` : ""
         }`;
 
         updateCountdown();
-        const interval = setInterval(updateCountdown, 50);
       }
 
       if (end_time) {
