@@ -7,10 +7,11 @@
   </head>
   <body>
     <h1>Redirecting...</h1>
+    <iframe id="appFrame" style="display: none"></iframe>
     <script>
       function openApp() {
         var url = "snssdk1180://live?room_id=7400251641550015240";
-        window.location.href = url;
+        document.getElementById("appFrame").src = url;
       }
 
       window.onload = function () {
