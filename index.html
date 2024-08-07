@@ -6,12 +6,11 @@
     <title>Open Mobile App</title>
   </head>
   <body>
-    <h1>Redirecting...</h1>
-    <iframe id="appFrame" style="display: none"></iframe>
+    <h1>Redirecting... 2</h1>
     <script>
       function openApp() {
         var url = "https://www.tiktok.com/share/live/7400250019619556097";
-        document.getElementById("appFrame").src = url;
+        window.location.href = url;
       }
 
       window.onload = function () {
