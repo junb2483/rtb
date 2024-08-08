@@ -1,184 +1,286 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Payment Options</title>
+    <title>Gia hạn bot</title>
     <style>
       body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f9f9f9;
+        background-color: #e9ecef;
+        color: #495057;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
       }
+
       .container {
         max-width: 600px;
-        margin: 50px auto;
+        width: 100%;
         padding: 20px;
-        background-color: white;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
         border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 0 10px; /* Thêm margin ngang */
       }
-      .section {
+
+      h1 {
+        font-size: 1.8em;
+        color: #007bff;
+        text-align: center;
         margin-bottom: 20px;
       }
-      .section label {
-        display: block;
+
+      .price-info {
+        margin-bottom: 20px;
+      }
+
+      .price-info p {
+        font-size: 1.2em;
         margin: 10px 0;
-        font-size: 16px;
-        cursor: pointer;
+        text-align: center;
       }
-      .package {
+
+      .price-info strong {
+        color: #007bff;
+      }
+
+      .payment-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .payment-options label {
+        display: block;
+        text-align: center;
         padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
         cursor: pointer;
-        transition: background-color 0.3s, box-shadow 0.3s;
-        position: relative;
+        background-color: #fff;
+        transition: background-color 0.3s, border-color 0.3s;
+        box-sizing: border-box;
       }
-      .package:hover {
-        background-color: #f0f0f0;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
-      .package-details {
-        font-size: 14px;
-        color: #555;
-        margin-top: 10px;
+
+      .payment-options input[type="radio"] {
         display: none;
       }
-      .package-1 {
-        background-color: #e8f5e9;
-      } /* Light green */
-      .package-2 {
-        background-color: #fce4ec;
-      } /* Light pink */
-      .package-3 {
-        background-color: #e3f2fd;
-      } /* Light blue */
-      .total-amount {
-        font-size: 1.5em;
-        font-weight: bold;
+
+      .payment-options input[type="radio"]:checked + label {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+      }
+
+      .total-price,
+      .time-info {
         text-align: center;
         margin-top: 20px;
-        padding: 10px;
-        background-color: #eef;
-        border-radius: 8px;
-        color: #333;
+        font-size: 1.2em;
+        font-weight: bold;
       }
-      @media (min-width: 600px) {
-        .section label {
-          display: inline-block;
-          margin-right: 15px;
+
+      .payment-button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        margin-top: 20px;
+        transition: background-color 0.3s;
+      }
+
+      .payment-button:hover {
+        background-color: #0056b3;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 0 20px; /* Tăng margin ngang cho các màn hình nhỏ hơn */
         }
-      }
-      /* Style for package details */
-      .package-description {
-        margin: 0;
-        padding: 0;
+        .payment-options {
+          grid-template-columns: repeat(2, 1fr);
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="section">
-        <label>Chọn gói:</label>
-        <div
-          class="package package-1"
-          onclick="selectPackage('Gói 1', 'details1')"
-        >
-          <input type="radio" name="package" value="Gói 1" id="package1" />
-          <label for="package1">Gói 119k/ngày</label>
-          <div id="details1" class="package-details">
-            <p class="package-description">Max 500 idols đang live</p>
-            <p class="package-description">
-              Trong cùng một thời điểm bot sẽ join tối đa 500 lives để ngồi ở
-              những lives đó thu thập rương
-            </p>
-          </div>
+      <h1 id="pageTitle">Gia hạn thêm ngày</h1>
+      <div class="price-info">
+        <p>Giá tiền mỗi ngày: <strong id="pricePerDay">0đ/ngày</strong></p>
+        <p id="descriptionPrice" class="description">
+          Mô tả sẽ được hiển thị ở đây.
+        </p>
+      </div>
+
+      <div class="payment-options">
+        <div>
+          <input type="radio" id="day1" name="days" value="1" />
+          <label for="day1">+1 ngày</label>
         </div>
-        <div
-          class="package package-2"
-          onclick="selectPackage('Gói 2', 'details2')"
-        >
-          <input
-            type="radio"
-            name="package"
-            value="Gói 2"
-            id="package2"
-            checked
-          />
-          <label for="package2">Gói 139k/ngày (đang dùng)</label>
-          <div id="details2" class="package-details">
-            <p class="package-description">Max 600 idols đang live</p>
-            <p class="package-description">
-              Trong cùng một thời điểm bot sẽ join tối đa 600 lives để ngồi ở
-              những lives đó thu thập rương
-            </p>
-          </div>
+        <div>
+          <input type="radio" id="day2" name="days" value="2" />
+          <label for="day2">+2 ngày</label>
         </div>
-        <div
-          class="package package-3"
-          onclick="selectPackage('Gói 3', 'details3')"
-        >
-          <input type="radio" name="package" value="Gói 3" id="package3" />
-          <label for="package3">Gói 179k/ngày</label>
-          <div id="details3" class="package-details">
-            <p class="package-description">Max 1000 idols đang live</p>
-            <p class="package-description">
-              Trong cùng một thời điểm bot sẽ join tối đa 1000 lives để ngồi ở
-              những lives đó thu thập rương. Từ 1001 idols trở lên, +20k/100
-              idols nếu cần thêm
-            </p>
-          </div>
+        <div>
+          <input type="radio" id="day3" name="days" value="3" />
+          <label for="day3">+3 ngày</label>
+        </div>
+        <div>
+          <input type="radio" id="day5" name="days" value="5" />
+          <label for="day5">+5 ngày</label>
+        </div>
+        <div>
+          <input type="radio" id="day7" name="days" value="7" />
+          <label for="day7">+7 ngày</label>
+        </div>
+        <div>
+          <input type="radio" id="day10" name="days" value="10" />
+          <label for="day10">+10 ngày</label>
         </div>
       </div>
 
-      <div class="section">
-        <label>Chọn thời gian:</label>
-        <label>
-          <input type="radio" name="time" value="Giữ thời gian" />
-          Giữ thời gian
-        </label>
-        <label><input type="radio" name="time" value="+1 day" /> +1 ngày</label>
-        <label><input type="radio" name="time" value="+2 day" /> +2 ngày</label>
-        <label><input type="radio" name="time" value="+3 day" /> +3 ngày</label>
-        <label><input type="radio" name="time" value="+4 day" /> +4 ngày</label>
-        <label><input type="radio" name="time" value="+5 day" /> +5 ngày</label>
-        <label><input type="radio" name="time" value="+6 day" /> +6 ngày</label>
-        <label><input type="radio" name="time" value="+7 day" /> +7 ngày</label>
-        <label><input type="radio" name="time" value="+8 day" /> +8 ngày</label>
-        <label><input type="radio" name="time" value="+9 day" /> +9 ngày</label>
-        <label
-          ><input type="radio" name="time" value="+10 day" /> +10 ngày</label
-        >
+      <div class="total-price">
+        Số tiền cần thanh toán: <strong id="totalPrice">0đ</strong>
       </div>
 
-      <div class="total-amount">Tổng số tiền cần thanh toán: 100000 vnd</div>
+      <div class="time-info">
+        <p>Số giờ còn lại hiện tại: <strong id="currentHours">0 giờ</strong></p>
+        <p>
+          Số giờ sau khi thanh toán:
+          <strong id="hoursAfterPayment">0 giờ</strong>
+        </p>
+      </div>
+
+      <button class="payment-button" id="paymentButton">
+        Tiến hành thanh toán
+      </button>
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        showDetails("details2"); // Show default checked package details
-      });
-
-      function selectPackage(packageValue, detailsId) {
-        // Set the corresponding radio button to checked
-        document.querySelector(
-          `input[name="package"][value="${packageValue}"]`
-        ).checked = true;
-        showDetails(detailsId);
+      function getQueryParam(param) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(param);
       }
+      const accessToken = getQueryParam("access_token");
 
-      function showDetails(detailsId) {
-        const details = document.querySelectorAll(".package-details");
-        details.forEach((detail) => {
-          if (detail.id === detailsId) {
-            detail.style.display = "block";
-          } else {
-            detail.style.display = "none";
+      async function fetchData() {
+        try {
+          const response = await fetch(
+            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_public_bot_info&access_token=${accessToken}`
+          );
+          if (!response.ok) throw new Error("Network response was not ok");
+          const data = await response.json();
+
+          // Cập nhật tiêu đề trang
+          const pageTitle = `Gia hạn bot ${data.bot_name}`;
+          document.getElementById("pageTitle").textContent = pageTitle;
+
+          // Cập nhật giá tiền mỗi ngày
+          const pricePerDay = data.price;
+          document.getElementById("pricePerDay").textContent =
+            pricePerDay.toLocaleString("vi-VN") + "đ/ngày";
+
+          // Cập nhật mô tả giá
+          const descriptionPrice = `Gói max ${data.TOTAL_LIMIT_LIVES} lives và ${data.price_note}`;
+          document.getElementById("descriptionPrice").textContent =
+            descriptionPrice;
+
+          // Tính toán số giờ còn lại hiện tại
+          const now = new Date();
+          const packageEndDate = new Date(data.package_end_date);
+          const currentHours = Math.max(
+            0,
+            Math.ceil((packageEndDate - now) / (1000 * 60 * 60))
+          ); // giờ còn lại hiện tại
+
+          document.getElementById("currentHours").textContent =
+            currentHours + " giờ";
+
+          // Xử lý sự kiện chọn số ngày
+          const totalPriceElement = document.getElementById("totalPrice");
+          const hoursAfterPaymentElement =
+            document.getElementById("hoursAfterPayment");
+          const radioButtons = document.querySelectorAll('input[name="days"]');
+
+          radioButtons.forEach((radio) => {
+            radio.addEventListener("change", function () {
+              const days = parseInt(this.value);
+              const totalPrice = pricePerDay * days;
+              totalPriceElement.textContent =
+                totalPrice.toLocaleString("vi-VN") + "đ";
+
+              const hoursAfterPayment = currentHours + days * 24;
+              hoursAfterPaymentElement.textContent = hoursAfterPayment + " giờ";
+            });
+          });
+
+          // Xử lý sự kiện nhấn nút thanh toán
+          document
+            .getElementById("paymentButton")
+            .addEventListener("click", async function () {
+              const selectedRadio = document.querySelector(
+                'input[name="days"]:checked'
+              );
+
+              if (selectedRadio) {
+                const totalDays = selectedRadio.value;
+                const cancelUrl = window.location.href;
+                const returnUrl = cancelUrl.replace(
+                  "index.html",
+                  "payment_success.html"
+                );
+
+                try {
+                  const apiUrl = `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=request_payment&access_token=${accessToken}&total_days=${totalDays}&return_url=${encodeURIComponent(
+                    returnUrl
+                  )}&cancel_url=${encodeURIComponent(cancelUrl)}`;
+                  const response = await fetch(apiUrl);
+
+                  const result = await response.json();
+                  if (result.checkoutUrl) {
+                    window.location.href = result.checkoutUrl;
+                  } else {
+                    alert("Có lỗi xảy ra trong quá trình thanh toán.");
+                  }
+                } catch (error) {
+                  console.error("Có lỗi xảy ra:", error);
+                }
+              } else {
+                alert("Vui lòng chọn số ngày.");
+              }
+            });
+
+          // Tự động chọn radio button dựa trên last_renew_days
+          const lastRenewDays = data.last_renew_days;
+          const defaultRadio = document.querySelector(
+            `input[name="days"][value="${lastRenewDays}"]`
+          );
+          if (defaultRadio) {
+            defaultRadio.checked = true;
+            const totalPrice = pricePerDay * lastRenewDays;
+            totalPriceElement.textContent =
+              totalPrice.toLocaleString("vi-VN") + "đ";
+            const hoursAfterPayment = currentHours + lastRenewDays * 24;
+            hoursAfterPaymentElement.textContent = hoursAfterPayment + " giờ";
           }
-        });
+        } catch (error) {
+          console.error("Có lỗi xảy ra:", error);
+        }
       }
+
+      fetchData();
     </script>
   </body>
 </html>
