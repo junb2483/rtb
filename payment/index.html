@@ -169,6 +169,14 @@
     </div>
 
     <script>
+      function toAbsoluteUrl(relativePath, baseUrl = window.location.href) {
+        try {
+          const absoluteUrl = new URL(relativePath, baseUrl);
+          return absoluteUrl.href;
+        } catch (error) {
+          return null;
+        }
+      }
       function getQueryParam(param) {
         const params = new URLSearchParams(window.location.search);
         return params.get(param);
@@ -237,10 +245,7 @@
               if (selectedRadio) {
                 const totalDays = selectedRadio.value;
                 const cancelUrl = window.location.href;
-                const returnUrl = cancelUrl.replace(
-                  "index.html",
-                  "payment_success.html"
-                );
+                const returnUrl = toAbsoluteUrl("./success.html");
 
                 try {
                   const apiUrl = `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=request_payment&access_token=${accessToken}&total_days=${totalDays}&return_url=${encodeURIComponent(
