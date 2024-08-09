@@ -148,10 +148,10 @@
     <div class="container">
       <h1 id="pageTitle">Gia hạn thêm ngày</h1>
       <div class="price-info">
-        <p>Giá tiền mỗi ngày: <strong id="pricePerDay">0đ/ngày</strong></p>
         <p id="descriptionPrice" class="description">
           Mô tả sẽ được hiển thị ở đây.
         </p>
+        <p>Giá: <strong id="pricePerDay">0đ/ngày</strong></p>
       </div>
 
       <div class="payment-options">
@@ -234,7 +234,9 @@
             pricePerDay.toLocaleString("vi-VN") + "đ/ngày";
 
           // Cập nhật mô tả giá
-          const descriptionPrice = `Gói max ${data.TOTAL_LIMIT_LIVES} lives và ${data.price_note}`;
+          const descriptionPrice = `Gói max ${data.TOTAL_LIMIT_LIVES} lives${
+            data.price_note ? " và " : " "
+          }${data.price_note}`;
           document.getElementById("descriptionPrice").textContent =
             descriptionPrice;
 
