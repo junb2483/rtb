@@ -208,13 +208,11 @@
           // Tính toán số giờ còn lại hiện tại
           const now = new Date();
           const packageEndDate = new Date(data.package_end_date);
-          const currentHours = Math.max(
-            0,
-            Math.ceil((packageEndDate - now) / (1000 * 60 * 60))
-          ); // giờ còn lại hiện tại
+          const currentHours =
+            (packageEndDate.getTime() - new Date().getTime()) / 3600000;
 
           document.getElementById("currentHours").textContent =
-            currentHours + " giờ";
+            Math.floor(currentHours) + " giờ";
 
           // Xử lý sự kiện chọn số ngày
           const totalPriceElement = document.getElementById("totalPrice");
@@ -230,7 +228,8 @@
                 totalPrice.toLocaleString("vi-VN") + "đ";
 
               const hoursAfterPayment = currentHours + days * 24;
-              hoursAfterPaymentElement.textContent = hoursAfterPayment + " giờ";
+              hoursAfterPaymentElement.textContent =
+                Math.floor(hoursAfterPayment) + " giờ";
             });
           });
 
@@ -278,7 +277,8 @@
             totalPriceElement.textContent =
               totalPrice.toLocaleString("vi-VN") + "đ";
             const hoursAfterPayment = currentHours + lastRenewDays * 24;
-            hoursAfterPaymentElement.textContent = hoursAfterPayment + " giờ";
+            hoursAfterPaymentElement.textContent =
+              Math.floor(hoursAfterPayment) + " giờ";
           }
         } catch (error) {
           console.error("Có lỗi xảy ra:", error);
