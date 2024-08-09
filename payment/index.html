@@ -16,7 +16,34 @@
         align-items: center;
         height: 100vh;
       }
-
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff; /* Không mờ */
+        display: none; /* Ẩn lớp overlay mặc định */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Đặt z-index để hiển thị trên tất cả các thành phần khác */
+      }
+      .loading-message {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: bold;
+        text-align: center;
+        width: 90%;
+      }
+      .hidden {
+        display: none;
+      }
+      .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        text-align: center;
+      }
       .container {
         max-width: 600px;
         width: 100%;
@@ -26,7 +53,6 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin: 0 10px; /* Thêm margin ngang */
       }
-
       h1 {
         font-size: 1.8em;
         color: #007bff;
@@ -115,6 +141,11 @@
     </style>
   </head>
   <body>
+    <div id="loading-overlay" class="loading-overlay">
+      <div id="loading-message" class="loading-message">
+        Đang tải dữ liệu...
+      </div>
+    </div>
     <div class="container">
       <h1 id="pageTitle">Gia hạn thêm ngày</h1>
       <div class="price-info">
@@ -169,6 +200,8 @@
     </div>
 
     <script>
+      let isSubmitting = false;
+
       function toAbsoluteUrl(relativePath, baseUrl = window.location.href) {
         try {
           const absoluteUrl = new URL(relativePath, baseUrl);
@@ -184,6 +217,11 @@
       const accessToken = getQueryParam("access_token");
 
       async function fetchData() {
+        const loadingOverlay = document.getElementById("loading-overlay");
+        const loadingMessage = document.getElementById("loading-message");
+        loadingMessage.textContent = "Đang tải dữ liệu..."; // Thông báo loading ban đầu
+        loadingOverlay.style.display = "flex"; // Hiển thị thông báo loading
+
         try {
           const response = await fetch(
             `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_public_bot_info&access_token=${accessToken}`
@@ -237,11 +275,19 @@
           document
             .getElementById("paymentButton")
             .addEventListener("click", async function () {
+              const loadingOverlay = document.getElementById("loading-overlay");
+              const loadingMessage = document.getElementById("loading-message");
+
               const selectedRadio = document.querySelector(
                 'input[name="days"]:checked'
               );
 
-              if (selectedRadio) {
+              if (selectedRadio && !isSubmitting) {
+                isSubmitting = true;
+                loadingMessage.textContent =
+                  "Đang tạo mã QR thanh toán, mỗi lần thanh toán là 1 mã QR khác nhau, các bạn chú ý nhé !"; // Thông báo loading khi gửi dữ liệu
+                loadingOverlay.style.display = "flex"; // Hiển thị thông báo loading
+
                 const totalDays = selectedRadio.value;
                 const cancelUrl = window.location.href;
                 const returnUrl = toAbsoluteUrl("./success.html");
@@ -260,7 +306,10 @@
                   }
                 } catch (error) {
                   console.error("Có lỗi xảy ra:", error);
+                  loadingOverlay.style.display = "none";
                 }
+
+                isSubmitting = false;
               } else {
                 alert("Vui lòng chọn số ngày.");
               }
@@ -280,8 +329,10 @@
             hoursAfterPaymentElement.textContent =
               Math.floor(hoursAfterPayment) + " giờ";
           }
+          loadingOverlay.style.display = "none"; // Ẩn thông báo loading
         } catch (error) {
           console.error("Có lỗi xảy ra:", error);
+          loadingMessage.textContent = "Lỗi khi tải dữ liệu.";
         }
       }
 
