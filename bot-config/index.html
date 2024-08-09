@@ -107,6 +107,12 @@
         color: red;
         font-weight: bold;
       }
+      .note-link {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #555;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -141,6 +147,10 @@
       <div class="note note-important">
         - Link này lộ ra ngoài, bot bạn có thể hỏng
       </div>
+      <div class="note-link">
+        - Bạn có thể thanh toán thêm ngày
+        <a id="payment-link" href="#">tại đây</a>
+      </div>
     </div>
 
     <script>
@@ -149,6 +159,10 @@
         return params.get(param);
       }
       const accessToken = getQueryParam("access_token");
+      document.getElementById(
+        "payment-link"
+      ).href = `../payment?access_token=${accessToken}`;
+
       let isSubmitting = false;
 
       async function loadData() {
