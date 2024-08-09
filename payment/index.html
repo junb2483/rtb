@@ -108,7 +108,6 @@
         text-align: center;
         margin-top: 20px;
         font-size: 1.2em;
-        font-weight: bold;
       }
 
       .payment-button {
@@ -182,16 +181,12 @@
         </div>
       </div>
 
+      <div class="time-info">
+        <p id="currentHours"></p>
+        <p id="hoursAfterPayment"></p>
+      </div>
       <div class="total-price">
         Số tiền cần thanh toán: <strong id="totalPrice">0đ</strong>
-      </div>
-
-      <div class="time-info">
-        <p>Số giờ còn lại hiện tại: <strong id="currentHours">0 giờ</strong></p>
-        <p>
-          Số giờ sau khi thanh toán:
-          <strong id="hoursAfterPayment">0 giờ</strong>
-        </p>
       </div>
 
       <button class="payment-button" id="paymentButton">
@@ -249,8 +244,11 @@
           const currentHours =
             (packageEndDate.getTime() - new Date().getTime()) / 3600000;
 
-          document.getElementById("currentHours").textContent =
-            Math.floor(currentHours) + " giờ";
+          document.getElementById(
+            "currentHours"
+          ).textContent = `Số giờ còn lại hiện tại: ${Math.floor(
+            currentHours
+          )} giờ`;
 
           // Xử lý sự kiện chọn số ngày
           const totalPriceElement = document.getElementById("totalPrice");
@@ -266,8 +264,9 @@
                 totalPrice.toLocaleString("vi-VN") + "đ";
 
               const hoursAfterPayment = currentHours + days * 24;
-              hoursAfterPaymentElement.textContent =
-                Math.floor(hoursAfterPayment) + " giờ";
+              hoursAfterPaymentElement.textContent = `Số giờ sau khi thanh toán: ${Math.floor(
+                hoursAfterPayment
+              )} giờ`;
             });
           });
 
@@ -326,8 +325,9 @@
             totalPriceElement.textContent =
               totalPrice.toLocaleString("vi-VN") + "đ";
             const hoursAfterPayment = currentHours + lastRenewDays * 24;
-            hoursAfterPaymentElement.textContent =
-              Math.floor(hoursAfterPayment) + " giờ";
+            hoursAfterPaymentElement.textContent = `Số giờ sau khi thanh toán: ${Math.floor(
+              hoursAfterPayment
+            )} giờ`;
           }
           loadingOverlay.style.display = "none"; // Ẩn thông báo loading
         } catch (error) {
