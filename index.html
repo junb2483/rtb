@@ -18,13 +18,11 @@
   <body>
     <h1>Redirecting... 2</h1>
     <script>
-      function openApp() {
-        var url = "https://www.tiktok.com/@wieneronfire/live";
-        window.location.href = url;
-      }
-
+      const user = new URLSearchParams(window.location.search).get("r");
       window.onload = function () {
-        openApp();
+        if (user) {
+          window.location.href = `https://www.tiktok.com/@${user}/live`;
+        }
       };
     </script>
   </body>
