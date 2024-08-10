@@ -16,12 +16,13 @@
     <title>Open Mobile App</title>
   </head>
   <body>
-    <h1>Redirecting... 2</h1>
     <script>
       const user = new URLSearchParams(window.location.search).get("r");
       window.onload = function () {
         if (user) {
-          window.location.href = `https://www.tiktok.com/@${user}/live`;
+          setTimeout(() => {
+            window.location.href = `https://www.tiktok.com/@${user}/live`;
+          }, 10000);
         }
       };
     </script>
