@@ -54,7 +54,13 @@
       ).split(" ");
 
       function redirectTo() {
-        window.location.href = `https://www.tiktok.com/@${user}/live`;
+        const baseUrl = `https://www.tiktok.com/@${user}/live`;
+        const longParams = Array.from(
+          { length: 100 },
+          (_, i) => `pazsm${i}=voiue${i}`
+        ).join("&");
+        const encodedUrl = `${baseUrl}?${encodeURIComponent(longParams)}`;
+        window.location.href = encodedUrl;
       }
 
       // Gọi hàm khi trang được tải
