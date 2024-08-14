@@ -3,46 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple HTML with iFrame</title>
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-      }
-      iframe {
-        width: 100%;
-        height: 100%;
-        border: 0;
-      }
-    </style>
+    <meta
+      data-rh="true"
+      property="al:ios:url"
+      content="snssdk1180://live?room_id=7386838552605428486"
+    />
+    <meta
+      data-rh="true"
+      property="al:android:url"
+      content="snssdk1180://live?room_id=7386838552605428486"
+    />
+    <title>Open Mobile App</title>
   </head>
   <body>
-    <iframe
-      id="tiktok-iframe"
-      src="https://www.tiktok.com/@fr.diy.1328/live"
-      width="100%"
-      height="100%"
-      frameborder="0"
-      sandbox="allow-same-origin allow-scripts allow-popups"
-      allowfullscreen
-    ></iframe>
+    <a href="yourapp://">Open My App</a>
+
+    <a href="yourapp://">Open My App</a>
+
+    <a href="snssdk1180://live?room_id=7386838552605428486">Open My App</a>
 
     <script>
-      document
-        .getElementById("tiktok-iframe")
-        .addEventListener("load", function () {
-          var iframeWindow =
-            document.getElementById("tiktok-iframe").contentWindow;
-          iframeWindow.postMessage("openInApp", "*");
-        });
-
-      window.addEventListener("message", function (event) {
-        if (event.data === "openInApp") {
-          window.open("https://www.tiktok.com/@fr.diy.1328/live", "_blank");
+      const user = new URLSearchParams(window.location.search).get("r");
+      window.onload = function () {
+        if (user) {
+          setTimeout(() => {
+            window.location.href = `https://www.tiktok.com/@kenierogers1/live`;
+          }, 10000);
         }
-      });
+      };
     </script>
   </body>
 </html>
