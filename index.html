@@ -4,19 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple HTML with iFrame</title>
+    <style>
+      /* Đặt kích thước của body và html để chiếm toàn bộ chiều cao */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      /* Thiết lập iFrame chiếm toàn bộ không gian */
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+    </style>
   </head>
   <body>
-    <h1>Nhúng Trang Web Khác</h1>
-
-    <iframe
-      src="https://www.tiktok.com/@fr.diy.1328/live"
-      width="100%"
-      height="600px"
-      frameborder="0"
-      allowfullscreen
-    >
+    <iframe src="https://www.tiktok.com/@fr.diy.1328/live" allowfullscreen>
     </iframe>
-
-    <p>Bạn có thể chỉnh sửa `src` để nhúng trang web mà bạn muốn.</p>
   </body>
 </html>
