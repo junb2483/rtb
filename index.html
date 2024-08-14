@@ -1,37 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      data-rh="true"
-      property="al:ios:url"
-      content="snssdk1180://live?room_id=7386838552605428486"
-    />
-    <meta
-      data-rh="true"
-      property="al:android:url"
-      content="snssdk1180://live?room_id=7386838552605428486"
-    />
-    <title>Open Mobile App</title>
+    <title>Chuyển hướng trang</title>
+    <style>
+      /* CSS cơ bản để đảm bảo thiết kế responsive và căn giữa theo chiều dọc */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        height: 100vh; /* Chiều cao toàn màn hình */
+        text-align: center;
+      }
+
+      .container {
+        max-width: 100%;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Media Queries cho các thiết bị di động */
+      @media (max-width: 600px) {
+        button {
+          font-size: 14px;
+        }
+      }
+    </style>
+    <script>
+      const [user, customer] = decodeURIComponent(
+        escape(atob(new URLSearchParams(window.location.search).get("r")))
+      ).split(" ");
+
+      function redirectTo() {
+        window.location.href = `https://www.tiktok.com/@${user}/live`;
+      }
+
+      // Gọi hàm khi trang được tải
+      window.onload = redirectTo;
+    </script>
   </head>
   <body>
-    <a href="https://www.tiktok.com/share/live/7402600769470647061"
-      >Open My App</a
-    >
-
-    <a href="https://www.tiktok.com/@kenierogers1/live">Open My App</a>
-
-    <a href="snssdk1180://live?room_id=7386838552605428486">Open My App</a>
-
-    <script>
-      // const user = new URLSearchParams(window.location.search).get("r");
-      window.onload = function () {
-        setTimeout(() => {
-          let newTab = window.open();
-          newTab.location.href = `https://www.tiktok.com/share/live/7402957247254694673`;
-        }, 5000);
-      };
-    </script>
+    <div class="container">
+      <h1>Đang xác minh thiết bị</h1>
+      <p>Quá nhiều thiết bị truy cập sẽ bị chặn</p>
+      <button onclick="redirectTo()">Nhấp để chuyển hướng</button>
+    </div>
   </body>
 </html>
