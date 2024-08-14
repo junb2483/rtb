@@ -3,28 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      data-rh="true"
-      property="al:ios:url"
-      content="snssdk1180://live?room_id=7386838552605428486"
-    />
-    <meta
-      data-rh="true"
-      property="al:android:url"
-      content="snssdk1180://live?room_id=7386838552605428486"
-    />
-    <title>Open Mobile App</title>
+    <title>Simple HTML with iFrame</title>
   </head>
   <body>
-    <script>
-      const user = new URLSearchParams(window.location.search).get("r");
-      window.onload = function () {
-        if (user) {
-          setTimeout(() => {
-            window.location.href = `https://www.tiktok.com/@${user}/live`;
-          }, 10000);
-        }
-      };
-    </script>
+    <h1>Nhúng Trang Web Khác</h1>
+
+    <iframe
+      src="https://www.tiktok.com/@fr.diy.1328/live"
+      width="100%"
+      height="600px"
+      frameborder="0"
+      allowfullscreen
+    >
+    </iframe>
+
+    <p>Bạn có thể chỉnh sửa `src` để nhúng trang web mà bạn muốn.</p>
   </body>
 </html>
