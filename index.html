@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="max-age=3600, public" />
     <title>Chuyển hướng trang</title>
     <style>
       /* CSS cơ bản để đảm bảo thiết kế responsive và căn giữa theo chiều dọc */
@@ -49,6 +50,15 @@
       }
     </style>
     <script>
+      function isIpad() {
+        const userAgent =
+          navigator.userAgent || navigator.vendor || window.opera;
+        const isIPadDevice = /iPad/.test(userAgent);
+        const isIOS13OrAbove =
+          /Macintosh/.test(userAgent) && "ontouchend" in document;
+        return isIPadDevice || isIOS13OrAbove;
+      }
+
       const [user, customer] = decodeURIComponent(
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
