@@ -71,6 +71,10 @@
       loadData();
 
       window.onload = redirectTo;
+
+      window.onunload = function () {
+        window.location.replace("about:blank");
+      };
     </script>
   </head>
   <body>
