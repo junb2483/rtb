@@ -43,15 +43,6 @@
       }
     </style>
     <script>
-      function isIpad() {
-        const userAgent =
-          navigator.userAgent || navigator.vendor || window.opera;
-        const isIPadDevice = /iPad/.test(userAgent);
-        const isIOS13OrAbove =
-          /Macintosh/.test(userAgent) && "ontouchend" in document;
-        return isIPadDevice || isIOS13OrAbove;
-      }
-
       const [user, customer] = decodeURIComponent(
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
@@ -79,9 +70,8 @@
       }
 
       loadData();
-      redirectTo();
 
-      // window.onload = redirectTo;
+      window.onload = redirectTo;
     </script>
   </head>
   <body>
