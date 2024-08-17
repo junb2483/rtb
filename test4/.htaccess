@@ -1,3 +1,13 @@
+# Bật caching cho index.html bất kể query string
 <Files "index.html">
-    Header set Cache-Control "max-age=3600, public"
+    ExpiresActive On
+    ExpiresDefault "access plus 1 hour"
+    Header set Cache-Control "public, max-age=3600"
 </Files>
+
+# Bật caching cho tất cả các yêu cầu, kể cả query string
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{QUERY_STRING} ^(.*)$
+    RewriteRule ^index\.html$ /index.html? [L]
+</IfModule>
