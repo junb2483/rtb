@@ -107,8 +107,6 @@
 
       loadData();
 
-      window.onload = redirectTo;
-
       document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "visible") {
           setTimeout(() => {
@@ -120,6 +118,8 @@
           window.close();
         }
       });
+
+      window.onload = redirectTo;
     </script>
   </head>
   <body>
