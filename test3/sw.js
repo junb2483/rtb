@@ -1,31 +1,61 @@
 const CACHE_NAME = "my-cache-v5";
-const urlsToCache = ["/", "/rtb/test3"];
+const urlsToCache = ["/", "/rtb/test3/index.html"];
 
-// Cài đặt cache
+// Chỉ định các URL để cache
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache).catch((error) => {
-        console.error("Failed to cache:", error);
-      });
+      return Promise.all(
+        urlsToCache.map((url) => {
+          return fetch(url)
+            .then((response) => {
+              if (response.ok) {
+                return cache.put(
+                  new Request(url, { mode: "no-cors" }),
+                  response.clone()
+                );
+              }
+              throw new Error("Failed to fetch " + url);
+            })
+            .catch((error) => {
+              console.error("Failed to cache:", url, error);
+            });
+        })
+      );
     })
   );
 });
 
 // Xử lý các yêu cầu và sử dụng cache
 self.addEventListener("fetch", (event) => {
-  console.log(event.request);
+  const url = new URL(event.request.url);
+  const urlWithoutQuery = url.origin + url.pathname; // Loại bỏ phần tham số truy vấn
 
   event.respondWith(
     caches
-      .match(event.request, { ignoreSearch: true }) // Bỏ qua phần truy vấn của URL
+      .match(urlWithoutQuery) // Tìm trong cache không có tham số truy vấn
       .then((response) => {
-        // Trả về dữ liệu từ cache nếu có
         if (response) {
-          return response;
+          return response; // Trả về dữ liệu từ cache nếu có
         }
-        // Nếu không có dữ liệu trong cache, gửi yêu cầu mạng
-        return fetch(event.request);
+        return fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse.ok) {
+              // Lưu vào cache với URL không có tham số truy vấn
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(
+                  new Request(urlWithoutQuery, { mode: "no-cors" }),
+                  networkResponse.clone()
+                );
+              });
+              return networkResponse;
+            }
+            throw new Error("Network response was not ok.");
+          })
+          .catch((error) => {
+            console.error("Fetch failed:", error);
+            throw error;
+          });
       })
   );
 });
