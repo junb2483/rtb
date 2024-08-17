@@ -16,11 +16,10 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
   // Chỉ cache và trả về file từ đường dẫn không có query params
+  console.log(1, url.pathname);
   if (url.pathname === "/rtb/test") {
     event.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
-        console.log(url.pathname);
-
         const cachedResponse = await cache.match(url.pathname);
         const fetchPromise = fetch(url.pathname).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
