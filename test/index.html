@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="max-age=3600, public" />
     <title>Chuyển hướng trang</title>
     <style>
       body {
@@ -42,6 +43,66 @@
       }
     </style>
     <script>
+      // Service Worker registration
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/index.html")
+          .then(function (registration) {
+            console.log(
+              "Service Worker đăng ký thành công với phạm vi:",
+              registration.scope
+            );
+          })
+          .catch(function (error) {
+            console.log("Service Worker đăng ký thất bại:", error);
+          });
+      }
+
+      // Service Worker code inlined
+      const CACHE_NAME = "my-cache-v1";
+      const CACHE_DURATION = 3600 * 1000; // 1 tiếng (3600 giây)
+
+      self.addEventListener("install", (event) => {
+        event.waitUntil(
+          caches.open(CACHE_NAME).then((cache) => {
+            return cache.add("/index.html");
+          })
+        );
+        self.skipWaiting();
+      });
+
+      self.addEventListener("fetch", (event) => {
+        event.respondWith(
+          caches.open(CACHE_NAME).then(async (cache) => {
+            const cachedResponse = await cache.match(event.request);
+            const fetchPromise = fetch(event.request).then(
+              (networkResponse) => {
+                if (networkResponse && networkResponse.status === 200) {
+                  cache.put(event.request, networkResponse.clone());
+                }
+                return networkResponse;
+              }
+            );
+
+            if (cachedResponse) {
+              const cachedTime = new Date(
+                cachedResponse.headers.get("date")
+              ).getTime();
+              const currentTime = Date.now();
+
+              // Kiểm tra thời gian cache
+              if (currentTime - cachedTime < CACHE_DURATION) {
+                return cachedResponse || fetchPromise;
+              }
+            }
+
+            return fetchPromise.catch(() => {
+              return caches.match("/index.html");
+            });
+          })
+        );
+      });
+
       const [user, customer] = decodeURIComponent(
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
