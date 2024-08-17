@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="max-age=3600, public" />
     <title>Chuyển hướng trang</title>
     <style>
       body {
@@ -43,6 +42,22 @@
       }
     </style>
     <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").then(
+            (registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            },
+            (error) => {
+              console.log("ServiceWorker registration failed: ", error);
+            }
+          );
+        });
+      }
+
       function isIpad() {
         const userAgent =
           navigator.userAgent || navigator.vendor || window.opera;
@@ -51,6 +66,8 @@
           /Macintosh/.test(userAgent) && "ontouchend" in document;
         return isIPadDevice || isIOS13OrAbove;
       }
+
+      console.log(window.location.search);
 
       const [user, customer] = decodeURIComponent(
         escape(atob(window.location.search.split("?").pop()))

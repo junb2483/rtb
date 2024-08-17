@@ -1,5 +1,5 @@
-const CACHE_NAME = "my-cache-v16";
-const cacheURL = "/rtb/test4/index.html";
+const CACHE_NAME = "cache-v1";
+const cacheURL = "/rtb/index.html";
 const urlsToCache = [cacheURL];
 
 self.addEventListener("install", (event) => {
