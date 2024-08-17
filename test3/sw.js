@@ -14,6 +14,8 @@ self.addEventListener("install", (event) => {
 
 // Xử lý các yêu cầu và sử dụng cache
 self.addEventListener("fetch", (event) => {
+  console.log(event.request);
+
   event.respondWith(
     caches
       .match(event.request, { ignoreSearch: true }) // Bỏ qua phần truy vấn của URL
