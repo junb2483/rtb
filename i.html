@@ -73,6 +73,17 @@
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
 
+      try {
+        // Sử dụng BroadcastChannel để đóng các tab khác cùng domain
+        const channel = new BroadcastChannel("close_tabs");
+        channel.onmessage = (event) => {
+          if (event.data === "close") {
+            window.close();
+          }
+        };
+        channel.postMessage("close");
+      } catch {}
+
       function redirectTo() {
         const baseUrl = `https://www.tiktok.com/@${user}/live`;
         const longParams = Array.from(
@@ -104,6 +115,12 @@
     <div class="container">
       <h1>Đang xác minh thiết bị</h1>
       <p>Quá nhiều thiết bị truy cập sẽ bị chặn</p>
+      <p>
+        <b
+          >Nếu không tự động mở ứng dụng tiktok, hãy vào xóa lịch sử trình duyệt
+          !
+        </b>
+      </p>
       <button onclick="redirectTo()">Nhấp để chuyển hướng</button>
     </div>
   </body>
