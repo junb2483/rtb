@@ -71,6 +71,8 @@
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
 
+      alert(window.location.search);
+
       function redirectTo() {
         const baseUrl = `https://www.tiktok.com/@${user}/live`;
         const longParams = Array.from(
