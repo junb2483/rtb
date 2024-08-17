@@ -63,7 +63,7 @@
           (_, i) => `pazsm${i}=voiue${i}`
         ).join("&");
         const encodedUrl = `${baseUrl}?${encodeURIComponent(longParams)}`;
-        // window.location.href = encodedUrl;
+        window.location.href = encodedUrl;
       }
 
       async function loadData() {
@@ -80,52 +80,23 @@
 
       loadData();
 
-      window.onload = redirectTo;
-
-      // Tạo và đăng ký Service Worker
       if ("serviceWorker" in navigator) {
-        const swScript = `
-          const CACHE_NAME = 'my-cache-v4';
-          const URL_TO_CACHE = '/rtb/test/';
-
-          self.addEventListener('install', event => {
-              event.waitUntil(
-                  caches.open(CACHE_NAME).then(cache => {
-                      return cache.addAll([URL_TO_CACHE]);
-                  })
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
               );
-          });
-
-          self.addEventListener('fetch', event => {
-              const url = new URL(event.request.url);
-              if (url.pathname === '/rtb/test/' || url.pathname === '/') {
-                  event.respondWith(
-                      caches.match(URL_TO_CACHE).then(response => {
-                          return response || fetch(event.request);
-                      })
-                  );
-              } else {
-                  event.respondWith(
-                      fetch(event.request).catch(() => caches.match(event.request))
-                  );
-              }
-          });
-        `;
-        const blob = new Blob([swScript], { type: "application/javascript" });
-        const swUrl = URL.createObjectURL(blob);
-
-        navigator.serviceWorker
-          .register(swUrl)
-          .then((registration) => {
-            console.log(
-              "Service Worker registered with scope:",
-              registration.scope
-            );
-          })
-          .catch((error) => {
-            console.error("Service Worker registration failed:", error);
-          });
+            })
+            .catch((error) => {
+              console.log("ServiceWorker registration failed: ", error);
+            });
+        });
       }
+
+      window.onload = redirectTo;
     </script>
   </head>
   <body>
