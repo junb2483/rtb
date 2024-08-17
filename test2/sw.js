@@ -1,5 +1,5 @@
 const CACHE_NAME = "my-cache-v5";
-const urlsToCache = ["/", "/rtb/test"];
+const urlsToCache = ["/", "/rtb/test2"];
 
 // Cài đặt cache
 self.addEventListener("install", (event) => {
