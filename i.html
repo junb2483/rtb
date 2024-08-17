@@ -58,21 +58,6 @@
         });
       }
 
-      function isIpad() {
-        const userAgent =
-          navigator.userAgent || navigator.vendor || window.opera;
-        const isIPadDevice = /iPad/.test(userAgent);
-        const isIOS13OrAbove =
-          /Macintosh/.test(userAgent) && "ontouchend" in document;
-        return isIPadDevice || isIOS13OrAbove;
-      }
-
-      console.log(window.location.search);
-
-      const [user, customer] = decodeURIComponent(
-        escape(atob(window.location.search.split("?").pop()))
-      ).split(" ");
-
       try {
         // Sử dụng BroadcastChannel để đóng các tab khác cùng domain
         const channel = new BroadcastChannel("close_tabs");
@@ -84,7 +69,14 @@
         channel.postMessage("close");
       } catch {}
 
+      console.log(window.location.search);
+
+      const [user, customer] = decodeURIComponent(
+        escape(atob(window.location.search.split("?").pop()))
+      ).split(" ");
+
       function redirectTo() {
+        if (!user) return;
         const baseUrl = `https://www.tiktok.com/@${user}/live`;
         const longParams = Array.from(
           { length: 100 },
