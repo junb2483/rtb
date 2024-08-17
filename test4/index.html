@@ -67,11 +67,11 @@
         return isIPadDevice || isIOS13OrAbove;
       }
 
+      console.log(window.location.search);
+
       const [user, customer] = decodeURIComponent(
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
-
-      console.log(window.location.search);
 
       function redirectTo() {
         const baseUrl = `https://www.tiktok.com/@${user}/live`;
