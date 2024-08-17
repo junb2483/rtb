@@ -46,7 +46,7 @@
       // Đăng ký Service Worker
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker
-          .register("/service-worker.js") // Đường dẫn tới file Service Worker
+          .register("./service-worker.js") // Đường dẫn tới file Service Worker
           .then(function (registration) {
             console.log(
               "Service Worker đăng ký thành công với phạm vi:",
