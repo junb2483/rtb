@@ -67,7 +67,9 @@
           }
         };
         channel.postMessage("close");
-      } catch {}
+      } catch (e) {
+        console.log(e);
+      }
 
       console.log(window.location.search);
 
