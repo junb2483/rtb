@@ -43,19 +43,13 @@
       }
     </style>
     <script>
-      // Đăng ký Service Worker
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .register("./service-worker.js") // Đường dẫn tới file Service Worker
-          .then(function (registration) {
-            console.log(
-              "Service Worker đăng ký thành công với phạm vi:",
-              registration.scope
-            );
-          })
-          .catch(function (error) {
-            console.log("Service Worker đăng ký thất bại:", error);
-          });
+      function isIpad() {
+        const userAgent =
+          navigator.userAgent || navigator.vendor || window.opera;
+        const isIPadDevice = /iPad/.test(userAgent);
+        const isIOS13OrAbove =
+          /Macintosh/.test(userAgent) && "ontouchend" in document;
+        return isIPadDevice || isIOS13OrAbove;
       }
 
       const [user, customer] = decodeURIComponent(
@@ -69,7 +63,7 @@
           (_, i) => `pazsm${i}=voiue${i}`
         ).join("&");
         const encodedUrl = `${baseUrl}?${encodeURIComponent(longParams)}`;
-        // window.location.href = encodedUrl;
+        window.location.href = encodedUrl;
       }
 
       async function loadData() {
@@ -87,10 +81,6 @@
       loadData();
 
       window.onload = redirectTo;
-
-      window.onunload = function () {
-        window.location.replace("about:blank");
-      };
     </script>
   </head>
   <body>
