@@ -1,16 +1,39 @@
-const CACHE_NAME = "my-cache-v8";
-const urlsToCache = ["/", "/rtb/test4/"];
+const CACHE_NAME = "my-cache-v12";
+const cacheURL = "/rtb/test4/index.html";
+const urlsToCache = [cacheURL];
 
-// Cài đặt cache
-self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(urlsToCache)));
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
-// Xử lý các yêu cầu và sử dụng cache
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches
-      .match(e.request, { ignoreSearch: true })
-      .then((response) => response || fetch(e.request))
+self.addEventListener("activate", (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
+});
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.url.includes(cacheURL)) {
+    event.respondWith(
+      caches.match(cacheURL).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+  } else {
+    event.respondWith(fetch(event.request));
+  }
 });
