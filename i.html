@@ -86,6 +86,11 @@
         ).join("&");
         const encodedUrl = `${baseUrl}?${encodeURIComponent(longParams)}`;
         window.location.href = encodedUrl;
+        setTimeout(() => {
+          try {
+            window.close();
+          } catch {}
+        }, 10000);
       }
 
       async function loadData() {
