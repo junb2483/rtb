@@ -5,7 +5,7 @@ const CACHE_DURATION = 3600 * 1000; // 1 tiếng (3600 giây)
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.add("/rtb/test"); // Đường dẫn tới file bạn muốn cache
+      return cache.add("/rtb/test");
     })
   );
   self.skipWaiting();
@@ -19,6 +19,8 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname === "/rtb/test") {
     event.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
+        console.log(url.pathname);
+
         const cachedResponse = await cache.match(url.pathname);
         const fetchPromise = fetch(url.pathname).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
