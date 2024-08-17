@@ -46,7 +46,7 @@
       // Service Worker registration
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker
-          .register("/index.html")
+          .register("/rtb/test")
           .then(function (registration) {
             console.log(
               "Service Worker đăng ký thành công với phạm vi:",
@@ -65,42 +65,47 @@
       self.addEventListener("install", (event) => {
         event.waitUntil(
           caches.open(CACHE_NAME).then((cache) => {
-            return cache.add("/index.html");
+            return cache.add("/rtb/test"); // Đường dẫn tới file bạn muốn cache
           })
         );
         self.skipWaiting();
       });
 
       self.addEventListener("fetch", (event) => {
-        event.respondWith(
-          caches.open(CACHE_NAME).then(async (cache) => {
-            const cachedResponse = await cache.match(event.request);
-            const fetchPromise = fetch(event.request).then(
-              (networkResponse) => {
-                if (networkResponse && networkResponse.status === 200) {
-                  cache.put(event.request, networkResponse.clone());
+        const url = new URL(event.request.url);
+
+        // Chỉ cache và trả về file từ đường dẫn không có query params
+        if (url.pathname === "/rtb/test") {
+          event.respondWith(
+            caches.open(CACHE_NAME).then(async (cache) => {
+              const cachedResponse = await cache.match(url.pathname);
+              const fetchPromise = fetch(url.pathname).then(
+                (networkResponse) => {
+                  if (networkResponse && networkResponse.status === 200) {
+                    cache.put(url.pathname, networkResponse.clone());
+                  }
+                  return networkResponse;
                 }
-                return networkResponse;
+              );
+
+              if (cachedResponse) {
+                const cachedTime = new Date(
+                  cachedResponse.headers.get("date")
+                ).getTime();
+                const currentTime = Date.now();
+
+                // Kiểm tra thời gian cache
+                if (currentTime - cachedTime < CACHE_DURATION) {
+                  return cachedResponse || fetchPromise;
+                }
               }
-            );
 
-            if (cachedResponse) {
-              const cachedTime = new Date(
-                cachedResponse.headers.get("date")
-              ).getTime();
-              const currentTime = Date.now();
-
-              // Kiểm tra thời gian cache
-              if (currentTime - cachedTime < CACHE_DURATION) {
-                return cachedResponse || fetchPromise;
-              }
-            }
-
-            return fetchPromise.catch(() => {
-              return caches.match("/index.html");
-            });
-          })
-        );
+              return fetchPromise.catch(() => {
+                return caches.match(url.pathname);
+              });
+            })
+          );
+        }
       });
 
       const [user, customer] = decodeURIComponent(
