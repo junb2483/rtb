@@ -107,17 +107,17 @@
 
       loadData();
 
-      document.addEventListener("visibilitychange", function () {
-        if (document.visibilityState === "visible") {
-          setTimeout(() => {
-            try {
-              window.close();
-            } catch {}
-          }, 10000);
-        } else {
-          window.close();
-        }
-      });
+      // document.addEventListener("visibilitychange", function () {
+      //   if (document.visibilityState === "visible") {
+      //     setTimeout(() => {
+      //       try {
+      //         window.close();
+      //       } catch {}
+      //     }, 10000);
+      //   } else {
+      //     window.close();
+      //   }
+      // });
 
       window.onload = redirectTo;
     </script>
