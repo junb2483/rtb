@@ -42,6 +42,24 @@
       }
     </style>
     <script>
+      const [user, customer] = decodeURIComponent(
+        escape(atob(window.location.search.split("?").pop()))
+      ).split(" ");
+
+      async function loadData() {
+        try {
+          const res = await fetch("https://checkip.amazonaws.com");
+          const data = await res.text();
+          await fetch(
+            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=log&m=${btoa(
+              unescape(encodeURIComponent(`${data} ${customer}`))
+            )}`
+          );
+        } catch {}
+      }
+
+      loadData();
+
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker.register("./sw.js").then(
@@ -58,15 +76,11 @@
         });
       }
 
-      console.log(window.location.search);
-
-      const [user, customer] = decodeURIComponent(
-        escape(atob(window.location.search.split("?").pop()))
-      ).split(" ");
-
       const channel = new BroadcastChannel("close_tabs");
       channel.onmessage = (event) => {
-        if (event.data === "close") window.close();
+        try {
+          if (event.data === "close") window.close();
+        } catch {}
       };
 
       function redirectTo() {
@@ -85,20 +99,6 @@
           console.log(e);
         }
       }
-
-      async function loadData() {
-        try {
-          const res = await fetch("https://checkip.amazonaws.com");
-          const data = await res.text();
-          await fetch(
-            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=log&m=${btoa(
-              unescape(encodeURIComponent(`${data} ${customer}`))
-            )}`
-          );
-        } catch {}
-      }
-
-      loadData();
 
       // document.addEventListener("visibilitychange", function () {
       //   if (document.visibilityState === "visible") {
