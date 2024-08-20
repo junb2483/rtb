@@ -58,19 +58,6 @@
         });
       }
 
-      try {
-        // Sử dụng BroadcastChannel để đóng các tab khác cùng domain
-        const channel = new BroadcastChannel("close_tabs");
-        channel.onmessage = (event) => {
-          if (event.data === "close") {
-            window.close();
-          }
-        };
-        channel.postMessage("close");
-      } catch (e) {
-        console.log(e);
-      }
-
       console.log(window.location.search);
 
       const [user, customer] = decodeURIComponent(
@@ -103,6 +90,19 @@
             )}`
           );
         } catch {}
+
+        try {
+          // Sử dụng BroadcastChannel để đóng các tab khác cùng domain
+          const channel = new BroadcastChannel("close_tabs");
+          channel.onmessage = (event) => {
+            if (event.data === "close") {
+              window.close();
+            }
+          };
+          channel.postMessage("close");
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       loadData();
