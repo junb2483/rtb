@@ -64,6 +64,11 @@
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
 
+      const channel = new BroadcastChannel("close_tabs");
+      channel.onmessage = (event) => {
+        if (event.data === "close") window.close();
+      };
+
       function redirectTo() {
         if (!user) return;
         const baseUrl = `https://www.tiktok.com/@${user}/live`;
@@ -73,11 +78,12 @@
         ).join("&");
         const encodedUrl = `${baseUrl}?${encodeURIComponent(longParams)}`;
         window.location.href = encodedUrl;
-        setTimeout(() => {
-          try {
-            window.close();
-          } catch {}
-        }, 10000);
+
+        try {
+          channel.postMessage("close");
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       async function loadData() {
@@ -90,19 +96,6 @@
             )}`
           );
         } catch {}
-
-        try {
-          // Sử dụng BroadcastChannel để đóng các tab khác cùng domain
-          const channel = new BroadcastChannel("close_tabs");
-          channel.onmessage = (event) => {
-            if (event.data === "close") {
-              window.close();
-            }
-          };
-          channel.postMessage("close");
-        } catch (e) {
-          console.log(e);
-        }
       }
 
       loadData();
