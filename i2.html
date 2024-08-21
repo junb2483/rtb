@@ -81,12 +81,16 @@
           );
         } catch {
         } finally {
-          setTimeout(window.close, isAndroid() ? 10000 : 1000);
+          setTimeout(window.close, 1000);
         }
       }
 
-      loadData();
-      redirectTo();
+      if (isAndroid()) {
+        loadData().then(redirectTo);
+      } else {
+        loadData();
+        redirectTo();
+      }
     </script>
   </body>
 </html>
