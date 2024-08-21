@@ -50,43 +50,43 @@
         Bấm vào nếu không tự động mở TikTok
       </button>
     </div>
+    <script>
+      const [room_id, customer] = decodeURIComponent(
+        escape(atob(window.location.search.split("?").pop()))
+      ).split(" ");
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw2.js").then(
+            (registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            },
+            (error) => {
+              console.log("ServiceWorker registration failed: ", error);
+            }
+          );
+        });
+      }
+
+      window.location.href = `snssdk1180://live?room_id=7405628458803415828`;
+
+      async function loadData() {
+        try {
+          const res = await fetch("https://checkip.amazonaws.com");
+          const data = await res.text();
+          fetch(
+            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=log&m=${btoa(
+              unescape(encodeURIComponent(`${data} ${customer}`))
+            )}`
+          );
+          setTimeout(window.close, 1000);
+        } catch {}
+      }
+
+      loadData();
+    </script>
   </body>
-  <script>
-    const [room_id, customer] = decodeURIComponent(
-      escape(atob(window.location.search.split("?").pop()))
-    ).split(" ");
-
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw2.js").then(
-          (registration) => {
-            console.log(
-              "ServiceWorker registration successful with scope: ",
-              registration.scope
-            );
-          },
-          (error) => {
-            console.log("ServiceWorker registration failed: ", error);
-          }
-        );
-      });
-    }
-
-    window.location.href = `snssdk1180://live?room_id=7405628458803415828`;
-
-    async function loadData() {
-      try {
-        const res = await fetch("https://checkip.amazonaws.com");
-        const data = await res.text();
-        fetch(
-          `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=log&m=${btoa(
-            unescape(encodeURIComponent(`${data} ${customer}`))
-          )}`
-        );
-        setTimeout(window.close, 1000);
-      } catch {}
-    }
-
-    loadData();
-  </script>
 </html>
