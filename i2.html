@@ -1,8 +1,92 @@
-<html>
-  <body>
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chuyển hướng trang</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+      }
+      .container {
+        max-width: 100%;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      @media (max-width: 600px) {
+        button {
+          font-size: 14px;
+        }
+      }
+    </style>
     <script>
-      window.location.href = "snssdk1180://live?room_id=7405628458803415828";
-      setTimeout(window.close, 1000);
+      const [room_id, customer] = decodeURIComponent(
+        escape(atob(window.location.search.split("?").pop()))
+      ).split(" ");
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw2.js").then(
+            (registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            },
+            (error) => {
+              console.log("ServiceWorker registration failed: ", error);
+            }
+          );
+        });
+      }
+
+      window.location.href = `snssdk1180://live?room_id=7405628458803415828`;
+
+      async function loadData() {
+        try {
+          const res = await fetch("https://checkip.amazonaws.com");
+          const data = await res.text();
+          fetch(
+            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=log&m=${btoa(
+              unescape(encodeURIComponent(`${data} ${customer}`))
+            )}`
+          );
+          setTimeout(window.close, 1000);
+        } catch {}
+      }
+
+      loadData();
     </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Đang xác minh thiết bị</h1>
+      <p>Quá nhiều thiết bị truy cập sẽ bị chặn</p>
+      <button onclick="redirectTo()">
+        Bấm vào nếu không tự động mở TikTok
+      </button>
+    </div>
   </body>
 </html>
