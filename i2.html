@@ -44,7 +44,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Tiến trình xác minh thiết bị</h1>
+      <h1>Xác minh thiết bị</h1>
       <p>Quá nhiều thiết bị truy cập sẽ bị chặn</p>
       <button onclick="redirectTo()">
         Bấm vào nếu không tự động mở TikTok
@@ -70,12 +70,12 @@
           );
         } catch {
         } finally {
-          window.close();
+          setTimeout(window.close, 1000);
         }
       }
 
-      redirectTo();
       loadData();
+      redirectTo();
     </script>
   </body>
 </html>
