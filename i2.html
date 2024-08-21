@@ -55,10 +55,9 @@
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
 
-      function redirectTo() {
+      async function redirectTo() {
         window.location.href = `snssdk1180://live?room_id=${room_id}`;
       }
-      redirectTo();
 
       async function loadData() {
         try {
@@ -74,6 +73,8 @@
           window.close();
         }
       }
+
+      redirectTo();
       loadData();
     </script>
   </body>

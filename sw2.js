@@ -1,4 +1,4 @@
-const CACHE_NAME = "cache-v20";
+const CACHE_NAME = "cache-v21";
 const cacheURL = "/rtb/i2.html";
 const urlsToCache = [cacheURL];
 
