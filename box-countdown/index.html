@@ -98,7 +98,10 @@
               ? `${Math.floor(totalSeconds / 60)} phút ${(
                   totalSeconds % 60
                 ).toFixed(1)} giây`
-              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) +" "+ (showGreen?"🟢":"")+ (showRed?"🔴":"") + (!showGreen && !showRed ? "⚪️":"")
+              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) 
+              
+              
+              // +" "+ (showGreen?"🟢":"")+ (showRed?"🔴":"") + (!showGreen && !showRed ? "⚪️":"")
 
           requestAnimationFrame(updateCountdown);
         }
