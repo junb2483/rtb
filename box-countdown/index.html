@@ -91,11 +91,11 @@
           const totalSeconds = (endTime - Date.now()) / 1000;
 
           countdownElement.innerHTML =
-            totalSeconds >= 60
+             (totalSeconds >= 60
               ? `${Math.floor(totalSeconds / 60)} phút ${(
                   totalSeconds % 60
                 ).toFixed(1)} giây`
-              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`;
+              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) + (0<=totalSeconds && totalSeconds<=0.8?(totalSeconds<=0.5?" 🔴":" 🟢"):"")
 
           requestAnimationFrame(updateCountdown);
         }
