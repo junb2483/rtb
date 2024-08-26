@@ -55,7 +55,7 @@
           font-size: 2rem;
         }
         .countdown {
-          font-size: 2.4rem;
+          font-size: 5rem;
           padding-top: 15px;
           padding-left: 15px;
           padding-right: 15px;
@@ -93,12 +93,7 @@
           const showGreen = 0.7<=totalSeconds && totalSeconds<=0.8
           const showRed = 0.3<=totalSeconds && totalSeconds<=0.5
 
-          countdownElement.innerHTML =
-             (totalSeconds >= 60
-              ? `${Math.floor(totalSeconds / 60)} phút ${(
-                  totalSeconds % 60
-                ).toFixed(1)} giây`
-              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) 
+          countdownElement.innerHTML = totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0
               
               
               // +" "+ (showGreen?"🟢":"")+ (showRed?"🔴":"") + (!showGreen && !showRed ? "⚪️":"")
