@@ -90,12 +90,15 @@
         function updateCountdown() {
           const totalSeconds = (endTime - Date.now()) / 1000;
 
+          const showGreen = 0.7<=totalSeconds && totalSeconds<=0.8
+          const showRed = 0.3<=totalSeconds && totalSeconds<=0.5
+
           countdownElement.innerHTML =
              (totalSeconds >= 60
               ? `${Math.floor(totalSeconds / 60)} phút ${(
                   totalSeconds % 60
                 ).toFixed(1)} giây`
-              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) +" "+ (0.7<=totalSeconds && totalSeconds<=0.8?"🟢":"")+ (0.3<=totalSeconds && totalSeconds<=0.5?"🔴":"")
+              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) +" "+ (showGreen?"🟢":"")+ (showRed?"🔴":"") + (!showGreen && !showRed ? "⚪️":"")
 
           requestAnimationFrame(updateCountdown);
         }
