@@ -95,7 +95,7 @@
               ? `${Math.floor(totalSeconds / 60)} phút ${(
                   totalSeconds % 60
                 ).toFixed(1)} giây`
-              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) + (0<=totalSeconds && totalSeconds<=0.8?(totalSeconds<=0.5?" 🔴":" 🟢"):"")
+              : `${totalSeconds >= 0 ? totalSeconds.toFixed(1) : 0} giây`) +" "+ (0.7<=totalSeconds && totalSeconds<=0.8?"🟢":"")+ (0.3<=totalSeconds && totalSeconds<=0.5?"🔴":"")
 
           requestAnimationFrame(updateCountdown);
         }
