@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Country Redirect</title>
+    <script>
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+
+      function getBrowserLanguage() {
+        return navigator.language || navigator.userLanguage;
+      }
+
+      const countryName = getQueryParam("cn");
+      if (countryName) {
+        const language = getBrowserLanguage().split("-")[0];
+        const wikiUrl = `https://${language}.wikipedia.org/wiki/${countryName}`;
+        console.log(`Redirecting to: ${wikiUrl}`);
+        window.location.href = wikiUrl;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Redirecting to Wikipedia...</h1>
+  </body>
+</html>
