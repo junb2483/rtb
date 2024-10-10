@@ -125,7 +125,7 @@
   <body>
     <div id="loading-overlay" class="loading-overlay">
       <div id="loading-message" class="loading-message">
-        Đang tải dữ liệu...
+        Đang tải dữ liệu ...
       </div>
     </div>
     <div class="container">
@@ -191,7 +191,7 @@
         const loadingMessage = document.getElementById("loading-message");
         const formContent = document.querySelector(".form-content");
 
-        loadingMessage.textContent = "Đang tải dữ liệu..."; // Thông báo loading ban đầu
+        loadingMessage.textContent = "Đang tải dữ liệu ..."; // Thông báo loading ban đầu
         loadingOverlay.style.display = "flex"; // Hiển thị thông báo loading
         formContent.style.display = "none"; // Ẩn các trường nhập liệu và nút cập nhật
 
@@ -229,7 +229,7 @@
         if (validateForm() && !isSubmitting) {
           isSubmitting = true;
           submitButton.disabled = true; // Vô hiệu hóa nút cập nhật
-          loadingMessage.textContent = "Đang gửi dữ liệu..."; // Thông báo loading khi gửi dữ liệu
+          loadingMessage.textContent = "Đang gửi dữ liệu ..."; // Thông báo loading khi gửi dữ liệu
           loadingOverlay.style.display = "flex"; // Hiển thị thông báo loading
           formContent.style.display = "none"; // Ẩn các trường nhập liệu
 
@@ -298,8 +298,16 @@
       }
 
       function confirmRestart() {
+        const loadingOverlay = document.getElementById("loading-overlay");
+        const loadingMessage = document.getElementById("loading-message");
+        const formContent = document.querySelector(".form-content");
+
         const confirmed = confirm("Bạn muốn khởi động lại bot?");
         if (confirmed) {
+          loadingMessage.textContent = "Đang gửi yêu cầu ..."; // Thông báo loading ban đầu
+          loadingOverlay.style.display = "flex"; // Hiển thị thông báo loading
+          formContent.style.display = "none"; // Ẩn các trường nhập liệu và nút cập nhật
+
           fetch(
             `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=restart_bot&access_token=${accessToken}`
           )
@@ -309,6 +317,11 @@
             })
             .catch((error) => {
               alert("Không thể khởi động lại bot ngay lúc này !");
+            })
+            .finally(() => {
+              // Hiển thị giao diện sau khi dữ liệu được tải xong
+              loadingOverlay.style.display = "none"; // Ẩn thông báo loading
+              formContent.style.display = "block"; // Hiển thị lại các trường nhập liệu và nút cập nhật
             });
         }
       }
