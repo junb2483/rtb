@@ -23,7 +23,7 @@
       .container {
         width: 80%;
         max-width: 500px; /* Đặt chiều rộng tối đa */
-        height: 430px; /* Đặt chiều cao cố định */
+        height: auto; /* Cho phép chiều cao thay đổi theo nội dung */
         margin: 0 auto;
         padding: 20px;
         background: white;
@@ -61,13 +61,6 @@
         cursor: pointer;
         width: 100%;
         box-sizing: border-box;
-      }
-      button:disabled {
-        background-color: #ddd;
-        cursor: not-allowed;
-      }
-      button:hover {
-        background-color: #007bff;
       }
       .loading-overlay {
         position: fixed;
@@ -113,6 +106,18 @@
         color: #555;
         text-align: center;
       }
+      .restartButton {
+        margin-top: 10px;
+        background-color: #e10707; /* Màu xanh lá cho nút restart */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 20px;
+        margin-top: 20px; /* Khoảng cách riêng cho nút RESTART BOT */
+      }
     </style>
   </head>
   <body>
@@ -140,9 +145,19 @@
           <div id="min_secs_error" class="error"></div>
         </div>
         <button type="button" id="submitButton" onclick="submitForm()">
-          CẬP NHẬT
+          Lưu
         </button>
       </div>
+
+      <button
+        type="button"
+        id="restartButton"
+        class="restartButton"
+        onclick="confirmRestart()"
+      >
+        Khởi động lại bot
+      </button>
+
       <div class="note">- Những thay đổi cần 1 đến 10p để bot nhận</div>
       <div class="note note-important">
         - Link này lộ ra ngoài, bot bạn có thể hỏng
@@ -278,6 +293,22 @@
         }
 
         return isValid;
+      }
+
+      function confirmRestart() {
+        const confirmed = confirm("Bạn muốn khởi động lại bot?");
+        if (confirmed) {
+          fetch(
+            `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=restart_bot&access_token=${accessToken}`
+          )
+            .then(async (response) => {
+              const data = await response.json();
+              alert(data?.message || "OK");
+            })
+            .catch((error) => {
+              alert("Không thể khởi động lại bot ngay lúc này !");
+            });
+        }
       }
 
       // Tải dữ liệu khi trang được tải
