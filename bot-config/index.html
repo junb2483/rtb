@@ -288,6 +288,7 @@
         document.getElementById("min_coins_error").innerText = "";
         document.getElementById("min_rate_error").innerText = "";
         document.getElementById("min_secs_error").innerText = "";
+        document.getElementById("accounts_error").innerText = "";
 
         // Kiểm tra MIN_COINS
         const minCoins = document.getElementById("min_coins").value;
@@ -310,6 +311,16 @@
         if (minSecs === "" || isNaN(minSecs)) {
           document.getElementById("min_secs_error").innerText =
             "Vui lòng nhập giá trị hợp lệ cho MIN_SECS.";
+          isValid = false;
+        }
+
+        // Kiểm tra USER_IDS
+        const maxAccount = 20;
+        const userIds = document.getElementById("accounts").value;
+        if (userIds && userIds.split(/[\s\n\t,]+/g).length > maxAccount) {
+          document.getElementById(
+            "accounts_error"
+          ).innerText = `Tối đa chỉ được ${maxAccount} tài khoản`;
           isValid = false;
         }
 
