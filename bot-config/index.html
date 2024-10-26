@@ -146,6 +146,21 @@
           <input type="text" id="min_secs" name="min_secs" />
           <div id="min_secs_error" class="error"></div>
         </div>
+
+        <div class="field">
+          <label for="accounts">Danh sách id có follow idols:</label>
+
+          <textarea
+            id="accounts"
+            name="accounts"
+            rows="8"
+            placeholder=" id1, id2, ..."
+            style="width: 100%"
+          ></textarea>
+
+          <div id="accounts_error" class="error"></div>
+        </div>
+
         <button type="button" id="submitButton" onclick="submitForm()">
           Lưu
         </button>
@@ -205,6 +220,7 @@
           document.getElementById("min_coins").value = data.MIN_COINS;
           document.getElementById("min_rate").value = data.MIN_RATE;
           document.getElementById("min_secs").value = data.MIN_SECS;
+          document.getElementById("accounts").value = data.USER_IDS;
 
           // Cập nhật tiêu đề với tên bot
           document.getElementById(
@@ -236,10 +252,13 @@
           const minCoins = document.getElementById("min_coins").value;
           const minRate = document.getElementById("min_rate").value;
           const minSecs = document.getElementById("min_secs").value;
+          const userIds = document.getElementById("accounts").value;
 
           try {
             const response = await fetch(
-              `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=update_bot_config&access_token=${accessToken}&MIN_COINS=${minCoins}&MIN_RATE=${minRate}&MIN_SECS=${minSecs}`
+              `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=update_bot_config&access_token=${accessToken}&MIN_COINS=${minCoins}&MIN_RATE=${minRate}&MIN_SECS=${minSecs}&USER_IDS=${(
+                userIds || ""
+              ).trim()}`
             );
             const data = await response.json();
             console.log(data);
