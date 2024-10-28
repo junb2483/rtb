@@ -242,6 +242,13 @@
         const loadingMessage = document.getElementById("loading-message");
         const formContent = document.querySelector(".form-content");
 
+        document.getElementById("accounts").value = (
+          document.getElementById("accounts").value || ""
+        )
+          .split(/[\s\n\t,]+/g)
+          .join(" ")
+          .toLowerCase();
+
         if (validateForm() && !isSubmitting) {
           isSubmitting = true;
           submitButton.disabled = true; // Vô hiệu hóa nút cập nhật
@@ -252,10 +259,7 @@
           const minCoins = document.getElementById("min_coins").value;
           const minRate = document.getElementById("min_rate").value;
           const minSecs = document.getElementById("min_secs").value;
-          const userIds = (document.getElementById("accounts").value || "")
-            .split(/[\s\n\t,]+/g)
-            .join(" ")
-            .toLowerCase();
+          const userIds = document.getElementById("accounts").value || "";
 
           try {
             const response = await fetch(
