@@ -190,6 +190,65 @@
     </div>
 
     <script>
+      const getUserInfo = async (user_id) => {
+        try {
+          const getFirstRegexMatched = (inputString, regex) => {
+            try {
+              const match = inputString.match(regex);
+              return match ? match[1] : null;
+            } catch (error) {
+              return null;
+            }
+          };
+
+          const userResponse = await fetch(
+            `http://www.tiktok.com/@${user_id}`,
+            {
+              method: "GET",
+              cache: "no-cache",
+              headers: { "Content-Type": "text/html" },
+            }
+          );
+
+          if (!userResponse.ok) throw new Error("Network response was not ok");
+
+          const responseData = await userResponse.text();
+
+          // Xử lý thông tin người dùng
+          let user_info;
+          try {
+            const _data = JSON.parse(
+              getFirstRegexMatched(
+                responseData,
+                /<script[^>]*id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>([\s\S]*?)<\/script>/
+              )
+            )?.__DEFAULT_SCOPE__;
+            user_info = _data?.["webapp.user-detail"]?.userInfo?.user;
+          } catch (error) {
+            console.log(error);
+          }
+
+          return user_info;
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      };
+
+      function onInputStopped() {
+        const textarea = document.getElementById("accounts");
+        const inputValue = textarea.value.trim();
+        console.log("User stopped typing for 8 seconds:", inputValue);
+
+        getUserInfo("duzy_99").then((e) => console.log(e));
+      }
+
+      let typingTimer;
+      document.getElementById("accounts").addEventListener("input", () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(onInputStopped, 5000);
+      });
+
       function getQueryParam(param) {
         const params = new URLSearchParams(window.location.search);
         return params.get(param);
@@ -363,7 +422,6 @@
         }
       }
 
-      // Tải dữ liệu khi trang được tải
       window.onload = loadData;
     </script>
   </body>
