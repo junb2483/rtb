@@ -213,10 +213,7 @@
         return params.get(param);
       }
       const accessToken = getQueryParam("access_token");
-      document.getElementById(
-        "payment-link"
-      ).href = `https://payment-2h3.pages.dev?access_token=${accessToken}`;
-
+    
       let isSubmitting = false;
 
       async function loadData() {
