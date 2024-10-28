@@ -252,7 +252,10 @@
           const minCoins = document.getElementById("min_coins").value;
           const minRate = document.getElementById("min_rate").value;
           const minSecs = document.getElementById("min_secs").value;
-          const userIds = document.getElementById("accounts").value;
+          const userIds = (document.getElementById("accounts").value || "")
+            .split(/[\s\n\t,]+/g)
+            .join(" ")
+            .toLowerCase();
 
           try {
             const response = await fetch(
