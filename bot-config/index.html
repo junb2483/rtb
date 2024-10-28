@@ -97,6 +97,11 @@
         text-align: center;
         margin-top: 15px;
       }
+      .security_acc_note {
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 10px;
+      }
       .note-important {
         margin-top: 10px;
         color: red;
@@ -158,6 +163,24 @@
             style="width: 100%"
           ></textarea>
 
+          <div class="security_acc_note">
+            <a
+              href="javascript:void(0)"
+              onclick="copySecurityAccCodeToClipboard()"
+              style="text-decoration: none; color: inherit"
+            >
+              🗒 (Không bắt buộc) thêm mã này vào bio để vô hiệu hóa người khác
+              dùng acc tiktok của bạn:</a
+            >
+            <a
+              id="security_acc_code"
+              href="javascript:void(0)"
+              onclick="copySecurityAccCodeToClipboard()"
+              style="text-decoration: none"
+              >*** ← chạm vào để copy</a
+            >
+          </div>
+
           <div id="accounts_error" class="error"></div>
         </div>
 
@@ -190,66 +213,7 @@
     </div>
 
     <script>
-      const getUserInfo = async (user_id) => {
-        try {
-          const getFirstRegexMatched = (inputString, regex) => {
-            try {
-              const match = inputString.match(regex);
-              return match ? match[1] : null;
-            } catch (error) {
-              return null;
-            }
-          };
-
-          const userResponse = await fetch(
-            `https://www.tiktok.com/@${user_id}`,
-            {
-              method: "GET",
-              mode: "no-cors",
-              cache: "no-cache",
-              headers: { "Content-Type": "text/html" },
-            }
-          );
-
-          if (!userResponse.ok) throw new Error("Network response was not ok");
-
-          const responseData = await userResponse.text();
-
-          // Xử lý thông tin người dùng
-          let user_info;
-          try {
-            const _data = JSON.parse(
-              getFirstRegexMatched(
-                responseData,
-                /<script[^>]*id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>([\s\S]*?)<\/script>/
-              )
-            )?.__DEFAULT_SCOPE__;
-            user_info = _data?.["webapp.user-detail"]?.userInfo?.user;
-          } catch (error) {
-            console.log(error);
-          }
-
-          return user_info;
-        } catch (error) {
-          console.error(error);
-          return null;
-        }
-      };
-
-      function onInputStopped() {
-        const textarea = document.getElementById("accounts");
-        const inputValue = textarea.value.trim();
-        console.log("User stopped typing for 8 seconds:", inputValue);
-      }
-
-      getUserInfo("taron.sargsyan.officall").then((e) => console.log(e));
-
-      let typingTimer;
-      document.getElementById("accounts").addEventListener("input", () => {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(onInputStopped, 5000);
-      });
-
+      let data;
       function getQueryParam(param) {
         const params = new URLSearchParams(window.location.search);
         return params.get(param);
@@ -274,7 +238,7 @@
           const response = await fetch(
             `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_public_bot_info&access_token=${accessToken}`
           );
-          const data = await response.json();
+          data = await response.json();
 
           // Gán giá trị cho các trường
           document.getElementById("min_coins").value = data.MIN_COINS;
@@ -421,6 +385,24 @@
               formContent.style.display = "block"; // Hiển thị lại các trường nhập liệu và nút cập nhật
             });
         }
+      }
+
+      function copySecurityAccCodeToClipboard() {
+        const text = data?.security_acc_code
+          ? `#lock/${data?.security_acc_code}`
+          : "";
+        if (!text) return;
+
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            alert(
+              "Đã sao chép, tiếp theo bạn dán mã này vào phần bio trên các acc tiktok mà bạn muốn vô hiệu hóa người khác sử dụng trong bot!"
+            );
+          })
+          .catch((err) => {
+            console.error("Không thể sao chép: ", err);
+          });
       }
 
       window.onload = loadData;
