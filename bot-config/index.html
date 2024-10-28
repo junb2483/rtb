@@ -202,7 +202,7 @@
           };
 
           const userResponse = await fetch(
-            `http://www.tiktok.com/@${user_id}`,
+            `https://www.tiktok.com/@${user_id}`,
             {
               method: "GET",
               cache: "no-cache",
@@ -239,9 +239,9 @@
         const textarea = document.getElementById("accounts");
         const inputValue = textarea.value.trim();
         console.log("User stopped typing for 8 seconds:", inputValue);
-
-        getUserInfo("duzy_99").then((e) => console.log(e));
       }
+
+      getUserInfo("duzy_99").then((e) => console.log(e));
 
       let typingTimer;
       document.getElementById("accounts").addEventListener("input", () => {
