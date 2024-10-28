@@ -169,16 +169,8 @@
               onclick="copySecurityAccCodeToClipboard()"
               style="text-decoration: none; color: inherit"
             >
-              🗒 (Không bắt buộc) thêm mã này vào bio để vô hiệu hóa người khác
-              dùng acc tiktok của bạn:</a
-            >
-            <br></br>
-            <a
-              id="security_acc_code"
-              href="javascript:void(0)"
-              onclick="copySecurityAccCodeToClipboard()"
-              style="text-decoration: none; display: block; text-align: center;"
-              ><b>XXXXXX</b> ← chạm vào để copy</a
+              🗒 (Không bắt buộc) Nhấp vào đây để vô hiệu hóa người khác dùng acc
+              tiktok của bạn</a
             >
           </div>
 
@@ -203,7 +195,6 @@
       <div class="note note-important">
         - Link này lộ ra ngoài, bot bạn có thể hỏng
       </div>
-     
     </div>
 
     <script>
@@ -213,7 +204,7 @@
         return params.get(param);
       }
       const accessToken = getQueryParam("access_token");
-    
+
       let isSubmitting = false;
 
       async function loadData() {
@@ -388,7 +379,7 @@
           .writeText(text)
           .then(() => {
             alert(
-              "Đã sao chép, tiếp theo bạn dán mã này vào phần bio trên các acc tiktok mà bạn muốn vô hiệu hóa người khác sử dụng trong bot!"
+              "Đã sao chép mã khóa acc, dán vào bio các acc TikTok cần vô hiệu hóa, bot sẽ tự động chặn người khác sử dụng!"
             );
           })
           .catch((err) => {
