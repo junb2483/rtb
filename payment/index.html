@@ -244,11 +244,9 @@
             pricePerDay.toLocaleString("vi-VN") + "đ/ngày";
 
           // Cập nhật mô tả giá
-          const descriptionPrice = `Gói max ${data.TOTAL_LIMIT_LIVES} lives${
-            data.price_note ? " và " : " "
-          }${data.price_note}`;
-          document.getElementById("descriptionPrice").textContent =
-            descriptionPrice;
+          document.getElementById(
+            "descriptionPrice"
+          ).textContent = `${data?.price_note} || "`;
 
           // Tính toán số giờ còn lại hiện tại
           const now = new Date();
