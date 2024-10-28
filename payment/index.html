@@ -244,9 +244,9 @@
             pricePerDay.toLocaleString("vi-VN") + "đ/ngày";
 
           // Cập nhật mô tả giá
-          document.getElementById(
-            "descriptionPrice"
-          ).textContent = `${data?.price_note} || "`;
+          document.getElementById("descriptionPrice").textContent = `${
+            data?.price_note || ""
+          }`;
 
           // Tính toán số giờ còn lại hiện tại
           const now = new Date();
