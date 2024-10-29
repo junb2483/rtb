@@ -286,7 +286,7 @@
             console.log(data);
 
             if (data.success) {
-              alert("Dữ liệu đã được cập nhật thành công.");
+              alert(data?.message || "Dữ liệu đã được cập nhật thành công.");
             } else {
               alert("Có lỗi xảy ra khi cập nhật dữ liệu.");
             }
