@@ -263,7 +263,7 @@
           radioButtons.forEach((radio) => {
             radio.addEventListener("change", function () {
               const days = parseInt(this.value);
-              const totalPrice = pricePerDay * days;
+              const totalPrice = pricePerDay * days + 1;
               totalPriceElement.textContent =
                 totalPrice.toLocaleString("vi-VN") + " USD";
 
@@ -325,7 +325,7 @@
           );
           if (defaultRadio) {
             defaultRadio.checked = true;
-            const totalPrice = pricePerDay * lastRenewDays;
+            const totalPrice = pricePerDay * lastRenewDays + 1;
             totalPriceElement.textContent =
               totalPrice.toLocaleString("vi-VN") + " USD";
             const hoursAfterPayment = currentHours + lastRenewDays * 24;
