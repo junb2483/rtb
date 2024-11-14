@@ -62,17 +62,6 @@
         }
       }
     </style>
-    <style amp-custom>
-      .custom-ad {
-        position: fixed; 
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        min-height: 10px; 
-        z-index: 9999;
-        }
-    </style>
-    <script async custom-element="amp-ad" src="https://cdn.ampproject.org/v0/amp-ad-0.1.js"></script>
   </head>
   <body>
     <div class="info" id="info"></div>
@@ -82,15 +71,14 @@
       <b>Để canh chuẩn:</b><br></br>- Thiết bị cần cài đặt tự động đồng bộ thời gian
       <br></br>- Sử dụng thiết bị cấu hình cao (Ví dụ: iPhone 15)
     </div>
-    <amp-ad
-     class="custom-ad"
-     layout="fixed"
-     width="728"
-     height="90"
-     type="adsense"
-     data-ad-client="ca-pub-7274354464460647"
-     data-ad-slot="2346097397">
-    </amp-ad>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7274354464460647" crossorigin="anonymous"></script>
+    <!-- Test ngang 1 -->
+    <ins class="adsbygoogle"
+        style="z-index: 9999; left: 0; bottom: 0; position: fixed; display:inline-block; width:728px;height:90px;"
+        data-ad-client="ca-pub-7274354464460647"
+        data-ad-slot="2346097397">
+    </ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
     <script>
       const countdownElement = document.getElementById("countdown");
