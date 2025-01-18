@@ -335,7 +335,9 @@
 
               const originTotalPrice = pricePerDay * days;
               const totalPrice =
-                originTotalPrice * (1 - (promotion_obj[days] || 0));
+                Math.ceil(
+                  (originTotalPrice * (1 - (promotion_obj[days] || 0))) / 1000
+                ) * 1000;
               totalPriceElement.textContent = `${Math.round(
                 totalPrice
               ).toLocaleString("vi-VN")} đ`;
@@ -419,7 +421,10 @@
 
             const originTotalPrice = pricePerDay * lastRenewDays;
             const totalPrice =
-              originTotalPrice * (1 - (promotion_obj[lastRenewDays] || 0));
+              Math.ceil(
+                (originTotalPrice * (1 - (promotion_obj[lastRenewDays] || 0))) /
+                  1000
+              ) * 1000;
 
             totalPriceElement.textContent =
               Math.round(totalPrice).toLocaleString("vi-VN") + "đ";
