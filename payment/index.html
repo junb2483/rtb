@@ -172,9 +172,9 @@
         </p>
         <p>
           Giá:
-          <strong id="pricePerDay">0đ/ngày</strong>
+          <strong id="newPrice">0đ/ngày</strong>
           <strong
-            id="originPricePerDay"
+            id="oldPrice"
             style="
               font-family: 'Times New Roman', Times, serif;
               color: gray;
@@ -233,13 +233,13 @@
       </div>
 
       <div class="time-info">
-        <p id="hoursAfterPayment"></p>
+        <p id="newHours"></p>
       </div>
       <div class="total-price">
         Tổng:
-        <strong id="totalPrice">0đ</strong>
+        <strong id="newTotal">0đ</strong>
         <strong
-          id="originTotalPrice"
+          id="oldTotal"
           style="
             font-family: 'Times New Roman', Times, serif;
             color: gray;
@@ -261,7 +261,17 @@
     </div>
 
     <script>
+      let setText = (id, text) =>
+        (document.getElementById(id).textContent = text);
       let isSubmitting = false;
+
+      function strMoney(input) {
+        try {
+          return `${Number(input).toLocaleString("vi-VN")} đ`;
+        } catch {
+          return "";
+        }
+      }
 
       function toAbsoluteUrl(relativePath, baseUrl = window.location.href) {
         try {
@@ -277,6 +287,29 @@
       }
       const accessToken = getQueryParam("access_token");
 
+      function handlePrice(endDate, oldPrice, days, promoObj = {}) {
+        // Promotion price logic
+        const percent = promoObj[days] || 0;
+        const newPrice = Math.ceil((oldPrice * (1 - percent)) / 1000) * 1000;
+        const newTotal = newPrice * days;
+        const oldTotal = oldPrice * days;
+
+        // Hours logic
+        const oldHours = Math.floor((new Date(endDate) - Date.now()) / 3600000);
+        const newHours = oldHours + days * 24;
+
+        // Update UI price
+        setText("newPrice", strMoney(newPrice));
+        setText("oldPrice", strMoney(oldPrice));
+
+        // Update UI total
+        setText("newTotal", strMoney(newTotal));
+        setText("oldTotal", promoObj[days] ? strMoney(oldTotal) : "");
+
+        // Update UI hours
+        setText("newHours", `Thời gian: ${oldHours} giờ ➙ ${newHours} giờ`);
+      }
+
       async function fetchData() {
         const loadingOverlay = document.getElementById("loading-overlay");
         const loadingMessage = document.getElementById("loading-message");
@@ -290,78 +323,25 @@
           if (!response.ok) throw new Error("Network response was not ok");
           const data = await response.json();
 
-          // Cập nhật tiêu đề trang
-          const pageTitle = `Gia hạn bot ${data.bot_name}`;
-          document.getElementById("pageTitle").textContent = pageTitle;
-
-          // Cập nhật giá tiền mỗi ngày
-          const pricePerDay = data.price;
-          document.getElementById("pricePerDay").textContent =
-            pricePerDay.toLocaleString("vi-VN") + "đ/ngày";
-
-          // Khuyến mãi
-          const promotion_obj = data.promotion_obj || {};
-
-          // Cập nhật mô tả giá
-          document.getElementById("descriptionPrice").textContent = `${
-            data?.price_note || ""
-          }`;
-
-          // Tính toán số giờ còn lại hiện tại
-          const now = new Date();
-          const packageEndDate = new Date(data.package_end_date);
-          const currentHours =
-            (packageEndDate.getTime() - new Date().getTime()) / 3600000;
+          setText("pageTitle", `Gia hạn bot ${data.bot_name}`);
+          setText("descriptionPrice", `${data?.price_note || ""}`);
 
           // Xử lý sự kiện chọn số ngày
-          const totalPriceElement = document.getElementById("totalPrice");
-
-          const hoursAfterPaymentElement =
-            document.getElementById("hoursAfterPayment");
-          const radioButtons = document.querySelectorAll('input[name="days"]');
-
-          radioButtons.forEach((radio) => {
-            const _id = `km${radio.value}day`;
-            if (promotion_obj[radio.value]) {
-              document.getElementById(_id).textContent = `- ${Math.round(
-                Number(promotion_obj[radio.value]) * 100
-              )}%`;
+          document.querySelectorAll('input[name="days"]').forEach((radio) => {
+            const id = `km${radio.value}day`;
+            if (data?.promotion_obj?.[radio?.value]) {
+              setText(id, `- ${data.promotion_obj[radio.value] * 100}%`);
             } else {
-              document.getElementById(_id).style = "display: none;";
+              document.getElementById(id).style = "display: none;";
             }
 
             radio.addEventListener("change", function () {
-              const days = parseInt(this.value);
-
-              const originTotalPrice = pricePerDay * days;
-              const totalPrice =
-                Math.ceil(
-                  (originTotalPrice * (1 - (promotion_obj[days] || 0))) / 1000
-                ) * 1000;
-              totalPriceElement.textContent = `${Math.round(
-                totalPrice
-              ).toLocaleString("vi-VN")} đ`;
-
-              document.getElementById("originTotalPrice").textContent =
-                promotion_obj[days] > 0
-                  ? ` ${Math.round(originTotalPrice).toLocaleString("vi-VN")} đ`
-                  : "";
-
-              document.getElementById("originPricePerDay").textContent =
-                promotion_obj[days] > 0
-                  ? ` ${pricePerDay.toLocaleString("vi-VN")} đ`
-                  : "";
-
-              document.getElementById(
-                "pricePerDay"
-              ).textContent = ` ${Math.round(
-                pricePerDay * (1 - (promotion_obj[days] || 0))
-              ).toLocaleString("vi-VN")} đ `;
-
-              const hoursAfterPayment = currentHours + days * 24;
-              hoursAfterPaymentElement.textContent = `Thời gian: ${Math.floor(
-                currentHours
-              )} giờ ➙ ${Math.floor(hoursAfterPayment)} giờ`;
+              handlePrice(
+                data.package_end_date,
+                data.price,
+                parseInt(this.value),
+                data.promotion_obj
+              );
             });
           });
 
@@ -412,41 +392,17 @@
             });
 
           // Tự động chọn radio button dựa trên last_renew_days
-          const lastRenewDays = data.last_renew_days;
           const defaultRadio = document.querySelector(
-            `input[name="days"][value="${lastRenewDays}"]`
+            `input[name="days"][value="${data.last_renew_days}"]`
           );
           if (defaultRadio) {
             defaultRadio.checked = true;
-
-            const originTotalPrice = pricePerDay * lastRenewDays;
-            const totalPrice =
-              Math.ceil(
-                (originTotalPrice * (1 - (promotion_obj[lastRenewDays] || 0))) /
-                  1000
-              ) * 1000;
-
-            totalPriceElement.textContent =
-              Math.round(totalPrice).toLocaleString("vi-VN") + "đ";
-
-            document.getElementById("originTotalPrice").textContent =
-              promotion_obj[lastRenewDays] > 0
-                ? ` ${Math.round(originTotalPrice).toLocaleString("vi-VN")} đ`
-                : "";
-
-            const hoursAfterPayment = currentHours + lastRenewDays * 24;
-            hoursAfterPaymentElement.textContent = `Thời gian: ${Math.floor(
-              currentHours
-            )} giờ ➙ ${Math.floor(hoursAfterPayment)} giờ`;
-
-            document.getElementById("originPricePerDay").textContent =
-              promotion_obj[lastRenewDays] > 0
-                ? ` ${pricePerDay.toLocaleString("vi-VN")} đ`
-                : "";
-
-            document.getElementById("pricePerDay").textContent = ` ${Math.round(
-              pricePerDay * (1 - (promotion_obj[lastRenewDays] || 0))
-            ).toLocaleString("vi-VN")} đ `;
+            handlePrice(
+              data.package_end_date,
+              data.price,
+              data.last_renew_days,
+              data.promotion_obj
+            );
           }
           loadingOverlay.style.display = "none"; // Ẩn thông báo loading
         } catch (error) {
