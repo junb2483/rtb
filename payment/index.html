@@ -136,6 +136,17 @@
         margin-top: 15px;
         margin-bottom: 15px;
       }
+      .promote-percent {
+        position: absolute;
+        background-color: red;
+        top: -5px;
+        right: 0;
+        padding: 2px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-radius: 5px;
+        color: white;
+      }
 
       @media (max-width: 600px) {
         .container {
@@ -159,45 +170,86 @@
         <p id="descriptionPrice" class="description">
           Mô tả sẽ được hiển thị ở đây.
         </p>
-        <p>Giá: <strong id="pricePerDay">0đ/ngày</strong></p>
+        <p>
+          Giá:
+          <strong id="pricePerDay">0đ/ngày</strong>
+          <strong
+            id="originPricePerDay"
+            style="
+              font-family: 'Times New Roman', Times, serif;
+              color: gray;
+              padding-right: 5px;
+              padding-left: 5px;
+            "
+          ></strong>
+        </p>
       </div>
 
       <div class="payment-options">
-        <div>
+        <div style="position: relative">
           <input type="radio" id="day1" name="days" value="1" />
-          <label for="day1">+1 ngày</label>
+          <label for="day1"
+            >+1 ngày
+            <div id="km1day" class="promote-percent">- 1%</div></label
+          >
         </div>
-        <div>
+        <div style="position: relative">
           <input type="radio" id="day2" name="days" value="2" />
-          <label for="day2">+2 ngày</label>
+          <label for="day2"
+            >+2 ngày
+            <div id="km2day" class="promote-percent">- 1%</div></label
+          >
         </div>
-        <div>
+        <div style="position: relative">
           <input type="radio" id="day3" name="days" value="3" />
-          <label for="day3">+3 ngày</label>
+          <label for="day3"
+            >+3 ngày
+            <div id="km3day" class="promote-percent">- 1%</div></label
+          >
         </div>
-        <div>
+        <div style="position: relative">
           <input type="radio" id="day5" name="days" value="5" />
-          <label for="day5">+5 ngày</label>
+          <label for="day5"
+            >+5 ngày
+            <div id="km5day" class="promote-percent">- 1%</div></label
+          >
         </div>
-        <div>
+        <div style="position: relative">
           <input type="radio" id="day7" name="days" value="7" />
-          <label for="day7">+7 ngày</label>
+          <label for="day7"
+            >+7 ngày
+            <div id="km7day" class="promote-percent">- 1%</div></label
+          >
         </div>
-        <div>
+        <div style="position: relative">
           <input type="radio" id="day10" name="days" value="10" />
-          <label for="day10">+10 ngày</label>
+          <label for="day10"
+            >+10 ngày
+            <div id="km10day" class="promote-percent">- 1%</div></label
+          >
         </div>
       </div>
 
       <div class="time-info">
-        <p id="currentHours"></p>
         <p id="hoursAfterPayment"></p>
       </div>
       <div class="total-price">
-        Số tiền cần thanh toán: <strong id="totalPrice">0đ</strong>
+        Tổng:
+        <strong id="totalPrice">0đ</strong>
+        <strong
+          id="originTotalPrice"
+          style="
+            font-family: 'Times New Roman', Times, serif;
+            color: gray;
+            padding-right: 5px;
+            padding-left: 5px;
+          "
+        ></strong>
       </div>
 
-      <button class="payment-button" id="paymentButton">Thanh toán</button>
+      <button class="payment-button" id="paymentButton">
+        Bấm vào đây để thanh toán
+      </button>
 
       <div class="note">
         <i> (Sau khi thanh toán, bot sẽ được gia hạn trong 1 đến 5 phút.) </i>
@@ -206,6 +258,13 @@
 
     <script>
       let isSubmitting = false;
+
+      function strikethrough(text) {
+        return text
+          .split("")
+          .map((char) => char + "\u0336")
+          .join("");
+      }
 
       function toAbsoluteUrl(relativePath, baseUrl = window.location.href) {
         try {
@@ -243,6 +302,9 @@
           document.getElementById("pricePerDay").textContent =
             pricePerDay.toLocaleString("vi-VN") + "đ/ngày";
 
+          // Khuyến mãi
+          const promotion_obj = data.promotion_obj || {};
+
           // Cập nhật mô tả giá
           document.getElementById("descriptionPrice").textContent = `${
             data?.price_note || ""
@@ -254,29 +316,57 @@
           const currentHours =
             (packageEndDate.getTime() - new Date().getTime()) / 3600000;
 
-          document.getElementById(
-            "currentHours"
-          ).textContent = `Số giờ còn lại hiện tại: ${Math.floor(
-            currentHours
-          )} giờ`;
-
           // Xử lý sự kiện chọn số ngày
           const totalPriceElement = document.getElementById("totalPrice");
+
           const hoursAfterPaymentElement =
             document.getElementById("hoursAfterPayment");
           const radioButtons = document.querySelectorAll('input[name="days"]');
 
           radioButtons.forEach((radio) => {
+            const _id = `km${radio.value}day`;
+            if (promotion_obj[radio.value]) {
+              document.getElementById(_id).textContent = `- ${Math.round(
+                Number(promotion_obj[radio.value]) * 100
+              )}%`;
+            } else {
+              document.getElementById(_id).style = "display: none;";
+            }
+
             radio.addEventListener("change", function () {
               const days = parseInt(this.value);
-              const totalPrice = pricePerDay * days;
-              totalPriceElement.textContent =
-                totalPrice.toLocaleString("vi-VN") + "đ";
+
+              const originTotalPrice = pricePerDay * days;
+              const totalPrice =
+                originTotalPrice * (1 - (promotion_obj[days] || 0));
+              totalPriceElement.textContent = `${Math.round(
+                totalPrice
+              ).toLocaleString("vi-VN")} đ`;
+
+              document.getElementById("originTotalPrice").textContent =
+                promotion_obj[days] > 0
+                  ? strikethrough(
+                      ` ${Math.round(originTotalPrice).toLocaleString(
+                        "vi-VN"
+                      )} đ`
+                    )
+                  : "";
+
+              document.getElementById("originPricePerDay").textContent =
+                promotion_obj[days] > 0
+                  ? strikethrough(` ${pricePerDay.toLocaleString("vi-VN")} đ`)
+                  : "";
+
+              document.getElementById(
+                "pricePerDay"
+              ).textContent = ` ${Math.round(
+                pricePerDay * (1 - (promotion_obj[days] || 0))
+              ).toLocaleString("vi-VN")} đ `;
 
               const hoursAfterPayment = currentHours + days * 24;
-              hoursAfterPaymentElement.textContent = `Số giờ sau khi thanh toán: ${Math.floor(
-                hoursAfterPayment
-              )} giờ`;
+              hoursAfterPaymentElement.textContent = `Thời gian: ${Math.floor(
+                currentHours
+              )} giờ ➙ ${Math.floor(hoursAfterPayment)} giờ`;
             });
           });
 
@@ -304,7 +394,9 @@
                 try {
                   const apiUrl = `https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=request_payment&access_token=${accessToken}&total_days=${totalDays}&return_url=${encodeURIComponent(
                     returnUrl
-                  )}&cancel_url=${encodeURIComponent(cancelUrl)}`;
+                  )}&cancel_url=${encodeURIComponent(
+                    cancelUrl
+                  )}&use_promotion=1`;
                   const response = await fetch(apiUrl);
 
                   const result = await response.json();
@@ -331,13 +423,34 @@
           );
           if (defaultRadio) {
             defaultRadio.checked = true;
-            const totalPrice = pricePerDay * lastRenewDays;
+
+            const originTotalPrice = pricePerDay * lastRenewDays;
+            const totalPrice =
+              originTotalPrice * (1 - (promotion_obj[lastRenewDays] || 0));
+
             totalPriceElement.textContent =
-              totalPrice.toLocaleString("vi-VN") + "đ";
+              Math.round(totalPrice).toLocaleString("vi-VN") + "đ";
+
+            document.getElementById("originTotalPrice").textContent =
+              promotion_obj[lastRenewDays] > 0
+                ? strikethrough(
+                    ` ${Math.round(originTotalPrice).toLocaleString("vi-VN")} đ`
+                  )
+                : "";
+
             const hoursAfterPayment = currentHours + lastRenewDays * 24;
-            hoursAfterPaymentElement.textContent = `Số giờ sau khi thanh toán: ${Math.floor(
-              hoursAfterPayment
-            )} giờ`;
+            hoursAfterPaymentElement.textContent = `Thời gian: ${Math.floor(
+              currentHours
+            )} giờ ➙ ${Math.floor(hoursAfterPayment)} giờ`;
+
+            document.getElementById("originPricePerDay").textContent =
+              promotion_obj[lastRenewDays] > 0
+                ? strikethrough(` ${pricePerDay.toLocaleString("vi-VN")} đ`)
+                : "";
+
+            document.getElementById("pricePerDay").textContent = ` ${Math.round(
+              pricePerDay * (1 - (promotion_obj[lastRenewDays] || 0))
+            ).toLocaleString("vi-VN")} đ `;
           }
           loadingOverlay.style.display = "none"; // Ẩn thông báo loading
         } catch (error) {
