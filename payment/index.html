@@ -180,6 +180,8 @@
               color: gray;
               padding-right: 5px;
               padding-left: 5px;
+              text-decoration: line-through;
+              -webkit-text-decoration-line: line-through;
             "
           ></strong>
         </p>
@@ -243,6 +245,8 @@
             color: gray;
             padding-right: 5px;
             padding-left: 5px;
+            text-decoration: line-through;
+            -webkit-text-decoration-line: line-through;
           "
         ></strong>
       </div>
@@ -258,13 +262,6 @@
 
     <script>
       let isSubmitting = false;
-
-      function strikethrough(text) {
-        return text
-          .split("")
-          .map((char) => char + "\u0336")
-          .join("");
-      }
 
       function toAbsoluteUrl(relativePath, baseUrl = window.location.href) {
         try {
@@ -345,16 +342,12 @@
 
               document.getElementById("originTotalPrice").textContent =
                 promotion_obj[days] > 0
-                  ? strikethrough(
-                      ` ${Math.round(originTotalPrice).toLocaleString(
-                        "vi-VN"
-                      )} đ`
-                    )
+                  ? ` ${Math.round(originTotalPrice).toLocaleString("vi-VN")} đ`
                   : "";
 
               document.getElementById("originPricePerDay").textContent =
                 promotion_obj[days] > 0
-                  ? strikethrough(` ${pricePerDay.toLocaleString("vi-VN")} đ`)
+                  ? ` ${pricePerDay.toLocaleString("vi-VN")} đ`
                   : "";
 
               document.getElementById(
@@ -433,9 +426,7 @@
 
             document.getElementById("originTotalPrice").textContent =
               promotion_obj[lastRenewDays] > 0
-                ? strikethrough(
-                    ` ${Math.round(originTotalPrice).toLocaleString("vi-VN")} đ`
-                  )
+                ? ` ${Math.round(originTotalPrice).toLocaleString("vi-VN")} đ`
                 : "";
 
             const hoursAfterPayment = currentHours + lastRenewDays * 24;
@@ -445,7 +436,7 @@
 
             document.getElementById("originPricePerDay").textContent =
               promotion_obj[lastRenewDays] > 0
-                ? strikethrough(` ${pricePerDay.toLocaleString("vi-VN")} đ`)
+                ? ` ${pricePerDay.toLocaleString("vi-VN")} đ`
                 : "";
 
             document.getElementById("pricePerDay").textContent = ` ${Math.round(
