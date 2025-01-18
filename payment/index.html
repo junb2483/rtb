@@ -300,7 +300,7 @@
 
         // Update UI price
         setText("newPrice", strMoney(newPrice));
-        setText("oldPrice", strMoney(oldPrice));
+        setText("oldPrice", promoObj[days] ? strMoney(oldPrice) : "");
 
         // Update UI total
         setText("newTotal", strMoney(newTotal));
