@@ -597,7 +597,12 @@
       }
 
       function onPressCustom() {
-        document.getElementById("only_regions").focus();
+        const textarea = document.getElementById("only_regions");
+        textarea.focus();
+        textarea.setSelectionRange(
+          textarea.value.length,
+          textarea.value.length
+        );
       }
 
       function copySecurityAccCodeToClipboard() {
