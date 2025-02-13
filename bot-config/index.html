@@ -118,16 +118,7 @@
         text-align: center;
       }
       .restartButton {
-        margin-top: 10px;
         background-color: #e10707; /* Màu xanh lá cho nút restart */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px 20px;
-        margin-top: 20px; /* Khoảng cách riêng cho nút RESTART BOT */
       }
     </style>
   </head>
@@ -214,31 +205,41 @@
 
         <div class="field">
           <label for="only_regions"
-            >Lọc theo quốc gia: (nhập theo cờ 🇯🇵 🇩🇪 🇹🇭 ...)</label
+            >Lọc quốc gia:
+            <span
+              style="
+                font-weight: normal;
+                font-style: italic;
+                font-size: 0.9rem;
+                color: #555;
+              "
+              >(nhập vào bằng cờ 🇯🇵 🇩🇪 🇹🇭 ...)</span
+            ></label
           >
           <textarea
             id="only_regions"
             name="only_regions"
-            rows="3"
+            rows="2"
             placeholder="Cờ 1, Cờ 2, ..."
             style="width: 100%"
           ></textarea>
           <div id="only_regions_error" class="error"></div>
         </div>
+      </div>
 
+      <div style="display: flex; gap: 10px">
+        <button
+          type="button"
+          id="restartButton"
+          class="restartButton"
+          onclick="confirmRestart()"
+        >
+          Khởi động lại bot
+        </button>
         <button type="button" id="submitButton" onclick="submitForm()">
           Lưu
         </button>
       </div>
-
-      <button
-        type="button"
-        id="restartButton"
-        class="restartButton"
-        onclick="confirmRestart()"
-      >
-        Khởi động lại bot
-      </button>
 
       <div class="note">- Những thay đổi cần 1 đến 10p để bot nhận</div>
       <div class="note note-important">
