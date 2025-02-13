@@ -4,52 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chọn Quốc Gia</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
-    />
     <style>
       body {
         font-family: Arial, sans-serif;
         text-align: center;
+        margin: 20px;
       }
-      #selected-countries {
-        padding: 10px;
-        border: 1px solid #ccc;
-        display: inline-block;
-        cursor: pointer;
+      select {
         width: 250px;
-        text-align: left;
-      }
-      .choices {
-        width: 250px;
-        margin: 10px auto;
+        height: 150px;
+        padding: 5px;
       }
     </style>
   </head>
   <body>
     <h3>Chọn Quốc Gia</h3>
-    <select id="country-select" multiple></select>
+    <select id="country-select" multiple>
+      <option value="Vietnam">Việt Nam</option>
+      <option value="USA">Hoa Kỳ</option>
+      <option value="France">Pháp</option>
+      <option value="Japan">Nhật Bản</option>
+      <option value="Korea">Hàn Quốc</option>
+    </select>
 
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <p>
+      <strong>Quốc gia đã chọn:</strong>
+      <span id="selected-countries">Chưa chọn</span>
+    </p>
+
     <script>
-      const countries = [
-        { value: "Vietnam", label: "Việt Nam" },
-        { value: "USA", label: "Hoa Kỳ" },
-        { value: "France", label: "Pháp" },
-        { value: "Japan", label: "Nhật Bản" },
-        { value: "Korea", label: "Hàn Quốc" },
-      ];
-
-      const selectElement = document.getElementById("country-select");
-
-      const choices = new Choices(selectElement, {
-        removeItemButton: true,
-        placeholderValue: "Chọn quốc gia...",
-        searchEnabled: true,
-      });
-
-      choices.setChoices(countries, "value", "label", true);
+      document
+        .getElementById("country-select")
+        .addEventListener("change", function () {
+          const selectedOptions = Array.from(this.selectedOptions).map(
+            (option) => option.text
+          );
+          document.getElementById("selected-countries").innerText =
+            selectedOptions.join(", ") || "Chưa chọn";
+        });
     </script>
   </body>
 </html>
