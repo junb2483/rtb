@@ -451,11 +451,8 @@
           const minLevel = document.getElementById("min_level").value;
           const minSecs = document.getElementById("min_secs").value;
           const userIds = document.getElementById("accounts").value || "";
-          const onlyRegions = getFlags(
-            document.getElementById("only_regions").value || ""
-          )
-            .sort()
-            .join(" ");
+          const onlyRegions =
+            document.getElementById("only_regions").value || "";
 
           const mode = document.getElementById("bag").checked ? "BAG" : "BOX";
 
