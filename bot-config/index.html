@@ -55,16 +55,7 @@
         border: 1px solid #ccc;
         border-radius: 4px;
       }
-      button {
-        padding: 10px 20px;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        box-sizing: border-box;
-        font-weight: bold;
-        font-size: 16px; /* Tăng kích thước chữ */
-      }
+
       .loading-overlay {
         position: fixed;
         top: 0;
@@ -116,12 +107,34 @@
         text-align: center;
       }
       .restartButton {
+        padding: 10px 20px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        box-sizing: border-box;
+        font-weight: bold;
+        font-size: 16px; /* Tăng kích thước chữ */
         width: 70%;
         background-color: #e10707;
       }
       .saveButton {
+        padding: 10px 20px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        box-sizing: border-box;
+        font-weight: bold;
+        font-size: 16px; /* Tăng kích thước chữ */
         width: 30%;
         background-color: #007bff;
+      }
+      .regionButton {
+        /* border: none; */
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background-color: transparent;
       }
     </style>
   </head>
@@ -209,23 +222,50 @@
 
         <div class="field">
           <label for="only_regions"
-            >Lọc quốc gia:
-            <span
-              style="
-                font-weight: normal;
-                font-style: italic;
-                font-size: 0.9rem;
-                color: #555;
-              "
-              >(nhập vào bằng cờ 🇯🇵 🇩🇪 🇹🇭 ...)</span
-            ></label
-          >
+            >Vùng:
+
+            <button
+              id="allButton"
+              type="button"
+              class="regionButton"
+              onclick="onPressAll()"
+            >
+              Tất cả
+            </button>
+
+            <button
+              id="asiaButton"
+              type="button"
+              class="regionButton"
+              onclick="onPressAsia()"
+            >
+              Châu Á
+            </button>
+            <button
+              id="europeButton"
+              type="button"
+              class="regionButton"
+              onclick="onPressEurope()"
+            >
+              Châu Âu
+            </button>
+            <button
+              id="customButton"
+              type="button"
+              class="regionButton"
+              style="border: none"
+            >
+              Tùy chỉnh
+            </button>
+          </label>
+
           <textarea
             id="only_regions"
             name="only_regions"
-            rows="2"
+            rows="3"
             placeholder="Cờ 1, Cờ 2, ..."
             style="width: 100%"
+            oninput="onChangeOnlyRegions(event)"
           ></textarea>
           <div id="only_regions_error" class="error"></div>
         </div>
@@ -284,6 +324,48 @@
         return [];
       }
 
+      const flagsByContinent = {
+        asia: getFlags(
+          "🇦🇫🇦🇲🇦🇿🇧🇩🇧🇹🇧🇳🇰🇭🇨🇳🇬🇪🇮🇳🇮🇩🇮🇷🇮🇶🇮🇱🇯🇵🇯🇴🇰🇿🇰🇼🇰🇬🇱🇦🇱🇧🇲🇾🇲🇻🇲🇳🇲🇲🇳🇵🇰🇵🇴🇲🇵🇰🇵🇭🇶🇦🇸🇦🇸🇬🇱🇰🇸🇾🇹🇼🇹🇯🇹🇭🇹🇷🇹🇲🇺🇿🇻🇳🇾🇪"
+        ).sort(),
+        europe: getFlags(
+          "🇦🇱🇦🇩🇦🇹🇧🇾🇧🇪🇧🇦🇧🇬🇭🇷🇨🇾🇨🇿🇩🇰🇪🇪🇫🇮🇫🇷🇩🇪🇬🇷🇭🇺🇮🇸🇮🇪🇮🇹🇱🇻🇱🇮🇱🇹🇱🇺🇲🇹🇲🇩🇲🇨🇲🇪🇳🇱🇲🇰🇳🇴🇵🇱🇵🇹🇷🇴🇷🇺🇷🇸🇸🇰🇸🇮🇪🇸🇸🇪🇨🇭🇺🇦🇬🇧🇽🇰"
+        ).sort(),
+      };
+
+      function updateSelectRegionsStyle() {
+        const currentOnlyRegions =
+          document.getElementById("only_regions").value;
+
+        if (currentOnlyRegions?.trim?.() === "") {
+          document.getElementById("allButton").style.color = "#007bff";
+          document.getElementById("asiaButton").style.color = "black";
+          document.getElementById("europeButton").style.color = "black";
+          document.getElementById("customButton").style.color = "gray";
+        } else if (
+          getFlags(currentOnlyRegions).sort().join("") ===
+          flagsByContinent.asia.join("")
+        ) {
+          document.getElementById("allButton").style.color = "black";
+          document.getElementById("asiaButton").style.color = "#007bff";
+          document.getElementById("europeButton").style.color = "black";
+          document.getElementById("customButton").style.color = "gray";
+        } else if (
+          getFlags(currentOnlyRegions).sort().join("") ===
+          flagsByContinent.europe.join("")
+        ) {
+          document.getElementById("allButton").style.color = "black";
+          document.getElementById("asiaButton").style.color = "black";
+          document.getElementById("europeButton").style.color = "#007bff";
+          document.getElementById("customButton").style.color = "gray";
+        } else {
+          document.getElementById("allButton").style.color = "black";
+          document.getElementById("asiaButton").style.color = "black";
+          document.getElementById("europeButton").style.color = "black";
+          document.getElementById("customButton").style.color = "#007bff";
+        }
+      }
+
       let isSubmitting = false;
 
       async function loadData() {
@@ -319,6 +401,7 @@
           ).textContent = `Bot ${data.bot_name}`;
 
           updateViewWithMode(data.MODE);
+          updateSelectRegionsStyle();
 
           // Hiển thị giao diện sau khi dữ liệu được tải xong
           loadingOverlay.style.display = "none"; // Ẩn thông báo loading
@@ -472,6 +555,35 @@
               formContent.style.display = "block"; // Hiển thị lại các trường nhập liệu và nút cập nhật
             });
         }
+      }
+
+      let typingTimer;
+      function onChangeOnlyRegions(event) {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
+          updateSelectRegionsStyle();
+          document.getElementById("only_regions").value = getFlags(
+            document.getElementById("only_regions").value || ""
+          ).join(" ");
+        }, 1000);
+      }
+
+      function onPressAll() {
+        document.getElementById("only_regions").value = "";
+        updateSelectRegionsStyle();
+      }
+
+      function onPressAsia() {
+        document.getElementById("only_regions").value =
+          flagsByContinent.asia.join(" ");
+        updateSelectRegionsStyle();
+      }
+
+      function onPressEurope() {
+        document.getElementById("only_regions").value =
+          flagsByContinent.europe.join(" ");
+
+        updateSelectRegionsStyle();
       }
 
       function copySecurityAccCodeToClipboard() {
