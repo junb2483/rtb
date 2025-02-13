@@ -104,7 +104,7 @@
         font-size: 0.9rem;
         color: #555;
         margin-top: 3px;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
       }
       .note-important {
         margin-top: 10px;
@@ -185,7 +185,7 @@
           <textarea
             id="accounts"
             name="accounts"
-            rows="5"
+            rows="3"
             placeholder=" id1, id2, ..."
             style="width: 100%"
           ></textarea>
@@ -196,9 +196,9 @@
               onclick="copySecurityAccCodeToClipboard()"
               style="text-decoration: none; color: inherit"
             >
-              🗒 (Không bắt buộc) Nhấp
-              <b><span style="color: blue">vào đây</span></b> để vô hiệu hóa
-              người khác dùng acc tiktok của bạn.
+              🗒 Nhấp
+              <b><span style="color: blue">vào đây</span></b> để chặn người khác
+              dùng id tiktok của bạn.
             </a>
 
             <a
@@ -210,6 +210,20 @@
           </div>
 
           <div id="accounts_error" class="error"></div>
+        </div>
+
+        <div class="field">
+          <label for="only_regions"
+            >Lọc theo quốc gia: (nhập theo cờ 🇯🇵 🇩🇪 🇹🇭 ...)</label
+          >
+          <textarea
+            id="only_regions"
+            name="only_regions"
+            rows="3"
+            placeholder="Cờ 1, Cờ 2, ..."
+            style="width: 100%"
+          ></textarea>
+          <div id="only_regions_error" class="error"></div>
         </div>
 
         <button type="button" id="submitButton" onclick="submitForm()">
@@ -248,6 +262,18 @@
         }
       }
 
+      function getFlags(input) {
+        try {
+          if (typeof input !== "string" || !input) return [];
+          return (
+            input.match(
+              /🏳️|🏴|🏴‍☠️|🏁|🚩|🏳️‍🌈|🏳️‍⚧️|🇺🇳|🇦🇫|🇦🇽|🇦🇱|🇩🇿|🇦🇸|🇦🇩|🇦🇴|🇦🇮|🇦🇶|🇦🇬|🇦🇷|🇦🇲|🇦🇼|🇦🇺|🇦🇹|🇦🇿|🇧🇸|🇧🇭|🇧🇩|🇧🇧|🇧🇾|🇧🇪|🇧🇿|🇧🇯|🇧🇲|🇧🇹|🇧🇴|🇧🇦|🇧🇼|🇧🇷|🇻🇬|🇧🇳|🇧🇬|🇧🇫|🇧🇮|🇰🇭|🇨🇲|🇨🇦|🇮🇨|🇨🇻|🇧🇶|🇰🇾|🇨🇫|🇹🇩|🇮🇴|🇨🇱|🇨🇳|🇨🇽|🇨🇨|🇨🇴|🇰🇲|🇨🇬|🇨🇩|🇨🇰|🇨🇷|🇨🇮|🇭🇷|🇨🇺|🇨🇼|🇨🇾|🇨🇿|🇩🇰|🇩🇯|🇩🇲|🇩🇴|🇪🇨|🇪🇬|🇸🇻|🇬🇶|🇪🇷|🇪🇪|🇸🇿|🇪🇹|🇪🇺|🇫🇰|🇫🇴|🇫🇯|🇫🇮|🇫🇷|🇬🇫|🇵🇫|🇹🇫|🇬🇦|🇬🇲|🇬🇪|🇩🇪|🇬🇭|🇬🇮|🇬🇷|🇬🇱|🇬🇩|🇬🇵|🇬🇺|🇬🇹|🇬🇬|🇬🇳|🇬🇼|🇬🇾|🇭🇹|🇭🇳|🇭🇰|🇭🇺|🇮🇸|🇮🇳|🇮🇩|🇮🇷|🇮🇶|🇮🇪|🇮🇲|🇮🇱|🇮🇹|🇯🇲|🇯🇵|🎌|🇯🇪|🇯🇴|🇰🇿|🇰🇪|🇰🇮|🇽🇰|🇰🇼|🇰🇬|🇱🇦|🇱🇻|🇱🇧|🇱🇸|🇱🇷|🇱🇾|🇱🇮|🇱🇹|🇱🇺|🇲🇴|🇲🇬|🇲🇼|🇲🇾|🇲🇻|🇲🇱|🇲🇹|🇲🇭|🇲🇶|🇲🇷|🇲🇺|🇾🇹|🇲🇽|🇫🇲|🇲🇩|🇲🇨|🇲🇳|🇲🇪|🇲🇸|🇲🇦|🇲🇿|🇲🇲|🇳🇦|🇳🇷|🇳🇵|🇳🇱|🇳🇨|🇳🇿|🇳🇮|🇳🇪|🇳🇬|🇳🇺|🇳🇫|🇰🇵|🇲🇰|🇲🇵|🇳🇴|🇴🇲|🇵🇰|🇵🇼|🇵🇸|🇵🇦|🇵🇬|🇵🇾|🇵🇪|🇵🇭|🇵🇳|🇵🇱|🇵🇹|🇵🇷|🇶🇦|🇷🇪|🇷🇴|🇷🇺|🇷🇼|🇼🇸|🇸🇲|🇸🇹|🇸🇦|🇸🇳|🇷🇸|🇸🇨|🇸🇱|🇸🇬|🇸🇽|🇸🇰|🇸🇮|🇬🇸|🇸🇧|🇸🇴|🇿🇦|🇰🇷|🇸🇸|🇪🇸|🇱🇰|🇧🇱|🇸🇭|🇰🇳|🇱🇨|🇵🇲|🇻🇨|🇸🇩|🇸🇷|🇸🇪|🇨🇭|🇸🇾|🇹🇼|🇹🇯|🇹🇿|🇹🇭|🇹🇱|🇹🇬|🇹🇰|🇹🇴|🇹🇹|🇹🇳|🇹🇷|🇹🇲|🇹🇨|🇹🇻|🇺🇬|🇺🇦|🇦🇪|🇬🇧|🏴󠁧󠁢󠁥󠁮󠁧󠁿|🏴󠁧󠁢󠁳󠁣󠁴󠁿|🏴󠁧󠁢󠁷󠁬󠁳󠁿|🇺🇸|🇺🇾|🇻🇮|🇺🇿|🇻🇺|🇻🇦|🇻🇪|🇻🇳|🇼🇫|🇪🇭|🇾🇪|🇿🇲|🇿🇼/g
+            ) || []
+          );
+        } catch {}
+        return [];
+      }
+
       let isSubmitting = false;
 
       async function loadData() {
@@ -271,6 +297,8 @@
           document.getElementById("min_level").value = data.MIN_LEVEL;
           document.getElementById("min_secs").value = data.MIN_SECS;
           document.getElementById("accounts").value = data.USER_IDS;
+          document.getElementById("only_regions").value = data.ONLY_REGIONS;
+
           document.getElementById("box").checked =
             data.MODE === "BOX" || !data.MODE;
           document.getElementById("bag").checked = data.MODE === "BAG";
@@ -304,6 +332,10 @@
           .join(" ")
           .toLowerCase();
 
+        document.getElementById("only_regions").value = getFlags(
+          document.getElementById("only_regions").value || ""
+        ).join(" ");
+
         if (validateForm() && !isSubmitting) {
           isSubmitting = true;
           submitButton.disabled = true; // Vô hiệu hóa nút cập nhật
@@ -316,13 +348,16 @@
           const minLevel = document.getElementById("min_level").value;
           const minSecs = document.getElementById("min_secs").value;
           const userIds = document.getElementById("accounts").value || "";
+          const onlyRegions =
+            document.getElementById("only_regions").value || "";
+
           const mode = document.getElementById("bag").checked ? "BAG" : "BOX";
 
           try {
             const response = await fetch(
               `https://script.google.com/macros/s/AKfycbz-Zn95LjnD8RgqZe8Agwx3fXADmlecT3UXHs5ijMRQheMzuti3PVtriYdIKfZwRSW_YQ/exec?action=update_bot_config&access_token=${accessToken}&MIN_COINS=${minCoins}&MIN_RATE=${minRate}&MIN_LEVEL=${minLevel}&MIN_SECS=${minSecs}&USER_IDS=${(
                 userIds || ""
-              ).trim()}&MODE=${mode}`
+              ).trim()}&MODE=${mode}&ONLY_REGIONS=${onlyRegions}`
             );
             const data = await response.json();
             console.log(data);
@@ -353,6 +388,7 @@
         document.getElementById("min_rate_error").innerText = "";
         document.getElementById("min_secs_error").innerText = "";
         document.getElementById("accounts_error").innerText = "";
+        document.getElementById("only_regions_error").innerText = "";
 
         // Kiểm tra MIN_COINS
         const minCoins = document.getElementById("min_coins").value;
