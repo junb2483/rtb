@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chọn Quốc Gia</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      #selected-countries {
+        padding: 10px;
+        border: 1px solid #ccc;
+        display: inline-block;
+        cursor: pointer;
+        width: 250px;
+        text-align: left;
+      }
+      .choices {
+        width: 250px;
+        margin: 10px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Chọn Quốc Gia</h3>
+    <select id="country-select" multiple></select>
+
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+      const countries = [
+        { value: "Vietnam", label: "Việt Nam" },
+        { value: "USA", label: "Hoa Kỳ" },
+        { value: "France", label: "Pháp" },
+        { value: "Japan", label: "Nhật Bản" },
+        { value: "Korea", label: "Hàn Quốc" },
+      ];
+
+      const selectElement = document.getElementById("country-select");
+
+      const choices = new Choices(selectElement, {
+        removeItemButton: true,
+        placeholderValue: "Chọn quốc gia...",
+        searchEnabled: true,
+      });
+
+      choices.setChoices(countries, "value", "label", true);
+    </script>
+  </body>
+</html>
