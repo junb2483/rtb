@@ -254,6 +254,7 @@
               type="button"
               class="regionButton"
               style="border: none"
+              onclick="onPressCustom()"
             >
               Tùy chỉnh
             </button>
@@ -593,6 +594,10 @@
           flagsByContinent.europe.join(" ");
 
         updateSelectRegionsStyle();
+      }
+
+      function onPressCustom() {
+        document.getElementById("only_regions").focus();
       }
 
       function copySecurityAccCodeToClipboard() {
