@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Canh thời gian mở rương/túi</title>
+    <style>
+      html,
+      body {
+        visibility: hidden;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        text-align: center;
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+      #changeUIBtn {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 8888;
+        padding: 10px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+      #changeUIBtn:hover {
+        background-color: #0056b3;
+      }
+      .info {
+        font-size: 2.8rem;
+        padding: 1px;
+        border-radius: 8px;
+      }
+      .countdown {
+        font-size: 2.8rem;
+        border-radius: 8px;
+        font-weight: bold;
+      }
+      .info {
+        font-size: 2rem;
+      }
+      .time {
+        margin-top: 5px;
+        font-size: 1.2rem;
+        font-style: italic;
+      }
+      .note {
+        padding: 5px;
+        margin-top: 5px;
+        font-size: 1.2rem;
+        font-style: italic;
+        width: 60%;
+      }
+      @media (max-width: 600px) {
+        .info {
+          font-size: 1.5rem;
+          padding: 15px;
+        }
+        .note {
+          font-size: 1.2rem;
+          margin-top: 20px;
+        }
+        .time {
+          font-size: 2rem;
+        }
+        .countdown {
+          font-size: 5rem;
+          padding-top: 15px;
+          padding-left: 15px;
+          padding-right: 15px;
+        }
+      }
+      .btn-open {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .btn-open:hover {
+        background: #0056b3;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+      .modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+      @keyframes fadeIn {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .modal-content h2 {
+        margin-top: 0;
+        font-size: 20px;
+        text-align: center;
+      }
+      .modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .modal-content input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+        margin-bottom: 10px;
+      }
+      .modal-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .btn-submit {
+        background: #28a745;
+        color: white;
+        margin-right: 10px;
+      }
+      .btn-cancel {
+        background: #dc3545;
+        color: white;
+      }
+      .btn-submit:hover {
+        background: #218838;
+      }
+      .btn-cancel:hover {
+        background: #c82333;
+      }
+
+      #delta-control {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      #delta-text {
+        font-size: 18px;
+      }
+      .btn-increase {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        background: #218838;
+        color: white;
+      }
+      .btn-decrease {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        background: #c82333;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="info" id="info"></div>
+    <div class="countdown" id="countdown">Loading...</div>
+    <div class="time" id="time"></div>
+
+    <div id="delta-control">
+      <button id="btn-decrease-0.01" class="btn-decrease">-0.01</button>
+      <button id="btn-decrease-0.05" class="btn-decrease">-0.05</button>
+      <span id="delta-text"></span>
+      <button id="btn-increase-0.05" class="btn-increase">+0.05</button>
+      <button id="btn-increase-0.01" class="btn-increase">+0.01</button>
+    </div>
+    <div class="note">
+      - Bật tự động cập nhật thời gian <br /><br />- Dùng thiết bị mạnh<br /><br />-
+      Đóng, xóa app không sử dụng
+    </div>
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <label>Thời gian bắt đầu:</label>
+        <input type="number" id="start_seconds" placeholder="Ví dụ nhập 0.7" />
+
+        <label>Thời gian kết thúc:</label>
+        <input type="number" id="end_seconds" placeholder="Ví dụ nhập 0.1" />
+
+        <label>Hiển thị màu nền:</label>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            margin-bottom: 10px;
+          "
+        >
+          <input
+            type="color"
+            id="hex_background_color"
+            placeholder="Mã màu sắc, ví dụ nhập #ff0000"
+            value="#ff0000"
+            style="
+              height: 40px;
+              padding: 0px;
+              margin-right: 10px;
+              margin-top: 0px;
+              margin-bottom: 0px;
+            "
+          />
+          <span
+            id="openColorPicker"
+            style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              white-space: nowrap;
+              background: #007bff;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              font-size: 16px;
+              height: 35px;
+              padding: 0 10px;
+            "
+            >Chọn màu</span
+          >
+        </div>
+
+        <div class="modal-buttons">
+          <button id="btn-submit" class="btn-submit">Thêm</button>
+          <button id="btn-cancel" class="btn-cancel">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="config-container"
+      style="
+        margin-top: 20px;
+        margin-bottom: 30px;
+        padding: 15px;
+        max-width: 500px;
+        border-radius: 10px;
+        border: 2px solid gray;
+      "
+    >
+      <button id="btn-open" class="btn-open">
+        Thêm màu sắc theo thời gian
+      </button>
+      <div id="color-display"></div>
+    </div>
+    <button id="changeUIBtn">Theme</button>
+
+    <script>
+      async function a(g){const h=document['createElement']('script');return h['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',document['head']['appendChild'](h),new Promise(i=>{h['onload']=()=>{const j=CryptoJS['MD5'](g)['toString']();i(j);};});}let b;((async()=>{try{let g=localStorage['getItem']('d');!g&&(g=await a(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']()),localStorage['setItem']('d',g));const h=g['split']('')['reverse']()['join']('');document['cookie']='time='+h+';\x20path=/;\x20domain=.junb.io.vn;\x20SameSite=None;\x20Secure';}catch(i){console['log'](i);}finally{b=0x1;}})());function c(){try{return JSON['parse'](localStorage['getItem']('ui')||'0')||0x0;}catch{return 0x0;}}function d(g){try{localStorage['setItem']('ui',g?g:0x0);}catch{}}const e=()=>{window['location']['href']='https://api.junb.io.vn/countdown'+window['location']['search'];};let f=new URLSearchParams(window['location']['search'])['get']('ui');if(f==='1')d(0x1);c()===0x2?(()=>new Promise(g=>{const h=()=>b===0x1?g():setTimeout(h,0x12c);h();}))()['then'](e):document['addEventListener']('DOMContentLoaded',function(){document['body']['style']['visibility']='visible',document['documentElement']['style']['visibility']='visible',document['getElementById']('changeUIBtn')['addEventListener']('click',function(){d(0x2),e();});function g(U,V){return Math['floor'](Math['random']()*(V-U+0x1))+U;}async function h(){const U=g(0x32,0x64),V=performance['now'](),W=await fetch('https://api.junb.io.vn/ping?z='+U),X=performance['now']();let Y=await W['text']();Y=Y['split']('')['map'](a3=>a3['charCodeAt'](0x0)-0x1-0x2*U)['join']('');const Z=parseInt(Y),a0=X-V,a1=Date['now']()-(performance['now']()-(V+a0/0x2)),a2=Z-a1;return{'oft':a2,'rtt':a0,'st':Z};}function i(){try{return JSON['parse'](localStorage['getItem']('ofs_3')||null);}catch{return null;}}function j(U){try{localStorage['setItem']('ofs_3',JSON['stringify'](U));}catch{}}let k=i()||{'oft':0x0,'rtt':Infinity,'st':0x0};const l=()=>{h()['then'](U=>{const V=0x3;U['st']=U['st']/V,(k['rtt']>U['rtt']||(U['st']-k['st'])*V>=0x1d4c0)&&(k=U,j(k));});};l();const n=setInterval(l,0x1388),o=()=>{return Date['now']()+k['oft'];};function p(){try{return JSON['parse'](localStorage['getItem']('idm')||'0')||0x0;}catch{return 0x0;}}function q(U){try{localStorage['setItem']('idm',U?0x1:0x0);}catch{}}function r(){try{return JSON['parse'](localStorage['getItem']('delta_time')||'0')||0x0;}catch{return 0x0;}}function s(U){try{localStorage['setItem']('delta_time',JSON['stringify'](U));}catch{}}function t(){try{return JSON['parse'](localStorage['getItem']('color_times')||'[]')||[];}catch{return[];}}function u(U){try{const V=t();V['push'](U),localStorage['setItem']('color_times',JSON['stringify'](V));}catch{}}function v(U){try{const V=t(),W=V['filter'](X=>''+(X?.['id']||'')!==''+(U||''));localStorage['setItem']('color_times',JSON['stringify'](W));}catch{}}let w,x=r();function y(){const U=x/0x3e8;document['getElementById']('delta-text')['style']['color']=U===0x0?'black':U>0x0?'green':'red',document['getElementById']('delta-text')['innerHTML']='<b>'+(U>0x0?'+':'')+U['toFixed'](0x2)+'s</b>';}y();const z=document['getElementById']('countdown'),A=document['getElementById']('info'),B=document['getElementById']('time'),{end_time:C,user:D,room:E,coins:F,can_open:G,is_special:H,lt:I,sb:J}=JSON['parse'](decodeURIComponent(escape(atob(new URLSearchParams(window['location']['search'])['get']('r')))));let K=!!new URLSearchParams(window['location']['search'])['get']('idm');if(K)q(0x1);if(p())K=0x1;let L,M;try{const U=JSON['parse'](decodeURIComponent(new URLSearchParams(window['location']['search'])['get']('m')));L=U['hot_box_str'],M=U['latest_viewers_str'];}catch(V){}const N=new Date(C)['getTime'](),O=new Date(C)['toLocaleTimeString']();function P(){function W(){const X=(N-o()+x)/0x3e8;if(K){const Y='±'+((k?.['rtt']||0x0)/0x2/0x3e8)['toFixed'](0x2);z['innerHTML']=(X>=0x0?X['toFixed'](0x1):0x0)+('\x20<span\x20style=\x22font-size:\x200.6em;\x22>'+Y+'</span>');}else z['textContent']=X>=0x0?X['toFixed'](0x1):0x0;B['innerHTML']=new Date(o())['toLocaleTimeString']()+'\x20-\x20'+O;if(X>=0x0){try{const Z=w?.['find'](a1=>a1['end_seconds']<=X&&X<=a1['start_seconds']),a0=Z?.['hex_background_color']||'#ffffff';w?.['length']&&document['body']['style']['backgroundColor']!==a0&&(document['body']['style']['backgroundColor']=a0);}catch{}requestAnimationFrame(W);}X<0x0&&clearInterval(n);}A['innerHTML']='<b><a\x20href=\x22https://www.tiktok.com\x22\x20target=\x22_blank\x22\x20style=\x22text-decoration:\x20none;\x22>'+D+'</a></b><br>'+F+'/'+G+'\x20'+(L||(H?'🔥🔥':''))+'\x20'+(M?'-\x20👀\x20'+M:''),requestAnimationFrame(W);}function Q(){try{w=t();const W=document['getElementById']('color-display');W['innerHTML']='',w?.['length']?(document['getElementById']('color-display')['style']='margin-top:\x2015px',document['getElementById']('config-container')['style']='margin-top:\x2020px;\x20margin-bottom:\x2030px;\x20padding:\x2015px;max-width:\x20500px;border-radius:\x2010px;\x20border:\x202px\x20solid\x20gray;'):(document['getElementById']('color-display')['style']='margin-top:\x200px',document['getElementById']('config-container')['style']='margin-top:\x2020px;\x20margin-bottom:\x2030px;\x20padding:\x2015px;max-width:\x20500px;border-radius:\x2010px;\x20border:\x200px\x20solid\x20gray;'),w['forEach'](X=>{const Y=document['createElement']('div');Y['classList']['add']('color-box'),Y['innerHTML']=('\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22display:\x20flex;\x20align-items:\x20center;\x20gap:\x2010px;\x20margin:\x206px;\x20font-size:\x2018px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20onclick=\x22deleteItem('+X?.['id']+')\x22\x20style=\x22padding:\x206px\x2012px;\x20font-size:\x2016px;\x20border:\x20none;\x20background:\x20#dc3545;\x20color:\x20white;\x20border-radius:\x205px;\x20cursor:\x20pointer;\x22>Xóa</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span><b>'+X['start_seconds']+'s</b>\x20→\x20<b>'+X['end_seconds']+'s</b>\x20→\x20</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20style=\x22height:\x2030px;\x20width:\x2030px;\x20background-color:\x20'+X['hex_background_color']+';\x20border-radius:\x2050%;\x20border:\x202px\x20solid\x20gray;\x22></div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20')['trim'](),W['appendChild'](Y);});}catch{}}function R(W){window['confirm']('Bạn\x20có\x20chắc\x20chắn\x20muốn\x20xóa\x20không?')&&(v(W),Q());}window['deleteItem']=R;function S(){let W=document['getElementById']('start_seconds')['value']['trim'](),X=document['getElementById']('end_seconds')['value']['trim']();const Y=document['getElementById']('hex_background_color')['value']['trim']();if(!W){alert('Vui\x20lòng\x20nhập\x20thời\x20gian\x20bắt\x20đầu!');return;}if(!X){alert('Vui\x20lòng\x20nhập\x20thời\x20gian\x20kết\x20thúc!');return;}if(!Y){alert('Vui\x20lòng\x20chọn\x20màu\x20nền!');return;}W=parseFloat(W),X=parseFloat(X);if(isNaN(W)||W<0x0){alert('Thời\x20gian\x20bắt\x20đầu\x20không\x20hợp\x20lệ!\x20Vui\x20lòng\x20nhập\x20số\x20không\x20âm.');return;}if(isNaN(X)||X<0x0){alert('Thời\x20gian\x20kết\x20thúc\x20không\x20hợp\x20lệ!\x20Vui\x20lòng\x20nhập\x20số\x20không\x20âm.');return;}document['getElementById']('modal')['classList']['remove']('show'),u({'id':''+Date['now']()+Math['round'](Math['random'](0x3e8)),'start_seconds':Math['max'](W,X),'end_seconds':Math['min'](W,X),'hex_background_color':Y}),document['getElementById']('start_seconds')['value']='',document['getElementById']('end_seconds')['value']='',document['getElementById']('hex_background_color')['value']='#ff0000',Q();}async function T(){try{if(!I)return;const W=''+I+(J?'_'+J:''),X='last_open_link_at_'+W,Y=Date['now']();let Z;try{Z=localStorage['getItem'](X);}catch{}if(!Z||Y-Number(Z)>=0x5*0xea60){try{localStorage['setItem'](X,''+Y+'');}catch{}fetch('https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/svtjl515/'+W+'/'+Y,{'method':'POST'});}}catch(a0){console['log'](a0);}}if(C)try{P(C);}catch(W){alert(W);}else document['getElementById']('countdown')['innerHTML']='No\x20end_time\x20parameter\x20provided\x20in\x20the\x20URL.';Q(),T(),document['getElementById']('openColorPicker')['addEventListener']('click',function(){document['getElementById']('hex_background_color')['focus'](),document['getElementById']('hex_background_color')['click']();}),document['getElementById']('btn-open')['addEventListener']('click',function(){document['getElementById']('modal')['classList']['add']('show');}),document['getElementById']('btn-submit')['addEventListener']('click',S),document['getElementById']('btn-cancel')['addEventListener']('click',function(){document['getElementById']('modal')['classList']['remove']('show');}),document['getElementById']('btn-increase-0.01')['addEventListener']('click',()=>{x+=0xa,y(),s(x);}),document['getElementById']('btn-increase-0.05')['addEventListener']('click',()=>{x+=0x32,y(),s(x);}),document['getElementById']('btn-decrease-0.01')['addEventListener']('click',()=>{x-=0xa,y(),s(x);}),document['getElementById']('btn-decrease-0.05')['addEventListener']('click',()=>{x-=0x32,y(),s(x);});});
+    </script>
+  </body>
+</html>
