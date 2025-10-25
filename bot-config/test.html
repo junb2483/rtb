@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Device ID cố định (TrustDecision)</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0f1e41;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      h2 {
+        margin-bottom: 10px;
+      }
+      pre {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 10px;
+        width: 90%;
+        word-break: break-all;
+        color: #aee6ff;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🔍 Device ID của bạn:</h2>
+    <pre id="device_id">Đang tải...</pre>
+
+    <script>
+      async function getTrustDeviceId() {
+        // Nếu đã lưu trong localStorage, dùng lại
+        const cachedId = localStorage.getItem("trust_device_id");
+        if (cachedId) return cachedId;
+
+        return new Promise((resolve, reject) => {
+          window._fmOpt = {
+            success: (result) => {
+              const id = result.device_id;
+              localStorage.setItem("trust_device_id", id); // Lưu lại để dùng sau
+              resolve(id);
+            },
+            fail: (err) => reject(err),
+          };
+
+          const fm = document.createElement("script");
+          fm.src =
+            "https://cdn.jsdelivr.net/npm/@trustdevicejs/trustdevice-js@1.0.6/dist/fm.min.js";
+          fm.async = true;
+          fm.onerror = () => reject(new Error("Không tải được TrustDeviceJS"));
+          document.head.appendChild(fm);
+        });
+      }
+
+      getTrustDeviceId().then((id) => {
+        document.getElementById("device_id").innerText = id;
+      });
+    </script>
+  </body>
+</html>

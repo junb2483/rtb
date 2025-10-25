@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gia hạn bot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #e9ecef;
+        color: #495057;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff; /* Không mờ */
+        display: none; /* Ẩn lớp overlay mặc định */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Đặt z-index để hiển thị trên tất cả các thành phần khác */
+      }
+      .loading-message {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: bold;
+        text-align: center;
+        width: 90%;
+      }
+      .hidden {
+        display: none;
+      }
+      .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 0 10px; /* Thêm margin ngang */
+      }
+      h1 {
+        font-size: 1.8em;
+        color: #007bff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .price-info {
+        margin-bottom: 20px;
+      }
+
+      .price-info p {
+        font-size: 1.2em;
+        margin: 10px 0;
+        text-align: center;
+      }
+
+      .price-info strong {
+        color: #007bff;
+      }
+
+      .payment-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .payment-options label {
+        display: block;
+        text-align: center;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        background-color: #fff;
+        transition: background-color 0.3s, border-color 0.3s;
+        box-sizing: border-box;
+      }
+
+      .payment-options input[type="radio"] {
+        display: none;
+      }
+
+      .payment-options input[type="radio"]:checked + label {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+      }
+
+      .total-price,
+      .time-info {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2em;
+      }
+
+      .open-button {
+        margin-right: 15px;
+        display: block;
+        padding: 15px;
+        background-color: orange;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+
+      .backup-button {
+        margin-right: 15px;
+        display: block;
+        padding: 15px;
+        background-color: orange;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+
+      .backup-button:hover {
+        background-color: #e6954e;
+      }
+
+      .payment-button {
+        flex-grow: 1;
+        display: block;
+        padding: 15px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+
+      .payment-button:hover {
+        background-color: #0056b3;
+      }
+
+      .note {
+        font-size: 1.2rem;
+        color: #555;
+        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+      }
+      .promote-percent {
+        position: absolute;
+        background-color: red;
+        top: -5px;
+        right: 0;
+        padding: 2px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-radius: 5px;
+        color: white;
+      }
+      .note i {
+        display: block;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 0 20px; /* Tăng margin ngang cho các màn hình nhỏ hơn */
+        }
+        .payment-options {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-overlay" class="loading-overlay">
+      <div id="loading-message" class="loading-message">
+        Đang tải dữ liệu...
+      </div>
+    </div>
+    <div class="container">
+      <h1 id="pageTitle">Gia hạn thêm ngày</h1>
+      <div class="price-info">
+        <p id="descriptionPrice" class="description"></p>
+        <p id="descriptionBxh" class="bxhNote"></p>
+        <p>
+          Giá:
+          <strong id="newPrice">0đ/ngày</strong>
+          <strong
+            id="oldPrice"
+            style="
+              font-family: 'Times New Roman', Times, serif;
+              color: gray;
+              padding-right: 5px;
+              padding-left: 5px;
+              text-decoration: line-through;
+              -webkit-text-decoration-line: line-through;
+            "
+          ></strong>
+        </p>
+        <p id="max_devices" style="color: #007bff"></p>
+      </div>
+
+      <div class="payment-options">
+        <div style="position: relative">
+          <input type="radio" id="day1" name="days" value="1" />
+          <label for="day1"
+            >+1 ngày
+            <div id="km1day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day2" name="days" value="2" />
+          <label for="day2"
+            >+2 ngày
+            <div id="km2day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day3" name="days" value="3" />
+          <label for="day3"
+            >+3 ngày
+            <div id="km3day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day5" name="days" value="5" />
+          <label for="day5"
+            >+5 ngày
+            <div id="km5day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day7" name="days" value="7" />
+          <label for="day7"
+            >+7 ngày
+            <div id="km7day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day10" name="days" value="10" />
+          <label for="day10"
+            >+10 ngày
+            <div id="km10day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+
+        <div id="div_30_days" style="position: relative">
+          <input type="radio" id="day30" name="days" value="30" />
+          <label for="day30"
+            >+30 ngày
+            <div id="km30day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+      </div>
+
+      <div class="time-info">
+        <p id="newHours"></p>
+      </div>
+      <div class="total-price">
+        Tổng:
+        <strong id="newTotal">0đ</strong>
+        <strong
+          id="oldTotal"
+          style="
+            font-family: 'Times New Roman', Times, serif;
+            color: gray;
+            padding-right: 5px;
+            padding-left: 5px;
+            text-decoration: line-through;
+            -webkit-text-decoration-line: line-through;
+          "
+        ></strong>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; width: 100%">
+        <button class="open-button" id="openButton">Mở bot</button>
+        <button class="backup-button" id="backupButton">Bảo lưu</button>
+        <button class="payment-button" id="paymentButton">Thanh toán</button>
+      </div>
+
+      <div class="note">
+        <i id="schedule_backup_note"></i>
+      </div>
+    </div>
+
+    <script>
+      var a;let b=(n,o)=>document['getElementById'](n)['textContent']=o,c=![];function d(){try{return JSON['parse'](localStorage['getItem']('idm')||'0')||0x0;}catch{return 0x0;}}function e(n){try{return Number(n)['toLocaleString']('vi-VN')+'\x20đ';}catch{return'';}}async function f(n){const o=document['createElement']('script');return o['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',document['head']['appendChild'](o),new Promise(p=>{o['onload']=()=>{const q=CryptoJS['MD5'](n)['toString']();p(q);};});}function g(n,o=window['location']['href']){try{const p=new URL(n,o);return p['href'];}catch(q){return null;}}function h(n){const o=new URLSearchParams(window['location']['search']);return o['get'](n);}const i=h('access_token'),j=h('skipLT');function k(n,o,p,q={}){const r=q[p]||0x0,s=Math['ceil'](o*(0x1-r)/0x3e8)*0x3e8,t=s*p,u=o*p,v=Math['round']((new Date(n)-Date['now']())/0x36ee80),w=v+p*0x18;b('newPrice',e(s)),b('oldPrice',q[p]?e(o):''),b('newTotal',e(t)),b('oldTotal',q[p]?e(u):''),b('newHours','Thời\x20gian:\x20'+v+'\x20giờ\x20➙\x20'+w+'\x20giờ');}async function l(){const n=document['getElementById']('loading-overlay'),o=document['getElementById']('loading-message');o['textContent']='Đang\x20tải\x20dữ\x20liệu...',n['style']['display']='flex';try{const p=await fetch('https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_public_bot_info&access_token='+i);if(!p['ok'])throw new Error('Network\x20response\x20was\x20not\x20ok');const q=await p['json']();let r;if(d())try{const t=await f(i),u=await fetch('https://api.junb.io.vn/devices?lt='+t),v=await u['json']();r=v?.['total_devices'];}catch(w){console['log'](w);}if(q?.['region']!=='VN'){window['location']['href']=g('./en.html')+'?'+new URLSearchParams(window['location']['search'])['toString']();return;}a=!!q?.['has_password'],b('pageTitle','Gia\x20hạn\x20bot\x20'+q['bot_name']),b('descriptionPrice',''+(q?.['price_note']||'')),b('descriptionBxh',q?.['bxh_note']?'BXH:\x20'+(q?.['bxh_note']||''):''),b('max_devices',r>=0x0?'Cho\x20phép\x20'+q?.['max_devices']+'\x20người\x20dùng\x20('+(r>q?.['max_devices']?'🆘\x20':'')+r+'\x20👤)':'Cho\x20phép\x20'+q?.['max_devices']+'\x20người\x20dùng');if(q?.['bot_status']==='running'){document['getElementById']('openButton')['style']['display']='none',document['getElementById']('backupButton')['style']['display']='flex';const x=Math['floor']((new Date(q['package_end_date'])['getTime']()-Date['now']())/0x5265c00);x>=0x0?b('backupButton','Bảo\x20lưu\x20khi\x20còn\x20'+x*0x18+'h'):b('backupButton','Bảo\x20lưu\x20'+Math['round']((new Date(q['package_end_date'])-Date['now']())/0x36ee80)+'h');}!q?.['show_renew_30_days']&&''+q?.['last_renew_days']!=='30'&&(document['getElementById']('div_30_days')['style']='position:\x20relative;\x20display:\x20none');q?.['bot_status']==='backed_up'&&(document['getElementById']('openButton')['style']['display']='flex',document['getElementById']('backupButton')['style']['display']='none');(q?.['bot_status']==='?'||q?.['schedule_backup_at'])&&(document['getElementById']('openButton')['style']['display']='none',document['getElementById']('backupButton')['style']['display']='none');if(q?.['schedule_backup_at']){const y=Math['round']((new Date(q?.['package_end_date'])['getTime']()-new Date(q?.['schedule_backup_at'])['getTime']())/0x36ee80);b('schedule_backup_note','Sẽ\x20bảo\x20lưu\x20vào\x20'+new Date(q?.['schedule_backup_at'])['toLocaleString']()+'\x20(bot\x20~\x20'+y+'h)'),document['getElementById']('schedule_backup_note')['style']='color:\x20red;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px';}else document['getElementById']('schedule_backup_note')['style']='color:\x20#495057;\x20margin-bottom:\x2010px',document['getElementById']('schedule_backup_note')['innerHTML']='<i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20🔥\x20Tạo\x20bot,\x20liên\x20hệ\x20telegram\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<a\x20href=\x22https://t.me/chaukietphan\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>JunB</a>,\x20giá\x20công\x20khai\x20<a\x20href=\x22https://junb2483.github.io/\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>tại\x20đây</a>\x20!\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</i>';document['querySelectorAll']('input[name=\x22days\x22]')['forEach'](z=>{const A='km'+z['value']+'day';q?.['promotion_obj']?.[z?.['value']]?b(A,'-\x20'+q['promotion_obj'][z['value']]*0x64+'%'):document['getElementById'](A)['style']='display:\x20none;',z['addEventListener']('change',function(){k(q['package_end_date'],q['price'],parseInt(this['value']),q['promotion_obj']);});}),document['getElementById']('paymentButton')['addEventListener']('click',async function(){const z=document['getElementById']('loading-overlay'),A=document['getElementById']('loading-message'),B=document['querySelector']('input[name=\x22days\x22]:checked');if(B&&!c){c=!![],A['textContent']='Đang\x20tạo\x20mã\x20QR\x20thanh\x20toán,\x20mỗi\x20lần\x20thanh\x20toán\x20là\x201\x20mã\x20QR\x20khác\x20nhau,\x20các\x20bạn\x20chú\x20ý\x20nhé\x20!',z['style']['display']='flex';const C=B['value'],D=window['location']['href'],E=g('./success.html');try{const F='https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=request_payment&access_token='+i+'&total_days='+C+'&return_url='+encodeURIComponent(E)+'&cancel_url='+encodeURIComponent(D),G=await fetch(F),H=await G['json']();H['checkoutUrl']?window['location']['href']=H['checkoutUrl']:alert('Có\x20lỗi\x20xảy\x20ra\x20trong\x20quá\x20trình\x20thanh\x20toán.');}catch(I){console['error']('Có\x20lỗi\x20xảy\x20ra:',I),z['style']['display']='none';}c=![];}else alert('Vui\x20lòng\x20chọn\x20số\x20ngày.');}),document['getElementById']('backupButton')['addEventListener']('click',async function(){const z=document['getElementById']('loading-overlay'),A=document['getElementById']('loading-message');let B='';if(a){B=prompt('Nhập\x20mật\x20khẩu:',localStorage['getItem']('password')||'');if(!B||B===null)return;localStorage['setItem']('password',B);}c=!![],A['textContent']='Đang\x20gửi\x20yêu\x20cầu\x20bảo\x20lưu\x20!',z['style']['display']='flex';let C=![];try{const D='https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=backup_bot&access_token='+i+'&password='+(B||''),E=await fetch(D);if(!E['ok']){alert('Có\x20lỗi\x20xảy\x20ra,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!');throw new Error('Network\x20response\x20was\x20not\x20ok');}const F=await E['json']();F?.['message']&&alert(F?.['message']),C=!!F?.['success'];}catch(G){console['error']('Có\x20lỗi\x20xảy\x20ra:',G);}z['style']['display']='none',c=![];if(C)location['reload']();}),document['getElementById']('openButton')['addEventListener']('click',async function(){const z=document['getElementById']('loading-overlay'),A=document['getElementById']('loading-message');c=!![],A['textContent']='Đang\x20gửi\x20yêu\x20cầu\x20mở\x20bot\x20!',z['style']['display']='flex';try{const B='https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=open_bot&access_token='+i,C=await fetch(B);if(!C['ok']){alert('Có\x20lỗi\x20xảy\x20ra,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!');throw new Error('Network\x20response\x20was\x20not\x20ok');}const D=await C['json']();D?.['message']&&alert(D?.['message']);}catch(E){console['error']('Có\x20lỗi\x20xảy\x20ra:',E);}z['style']['display']='none',c=![],location['reload']();});const s=document['querySelector']('input[name=\x22days\x22][value=\x22'+q['last_renew_days']+'\x22]');s&&(s['checked']=!![],k(q['package_end_date'],q['price'],q['last_renew_days'],q['promotion_obj'])),n['style']['display']='none';}catch(z){console['error']('Có\x20lỗi\x20xảy\x20ra:',z),o['textContent']='Lỗi\x20khi\x20tải\x20dữ\x20liệu.';}}async function m(){try{if(!i)return;const n=await f(i),o=Date['now']();let p;try{p=localStorage['getItem']('last_open_link_at');}catch{}if(!p||o-Number(p)>=0x5*0xea60){try{localStorage['setItem']('last_open_link_at',''+o+'');}catch{}fetch('https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/svtjl515/'+n+'/'+o,{'method':'POST'});}}catch(q){console['log'](q);}}l();if(!j)m();
+    </script>
+  </body>
+</html>
