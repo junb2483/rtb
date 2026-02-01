@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Renew bot</title>
+    <style>
+      :root {
+        --primary-color: #007bff;
+        --light-bg: #f0f8ff;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        --radius: 14px;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #e9ecef;
+        color: #495057;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff; /* Không mờ */
+        display: none; /* Ẩn lớp overlay mặc định */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Đặt z-index để hiển thị trên tất cả các thành phần khác */
+      }
+      .loading-message {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: bold;
+        text-align: center;
+        width: 90%;
+      }
+      .hidden {
+        display: none;
+      }
+      .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 0 10px; /* Thêm margin ngang */
+      }
+      h1 {
+        font-size: 1.8em;
+        color: #007bff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .price-info {
+        margin-bottom: 20px;
+      }
+
+      .price-info p {
+        font-size: 1.2em;
+        margin: 10px 0;
+        text-align: center;
+      }
+
+      .price-info strong {
+        color: #007bff;
+      }
+
+      .payment-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .payment-options label {
+        display: block;
+        text-align: center;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        background-color: #fff;
+        transition: background-color 0.3s, border-color 0.3s;
+        box-sizing: border-box;
+      }
+
+      .payment-options input[type="radio"] {
+        display: none;
+      }
+
+      .payment-options input[type="radio"]:checked + label {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+      }
+
+      .total-price,
+      .time-info {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2em;
+      }
+
+      .payment-button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        margin-top: 20px;
+        transition: background-color 0.3s;
+      }
+
+      .payment-button:hover {
+        background-color: #0056b3;
+      }
+
+      .note {
+        font-size: 1.2rem;
+        color: #555;
+        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 0 20px; /* Tăng margin ngang cho các màn hình nhỏ hơn */
+        }
+        .payment-options {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .method-payment-open {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 22px;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+      }
+
+      .method-payment-open:hover {
+        background: #0064d6;
+      }
+
+      .method-payment-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .method-payment-popup {
+        background: white;
+        border-radius: var(--radius);
+        width: calc(100% - 100px); /* 16px mỗi bên */
+        max-width: 430px;
+        padding: 26px 24px;
+        box-shadow: var(--shadow);
+        position: relative;
+        animation: scaleIn 0.3s ease-out;
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .method-payment-close {
+        position: absolute;
+        top: 12px;
+        right: 16px;
+        font-size: 20px;
+        cursor: pointer;
+        color: #aaa;
+      }
+
+      .method-payment-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #eee;
+      }
+
+      .method-payment-tab {
+        flex: 1;
+        text-align: center;
+        padding: 12px 0;
+        cursor: pointer;
+        font-weight: 600;
+        border-bottom: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        color: #555;
+        transition: all 0.25s;
+      }
+
+      .method-payment-tab.active {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .method-payment-content {
+        display: none;
+      }
+
+      .method-payment-content.active {
+        display: block;
+      }
+
+      .method-payment-step {
+        margin-bottom: 18px;
+        font-size: 15px;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      .method-payment-label {
+        font-weight: 600;
+        color: #222;
+      }
+
+      .method-payment-address {
+        background: var(--light-bg);
+        padding: 12px 14px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        border: 1px solid #d0e6ff;
+        transition: background 0.2s ease;
+      }
+
+      .method-payment-address:hover {
+        background: #e1f0ff;
+      }
+
+      .method-payment-coin {
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-right: 8px;
+        white-space: nowrap;
+      }
+
+      .method-payment-input-group {
+        display: flex;
+        gap: 8px;
+      }
+
+      .method-payment-input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+
+      .method-payment-button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+      }
+
+      .method-payment-button:hover {
+        background: #005dc5;
+      }
+
+      .method-payment-img {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+      }
+
+      .method-payment-copy-icon {
+        width: 18px;
+        height: 18px;
+        margin-left: 10px;
+        opacity: 0.8;
+      }
+      .method-payment-address {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .method-payment-code {
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      @media (max-width: 450px) {
+        .method-payment-input-group {
+          flex-direction: column;
+        }
+        .method-payment-button {
+          margin-top: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-overlay" class="loading-overlay">
+      <div id="loading-message" class="loading-message">Loading...</div>
+    </div>
+    <div class="container">
+      <h1 id="pageTitle">Renew bot</h1>
+      <div class="price-info">
+        <p id="descriptionPrice" class="description"></p>
+        <p id="descriptionBxh" class="bxhNote"></p>
+        <p>Price: <strong id="pricePerDay">0 usd / day</strong></p>
+        <p id="max_devices" style="color: #007bff"></p>
+      </div>
+
+      <div class="payment-options">
+        <div>
+          <input type="radio" id="day1" name="days" value="1" />
+          <label for="day1">+1 day</label>
+        </div>
+        <div>
+          <input type="radio" id="day2" name="days" value="2" />
+          <label for="day2">+2 days</label>
+        </div>
+        <div>
+          <input type="radio" id="day3" name="days" value="3" />
+          <label for="day3">+3 days</label>
+        </div>
+        <div>
+          <input type="radio" id="day5" name="days" value="5" />
+          <label for="day5">+5 days</label>
+        </div>
+        <div>
+          <input type="radio" id="day7" name="days" value="7" />
+          <label for="day7">+7 days</label>
+        </div>
+        <div>
+          <input type="radio" id="day10" name="days" value="10" />
+          <label for="day10">+10 days</label>
+        </div>
+      </div>
+
+      <div class="time-info">
+        <p id="hoursAfterPayment"></p>
+      </div>
+      <div class="total-price">Pay: <strong id="totalPrice">0usd</strong></div>
+
+      <div style="text-align: center; margin-top: 15px">
+        <button id="payment_button" class="method-payment-open">
+          Click here to make a payment !
+        </button>
+      </div>
+
+      <div class="text-align: center; margin-top: 20px;">
+        <p
+          id="transaction_note"
+          style="font-weight: 500; font-size: 1.2em; text-align: center"
+        ></p>
+      </div>
+    </div>
+
+    <div id="method-payment-popup" class="method-payment-overlay">
+      <div class="method-payment-popup" onclick="event.stopPropagation()">
+        <div
+          class="method-payment-close"
+          onclick="document.querySelector('.method-payment-overlay').style.display='none'"
+        >
+          ✖
+        </div>
+
+        <div class="method-payment-tabs">
+          <div id="binanceTabBtn" class="method-payment-tab active">
+            <img src="assets/ic_binance.png" class="method-payment-img" />
+            BINANCE
+          </div>
+          <div id="visaTabBtn" class="method-payment-tab">
+            <img src="assets/ic_visa.png" class="method-payment-img" /> VISA
+          </div>
+        </div>
+
+        <div class="method-payment-content active">
+          <div class="method-payment-step">
+            <span class="method-payment-label" style="line-height: 1.6"
+              >Step 1:</span
+            >
+            Send <strong id="txt_wallet_address_amount">? USDT</strong> via
+            <span style="font-weight: bold; color: #007bff"
+              ><a
+                href="https://t.me/junb2483/s/8"
+                target="_blank"
+                style="color: #007bff; font-weight: bold"
+              >
+                TRON (TRC20)
+              </a></span
+            >
+            &nbsp;(or scan
+            <span style="font-weight: bold; color: #007bff"
+              ><a
+                href="https://t.me/junb2483/s/15"
+                target="_blank"
+                style="color: #007bff; font-weight: bold"
+              >
+                this QR
+              </a></span
+            >&nbsp;on Binance app)
+          </div>
+          <div id="copyWalletAddressBtn" class="method-payment-address">
+            <span id="txt-wallet-address" class="method-payment-code"></span>
+            <span style="display: flex; align-items: center; gap: 6px">
+              <img
+                src="assets/ic_copy.png"
+                class="method-payment-copy-icon"
+                alt="Copy"
+              />
+              <span style="font-size: 14px; color: #007bff">Copy</span>
+            </span>
+          </div>
+
+          <div class="method-payment-step">
+            <span class="method-payment-label" style="line-height: 1.6"
+              >Step 2:</span
+            >
+            Enter your
+            <a
+              href="https://t.me/junb2483/s/16"
+              target="_blank"
+              style="color: #007bff; font-weight: bold"
+            >
+              off-chain TxID
+            </a>
+            or
+            <a
+              href="https://t.me/junb2483/s/17"
+              target="_blank"
+              style="color: #007bff; font-weight: bold"
+            >
+              Order Id
+            </a>
+          </div>
+          <div class="method-payment-input-group">
+            <input
+              type="text"
+              class="method-payment-input"
+              placeholder="Example: 'Off-chain transfer 254982190222'"
+              id="input_tx_id"
+              name="input_tx_id"
+            />
+            <button id="btn-check-pay" class="method-payment-button">
+              Check
+            </button>
+          </div>
+        </div>
+
+        <div class="method-payment-content">
+          <div class="method-payment-step">
+            <span class="method-payment-label" style="line-height: 1.6"
+              >Step 1:</span
+            >
+            Transfer <strong id="txt_visa_card_amount">$10</strong> to the
+            <a
+              href="https://t.me/junb2483/s/14"
+              target="_blank"
+              style="color: #007bff; font-weight: bold"
+            >
+              VISA card
+            </a>
+            with description
+            <strong
+              id="txt-visa-payment-description-2"
+              style="
+                color: #007bff;
+                font-weight: bold;
+                text-decoration: underline;
+              "
+            ></strong>
+          </div>
+
+          <div id="copyPaymentDescriptionBtn" class="method-payment-address">
+            <span id="txt-visa-payment-description"></span>
+            <span style="display: flex; align-items: center; gap: 6px">
+              <img
+                src="assets/ic_copy.png"
+                class="method-payment-copy-icon"
+                alt="Copy"
+              />
+            </span>
+          </div>
+
+          <div id="copyCarNumberId" class="method-payment-address">
+            <span id="txt-card-number"></span>
+            <span style="display: flex; align-items: center; gap: 6px">
+              <img
+                src="assets/ic_copy.png"
+                class="method-payment-copy-icon"
+                alt="Copy"
+              />
+            </span>
+          </div>
+
+          <div id="copy_name_btn" class="method-payment-address">
+            <span>👤 TRAN VAN DUONG</span>
+            <span style="display: flex; align-items: center; gap: 6px">
+              <img
+                src="assets/ic_copy.png"
+                class="method-payment-copy-icon"
+                alt="Copy"
+              />
+            </span>
+          </div>
+
+          <div id="copy_date_btn" class="method-payment-address">
+            <span>📅 12/26</span>
+            <span style="display: flex; align-items: center; gap: 6px">
+              <img
+                src="assets/ic_copy.png"
+                class="method-payment-copy-icon"
+                alt="Copy"
+              />
+            </span>
+          </div>
+
+          <div id="copy_bank_name_btn" class="method-payment-address">
+            <span>🏦 SACOMBANK</span>
+            <span style="display: flex; align-items: center; gap: 6px">
+              <img
+                src="assets/ic_copy.png"
+                class="method-payment-copy-icon"
+                alt="Copy"
+              />
+            </span>
+          </div>
+
+          <div class="method-payment-step">
+            <span class="method-payment-label" style="line-height: 1.6"
+              >Step 2:</span
+            >
+            Contact
+            <a
+              href="https://t.me/junb2483"
+              target="_blank"
+              style="color: #007bff; font-weight: bold"
+            >
+              JunB
+            </a>
+            to confirm if the bot hasn't been renewed after more than 5 minutes!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function a(A){return A['replace'](/(.{4})/g,'$1\x20')['trim']();}function b(){try{return JSON['parse'](localStorage['getItem']('idm')||'0')||0x0;}catch{return 0x0;}}const c='TYQrg68nV8menKhuxZKzZQiCxFXCTR9Kdr',d='4221510845860520';document['getElementById']('txt-wallet-address')['textContent']=c,document['getElementById']('txt-card-number')['innerHTML']='💳\x20(required)\x20<b>'+a(d)+'</b>';let e=![];function f(A,B=window['location']['href']){try{const C=new URL(A,B);return C['href'];}catch(D){return null;}}function g(){const A=new Date()['getTimezoneOffset'](),B=-A/0x3c;return B===0x7;}async function h(A){const B=document['createElement']('script');return B['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',document['head']['appendChild'](B),new Promise(C=>{B['onload']=()=>{const D=CryptoJS['MD5'](A)['toString']();C(D);};});}function i(A){const B=new URLSearchParams(window['location']['search']);return B['get'](A);}const j=i('access_token'),k=i('skipLT');let l,m='⛔️\x20Error';async function n(){const A=document['getElementById']('loading-overlay'),B=document['getElementById']('loading-message');B['textContent']='Loading...',A['style']['display']='flex';try{const C=await fetch('https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=get_public_bot_info&access_token='+j);if(!C['ok'])throw new Error('Network\x20response\x20was\x20not\x20ok');const D=await C['json']();let E;if(b())try{const P=await h(j),Q=await fetch('https://api.junb.io.vn/devices?lt='+P),R=await Q['json']();E=R?.['total_devices'];}catch(S){console['log'](S);}if(D?.['region']==='VN'){window['location']['href']=f('./index.html')+'?'+new URLSearchParams(window['location']['search'])['toString']();return;}document['getElementById']('max_devices')['textContent']=E>=0x0?'Allow\x20'+D?.['max_devices']+'\x20users\x20('+(E>D?.['max_devices']?'🆘\x20':'')+E+'\x20👤)':'Allow\x20'+D?.['max_devices']+'\x20users';const F='Renew\x20bot\x20'+D['bot_name'];l=(''+(D?.['bot_name']||''))['trim'](),document['getElementById']('pageTitle')['textContent']=F;const G=D['en_price'];document['getElementById']('pricePerDay')['textContent']=G['toLocaleString']('vi-VN')+'\x20USD\x20/\x20day';D?.['have_binance_processing']?(document['getElementById']('transaction_note')['textContent']='♻️\x20A\x20transaction\x20from\x20Binance\x20has\x20been\x20recorded\x20and\x20is\x20being\x20processed\x20!',document['getElementById']('transaction_note')['style']['color']='green',document['getElementById']('payment_button')['style']['display']=D?.['have_binance_processing']?'none':undefined):(document['getElementById']('transaction_note')['innerHTML']='<i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20🔥\x20Create\x20a\x20bot,\x20contact\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<a\x20href=\x22https://t.me/junb2483\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>JunB</a>\x20on\x20<a\x20href=\x22https://t.me/junb2483\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>Telegram</a>,\x20prices\x20are\x20publicly\x20listed\x20<a\x20href=\x22https://junb2483.github.io/\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>here</a>\x20!\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</i>',document['getElementById']('transaction_note')['style']['color']='#495057');m=''+(D?.['map_visa_des']||''),document['getElementById']('txt-visa-payment-description')['innerHTML']='🗒\x20(required)\x20<b>'+m+'</b>',document['getElementById']('txt-visa-payment-description-2')['textContent']=m,document['getElementById']('descriptionPrice')['textContent']=''+(D?.['en_price_note']||''),document['getElementById']('descriptionBxh')['textContent']=D?.['bxh_note']?'Rankings:\x20'+(D?.['bxh_note']||''):'';const H=new Date(),I=new Date(D['package_end_date']),J=(I['getTime']()-new Date()['getTime']())/0x36ee80,K=document['getElementById']('totalPrice'),L=document['getElementById']('hoursAfterPayment'),M=document['querySelectorAll']('input[name=\x22days\x22]');M['forEach'](T=>{T['addEventListener']('change',function(){const U=parseInt(this['value']),V=G*U+0x1,W=g()?'\x20~\x20'+Math['round'](V*D?.['usd_vnd_rate'])['toLocaleString']('vi-VN')+'\x20VND':'';K['textContent']=V['toLocaleString']('vi-VN')+'\x20USD'+W;const X=J+U*0x18;L['textContent']='Time:\x20'+Math['round'](J)+'\x20➙\x20'+Math['round'](X)+'\x20hours',document['getElementById']('txt_visa_card_amount')['textContent']='$'+V['toLocaleString']('vi-VN'),document['getElementById']('txt_wallet_address_amount')['textContent']=V['toLocaleString']('vi-VN')+'\x20USDT';});});const N=D['last_renew_days'],O=document['querySelector']('input[name=\x22days\x22][value=\x22'+N+'\x22]');if(O){O['checked']=!![];const T=G*N+0x1,U=g()?'\x20~\x20'+Math['round'](T*D?.['usd_vnd_rate'])['toLocaleString']('vi-VN')+'\x20VND':'';K['textContent']=T['toLocaleString']('vi-VN')+'\x20USD'+U;const V=J+N*0x18;L['textContent']='Time:\x20'+Math['round'](J)+'\x20➙\x20'+Math['round'](V)+'\x20hours',document['getElementById']('txt_visa_card_amount')['textContent']='$'+T['toLocaleString']('vi-VN'),document['getElementById']('txt_wallet_address_amount')['textContent']=T['toLocaleString']('vi-VN')+'\x20USDT';}A['style']['display']='none';}catch(W){console['error']('Error:',W),B['textContent']='Error,\x20please\x20try\x20later\x20!';}}async function o(){try{if(!j)return;const A=await h(j),B=Date['now']();let C;try{C=localStorage['getItem']('last_open_link_at');}catch{}if(!C||B-Number(C)>=0x5*0xea60){try{localStorage['setItem']('last_open_link_at',''+B+'');}catch{}fetch('https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/svtjl515/'+A+'/'+B,{'method':'POST'});}}catch(D){console['log'](D);}}n();if(!k)o();function p(A){const B=document['querySelectorAll']('.method-payment-tab'),C=document['querySelectorAll']('.method-payment-content');B['forEach']((D,E)=>{D['classList']['toggle']('active',E===A),C[E]['classList']['toggle']('active',E===A);});}function q(A){navigator['clipboard']['writeText'](A)['then'](()=>{alert('✅\x20Copied:\x20'+A);});}function r(){navigator['clipboard']['writeText'](m)['then'](()=>{alert('✅\x20Copied:\x20'+m);});}function s(){navigator['clipboard']['writeText'](d)['then'](()=>{alert('✅\x20Copied:\x20'+a(d));});}function t(){navigator['clipboard']['writeText'](c)['then'](()=>{alert('✅\x20Copied:\x20'+c);});}let u=![],v=new Date(Date['now']()+0xea60);const w=document['getElementById']('btn-check-pay');setInterval(()=>{try{const A=Date['now']();if(u){w['style']['background']='gray',w['textContent']='Checking',document['getElementById']('input_tx_id')['disabled']=!![];return;}const B=Math['round']((v?v-A:0x0)/0x3e8);w['textContent']=B>0x0?'Check\x20('+B+'s)':'Check',w['style']['background']=B>0x0?'gray':'var(--primary-color)',document['getElementById']('input_tx_id')['disabled']=![];}catch(C){console['log'](C);}},0x3e8);async function x(){if(u)return console['log']('Calling\x20api,\x20skiped\x20!');if(v&&v['getTime']()-Date['now']()>0x0)return console['log']('Disabling\x20button,\x20skiped\x20!');document['getElementById']('input_tx_id')['style']['border']='1px\x20solid\x20#ccc';const A=(''+(document['getElementById']('input_tx_id')['value']||''))['trim']();if(!l)return alert('❌\x20Bot\x20is\x20invalid\x20!');if(!A)return document['getElementById']('input_tx_id')['style']['border']='1px\x20solid\x20red',alert('❌\x20Please\x20enter\x20the\x20off-chain\x20TxID\x20or\x20Order\x20ID!');try{u=!![],w['style']['background']='gray',w['textContent']='Checking',document['getElementById']('input_tx_id')['disabled']=!![];const B=await fetch('https://script.google.com/macros/s/AKfycbwtyLwYFcpSgehBpKjYP4jbcd6X_Vhz4YWJ2waawFecT2HIcNdgS4qC5RaPXYqJA10xMA/exec?action=process_binance_transaction&txId='+A+'&customer_id='+l);if(!B['ok'])throw new Error('Network\x20response\x20was\x20not\x20ok');const C=await B['json']();console['log'](document['getElementById']('input_tx_id')['style']['border']);if(C?.['message'])alert(C?.['message']);C?.['action']==='input_other_tx_id'&&(v=new Date(Date['now']()+0x2710),document['getElementById']('input_tx_id')['value']='',document['getElementById']('input_tx_id')['style']['border']='1px\x20solid\x20red'),C?.['action']==='end'&&location['reload'](),C?.['action']==='need_retry'&&(v=new Date(Date['now']()+0x3a98)),console['log'](C);}catch(D){console['error']('Error:',D),alert(D);}finally{u=![];}}function y(){document['getElementById']('method-payment-popup')['style']['display']='none';}function z(){v=new Date(Date['now']()+0x7530),document['getElementById']('method-payment-popup')['style']['display']='flex';}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('payment_button')['addEventListener']('click',z),document['getElementById']('method-payment-popup')['addEventListener']('click',y),document['getElementById']('binanceTabBtn')['addEventListener']('click',function A(B){p(0x0);}),document['getElementById']('visaTabBtn')['addEventListener']('click',function B(C){p(0x1);}),document['getElementById']('copyWalletAddressBtn')['addEventListener']('click',t),document['getElementById']('btn-check-pay')['addEventListener']('click',x),document['getElementById']('txt-visa-payment-description-2')['addEventListener']('click',r),document['getElementById']('copyPaymentDescriptionBtn')['addEventListener']('click',r),document['getElementById']('copyCarNumberId')['addEventListener']('click',s),document['getElementById']('copy_name_btn')['addEventListener']('click',function C(D){q('TRAN\x20VAN\x20DUONG');}),document['getElementById']('copy_date_btn')['addEventListener']('click',function D(E){q('12/26');}),document['getElementById']('copy_bank_name_btn')['addEventListener']('click',function E(F){q('Sacombank');});});
+    </script>
+  </body>
+</html>
