@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duyệt thiết bị</title>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(to bottom right, #f3f4f6, #ede9fe);
+        margin: 0;
+        padding: 0 20px 0 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .limit-text {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+        margin-left: 15px;
+      }
+
+      .add-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .add-btn:hover {
+        background: #1e40af;
+      }
+
+      .search-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 17px 8px 17px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .search-btn:hover {
+        background: #1e40af;
+      }
+
+      /* Item list */
+      .item {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        word-break: break-word;
+      }
+
+      .item-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .stt {
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 1.2rem;
+      }
+
+      .desc {
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex: 1;
+        color: #111;
+      }
+
+      .value {
+        color: #374151;
+        font-size: 1.1rem;
+        word-break: break-all;
+        margin-bottom: 8px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .edit-btn {
+        background: #2563eb;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .edit-btn:hover {
+        background: #1e40af;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .delete-btn:hover {
+        background: #991b1b;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        padding: 16px;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.25s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal h2 {
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+
+      .close-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        box-sizing: border-box;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .save-btn {
+        flex: 1;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .save-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .cancel-btn {
+        flex: 1;
+        background: #9ca3af;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .cancel-btn:hover {
+        background: #6b7280;
+      }
+
+      .password-modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .password-modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .password-modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .password-modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .password-modal-content input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .password-modal-buttons {
+        display: flex;
+        margin-top: 12px;
+      }
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn-password-submit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-password-submit:hover {
+        background: #218838;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input type="password" id="password" placeholder="Mật khẩu" />
+        <div class="password-modal-buttons">
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="container" class="container" style="visibility: hidden">
+      <div
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 10px 0px;
+          box-sizing: border-box;
+          margin: 10px 0 10px 0;
+        "
+      >
+        <p id="limit-text" class="limit-text"></p>
+        <button class="add-btn" id="openModalBtn"></button>
+      </div>
+
+      <div
+        id="search_container"
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 0px 0px;
+          box-sizing: border-box;
+          margin: 0 0 10px 0;
+        "
+      >
+        <input
+          type="text"
+          id="text_search"
+          placeholder="Gõ để tìm kiếm"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          style="margin: 0"
+          enterkeyhint="search"
+        />
+        <button class="search-btn" id="search_btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div id="itemList"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <button class="close-icon" id="closeModalBtn">&times;</button>
+        <h2 id="modalTitle">Thêm mã thiết bị</h2>
+        <input
+          type="text"
+          id="description"
+          placeholder="Ghi chú"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+        <input
+          type="text"
+          id="value"
+          placeholder="Mã thiết bị"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+
+        <div class="modal-buttons">
+          <button class="cancel-btn" id="cancelBtn">Đóng</button>
+          <button class="save-btn" id="saveBtn">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var a='AppKeyValueDB',b='keyval';async function c(){return new Promise((F,G)=>{const H=indexedDB['open'](a,0x1);H['onupgradeneeded']=I=>{const J=I['target']['result'];!J['objectStoreNames']['contains'](b)&&J['createObjectStore'](b);},H['onsuccess']=()=>F(H['result']),H['onerror']=()=>G(H['error']);});}async function d(F,G){try{localStorage['setItem'](F,G);}catch(H){console['error'](H);}try{const I=await c();return new Promise((J,K)=>{const L=I['transaction'](b,'readwrite'),M=L['objectStore'](b);M['put'](G,F),L['oncomplete']=()=>J(!![]),L['onerror']=()=>K(L['error']);});}catch(J){console['error'](J);}}async function e(F){try{const G=localStorage['getItem'](F);if(G!==null)return G;}catch(H){console['error'](H);}try{const I=await c();return new Promise((J,K)=>{const L=I['transaction'](b,'readonly'),M=L['objectStore'](b),N=M['get'](F);N['onsuccess']=()=>J(N?.['result']||null),N['onerror']=()=>K(N['error']);});}catch(J){console['error'](J);}}async function f(F){const G='_____'+(F+'')['split']('')['reverse']()['join'](''),H=await e(G);if(H)return H;typeof CryptoJS==='undefined'&&await new Promise(J=>{const K=document['createElement']('script');K['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',K['onload']=J,document['head']['appendChild'](K);});const I=CryptoJS['MD5'](F)['toString']();return d(G,I),I;}const g=document['getElementById']('container'),h=document['getElementById']('modal'),i=document['getElementById']('openModalBtn'),j=document['getElementById']('search_container'),k=document['getElementById']('text_search'),l=document['getElementById']('search_btn'),m=document['getElementById']('closeModalBtn'),n=document['getElementById']('cancelBtn'),o=document['getElementById']('saveBtn'),p=document['getElementById']('modalTitle'),q=document['getElementById']('description'),r=document['getElementById']('value'),s=document['getElementById']('itemList'),t=document['getElementById']('limit-text');function u(F){const G=new URLSearchParams(window['location']['search']);return G['get'](F);}function v(F){try{return F['normalize']('NFD')['replace'](/[\u0300-\u036f]/g,'')['replace'](/đ/g,'d')['replace'](/Đ/g,'D');}catch(G){console['error'](G);}return'';}function w(F){try{return(''+(F||''))['replace'](/[^a-zA-Z0-9]/g,'')+'=';}catch(G){console['error'](G);}return'';}window['devices']=[],window['max_devices']=0x0,window['editting_id'],window['search_text']='';const x=()=>{g['style']['visibility']='visible',j['style']['visibility']=window['devices']['length']?'visible':'hidden',s['innerHTML']='';const F=window['devices']['length']>0x1;let G=[...window?.['devices']||[]]['reverse']();G['forEach']((H,I)=>{const J=document['createElement']('div'),K=!(''+(window['search_text']||''))['trim']()['toLowerCase']()||v(((H?.['description']||'')+'\x20'+(H?.['device_id']||''))['toLowerCase']())['includes'](v((''+(window['search_text']||''))['trim']()['toLowerCase']())),L=String(H?.['description'])['toLowerCase']()['includes']('admin');J['style']='margin:\x200\x200\x2010px\x200;\x20padding:\x2010px;\x20display:\x20'+(K?'block':'none'),J['className']='item',J['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22item-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22stt\x22>'+(window['devices']['length']-I)+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22desc\x22\x20'+(L?'style=\x22color:\x20#2563eb\x22':'')+'>'+(L?String('🔷\x20'+H?.['description'])['toUpperCase']():H?.['description']||'Người\x20dùng')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22value\x22>'+H['device_id']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22btn-group\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20edit-btn\x22\x20onclick=\x22editItem(\x27'+H['_id']+'\x27)\x22>SỬA</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(F?'<button\x20class=\x22btn\x20delete-btn\x22\x20onclick=\x22deleteItem(\x27'+H['_id']+'\x27)\x22>XÓA</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20',s['appendChild'](J);});},y=F=>{o['textContent']='Lưu',p['textContent']=F?'Sửa\x20mã\x20thiết\x20bị':'Thêm\x20mã\x20thiết\x20bị',q['disabled']=![],r['disabled']=![];let G;F?(G=(window['devices']||[])['find'](H=>H?.['_id']===F),q['value']=G?.['description']||'',r['value']=G?.['device_id']||''):(q['value']='',r['value']='',!window['devices']?.['length']&&(q['disabled']=!![],q['value']='Admin',r['disabled']=!![],r['value']=btoa(window['________d']||''),o['textContent']='Kích\x20hoạt',p['textContent']='Kích\x20hoạt\x20tính\x20năng')),window['editting_id']=F||'',h['style']['display']='flex';};i['onclick']=()=>{k['value']='',window['search_text']='',x(),A();if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');y();};var z;k['addEventListener']('input',()=>{clearTimeout(z),z=setTimeout(()=>{!k?.['value']&&(window['search_text']='',x(),A());},0x1f4);}),k['addEventListener']('change',function(F){F['key']==='Enter'&&(window['search_text']=(''+(k['value']||''))['trim'](),x(),A());}),k['addEventListener']('keyup',function(F){F['key']==='Enter'&&(window['search_text']=(''+(k['value']||''))['trim'](),x(),A());}),l['onclick']=()=>{window['search_text']=(''+(k['value']||''))['trim'](),x(),A();},m['onclick']=n['onclick']=()=>h['style']['display']='none',h['onclick']=F=>F['target']===h&&(h['style']['display']='none'),o['onclick']=()=>{const F=q['value']['trim'](),G=r['value']['trim']();if(!F||!G)return alert('Vui\x20lòng\x20nhập\x20đầy\x20đủ\x20thông\x20tin!');if(window['editting_id'])D({'_id':window['editting_id'],'description':F,'device_id':G});else{if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');B({'description':F,'device_id':G});}h['style']['display']='none';},window['editItem']=F=>y(F),window['deleteItem']=F=>{confirm('Bạn\x20có\x20chắc\x20muốn\x20xóa\x20mã\x20thiết\x20bị\x20này?')&&(C(F),x());};async function A(){try{const F=u('access_token')['trim'](),G=(localStorage['getItem']('password')||'')['trim']();if(!F||!G)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const H=new Headers();H['append']('authorization',btoa(F+'|'+G));const I={'method':'GET','headers':H,'redirect':'follow'},J=await fetch('https://api3.junb.io.vn/config-devices',I),K=await J['json']();if(K?.['code']==='invalid_auth')return alert(K?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),E();Array['isArray'](K?.['data'])&&(window['devices']=K?.['data'],i['textContent']=window['devices']?.['length']?'+\x20THÊM':'KÍCH\x20HOẠT\x20NGAY',x()),window['max_devices']=K?.['max_devices']||0x0,window['user_id']=K?.['user_id']||'',t['innerHTML']='Bot\x20<b>'+window['user_id']+'</b><br>Tối\x20đa\x20'+window['max_devices']+'\x20thiết\x20bị';}catch(L){alert(L?.['message']||L);}}async function B({description:F,device_id:G}){try{const H=u('access_token')['trim'](),I=(localStorage['getItem']('password')||'')['trim']();if(!H||!I)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const J=new Headers();J['append']('authorization',btoa(H+'|'+I)),J['append']('Content-Type','application/json');const K={'method':'POST','headers':J,'body':JSON['stringify']({'description':(''+(F||''))['trim'](),'device_id':w(G)}),'redirect':'follow'},L=await fetch('https://api3.junb.io.vn/config-devices',K),M=await L['json']();if(M?.['code']==='invalid_auth')return alert(M?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),E();M?.['_id']?A():alert(M?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(N){alert(N?.['message']||N);}}async function C(F){try{const G=u('access_token')['trim'](),H=(localStorage['getItem']('password')||'')['trim']();if(!G||!H)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const I=new Headers();I['append']('authorization',btoa(G+'|'+H));const J={'method':'DELETE','headers':I,'redirect':'follow'},K=await fetch('https://api3.junb.io.vn/config-devices/'+F,J),L=await K['json']();L?.['code']==='invalid_auth'&&(alert(L?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),E());}catch(M){alert(M?.['message']||M);}finally{A();}}async function D({_id:F,description:G,device_id:H}){try{const I=u('access_token')['trim'](),J=(localStorage['getItem']('password')||'')['trim']();if(!I||!J)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const K=new Headers();K['append']('authorization',btoa(I+'|'+J)),K['append']('Content-Type','application/json');const L={'method':'PUT','headers':K,'body':JSON['stringify']({'description':(''+(G||''))['trim'](),'device_id':w(H)}),'redirect':'follow'},M=await fetch('https://api3.junb.io.vn/config-devices/'+F,L),N=await M['json']();if(N?.['code']==='invalid_auth')return alert(N?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),E();N?.['_id']?A():alert(N?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(O){alert(O?.['message']||O);}}function E(){document['getElementById']('password')['value']=localStorage['getItem']('password')||'',document['getElementById']('password-modal')['classList']['add']('show'),document['getElementById']('password')['focus']();}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const F=document['getElementById']('password')['value']||'';if(!F){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}document['getElementById']('password-modal')['classList']['remove']('show'),localStorage['setItem']('password',F),A();}),E(),((async()=>{try{let F=await e('d');!F&&(F=await f(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']())),d('d',F),window['________d']=F;}catch(G){console['error'](G);}})());});
+    </script>
+  </body>
+</html>
