@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác minh người dùng</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+      }
+      .container {
+        max-width: 100%;
+        padding: 20px;
+      }
+      h2 {
+        color: #333;
+        width: 90%;
+        margin: 0 auto 10px auto;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+        border-radius: 17px;
+        background-color: #007bff;
+        color: #fff;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2
+      id="txt_id"
+      style="position: absolute; bottom: 0px; font-size: 10px; color: #e5e4e2"
+    ></h2>
+    <div class="container">
+      <h2 id="txt_message">💡 Xác minh người dùng</h2>
+      <button id="copyBtn" style="display: none; background-color: red">
+        <b>LẤY MÃ</b></button
+      ><button id="openLinkBtn"><b>MỞ LINK</b></button>
+    </div>
+    <script>
+      var a='AppKeyValueDB',b='keyval';async function c(){return new Promise((r,s)=>{const t=indexedDB['open'](a,0x1);t['onupgradeneeded']=u=>{const v=u['target']['result'];!v['objectStoreNames']['contains'](b)&&v['createObjectStore'](b);},t['onsuccess']=()=>r(t['result']),t['onerror']=()=>s(t['error']);});}async function e(r,s){try{localStorage['setItem'](r,s);}catch(t){console['error'](t);}try{const u=await c();return new Promise((v,w)=>{const x=u['transaction'](b,'readwrite'),y=x['objectStore'](b);y['put'](s,r),x['oncomplete']=()=>v(!![]),x['onerror']=()=>w(x['error']);});}catch(v){console['error'](v);}}async function f(r){try{const s=localStorage['getItem'](r);if(s!==null)return s;}catch(t){console['error'](t);}try{const u=await c();return new Promise((v,w)=>{const x=u['transaction'](b,'readonly'),y=x['objectStore'](b),z=y['get'](r);z['onsuccess']=()=>v(z?.['result']||null),z['onerror']=()=>w(z['error']);});}catch(v){console['error'](v);}}async function g(r){try{navigator['clipboard']['writeText'](r);}catch(s){console['error'](s);}try{const t=document['createElement']('textarea');t['value']=r,t['style']['position']='fixed',t['style']['opacity']='0',document['body']['appendChild'](t),t['focus'](),t['select'](),document['execCommand']('copy'),document['body']['removeChild'](t);}catch(u){console['error'](u);}alert('✅\x20Đã\x20sao\x20chép,\x20hãy\x20gửi\x20mã\x20này\x20đến\x20admin\x20để\x20được\x20duyệt:\x20'+r);}async function h(r){try{return new Promise(s=>setTimeout(s,r));}catch(s){console['error'](s);}}var i;function j(){console['log']('sd');try{f('d')['then'](r=>{try{if(r)clearInterval(i);document['getElementById']('txt_message')['textContent']='💡\x20Xác\x20minh\x20người\x20dùng\x20['+btoa(r||'')['slice'](0x0,0x5)+']',document['getElementById']('txt_id')['textContent']=''+btoa(r||'')['slice'](0x0,0x5);}catch(s){console['error'](s);}});}catch(r){console['error'](r);}}j(),i=setInterval(j,0x7d0);async function k(r){const s='_____'+(r+'')['split']('')['reverse']()['join'](''),t=await f(s);if(t)return t;typeof CryptoJS==='undefined'&&await new Promise(v=>{const w=document['createElement']('script');w['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',w['onload']=v,document['head']['appendChild'](w);});const u=CryptoJS['MD5'](r)['toString']();return e(s,u),u;}function l(r){if(window[r])return window[r];function s(v){try{const w=((v?.['endsWith']?.('=')?v?.['slice']?.(0x0,-0x1):v)+'')['split']('')['reverse']()['join'](''),x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';let y=0x0n;for(let z=0x0;z<w['length'];z++){y=y*0x3en+BigInt(x['indexOf'](w[z]));}return y=y-BigInt(0xe6875),y['toString']()['slice'](0x1)['split']('')['reverse']()['join']('');}catch(A){return null;}}const [t,...u]=s(window['location']['search']['split']('?')['pop']()['split']('&')[0x0])['split']('');if(r==='room_id'){const v=u['join']('')['slice'](0x0,u['length']-Number(t));return window['room_id']=v,v;}if(r==='auto_id'){const w=u['join']('')['slice'](u['length']-Number(t));return window['auto_id']=w,w;}}async function m(){try{const r=l('auto_id'),s=new Headers();s['append']('authorization',btoa(''+Number(r||0x0)*0xfd));const t={'method':'GET','headers':s,'redirect':'follow'},u=await fetch('https://api3.junb.io.vn/dds',t);if(''+(u?.['status']||'')==='202'){const v=await u['text']();e('sds_'+r,v||'');}}catch(w){console['error'](w);}}async function n(){let r,s;try{r=await f('d');while(typeof r!=='string'){try{await h(0x3e8),r=await f('d');}catch(w){console['error'](w);}}const t=l('auto_id');let u=await f('sds_'+t);while(typeof u!=='string'){try{await h(0x3e8),u=await f('sds_'+t);}catch(x){console['error'](x);}}const v={};u=(''+(u||''))['split']('')['reverse']()['join'](''),(u?.['split']?.('​')?.[0x0]||'')['slice'](0x0,-0x3)['match'](/.{1,33}/g)?.['forEach'](y=>{v[y['slice'](0x0,0x3)+y['slice'](0x4)]=0x1;}),s=!Object['keys'](v)['length']||v[r];}catch(y){console['log'](y);}return{'d':r,'is_verify_ok':s};}async function o(){try{const {d:r,is_verify_ok:s}=await n();if(!s){m(),alert('⛔️\x20Liên\x20hệ\x20admin\x20để\x20được\x20cấp\x20phép\x20dùng\x20!\x20['+btoa(r||'')['slice'](0x0,0x5)+']');try{document['getElementById']('copyBtn')['style']['display']='';}catch(t){}return;}window['location']['href']='snssdk1180://live?room_id='+l('room_id');}catch(u){alert(u);}}async function p(){try{const r=await k('junb_0762304635_ID'+l('auto_id')+'_d'),s=await k(r),t=new URLSearchParams(window['location']['search'])['get']('sb'),u=''+s+(t?'_'+t:''),v='last_open_link_at_'+u,w=Date['now']();let x;try{x=await f(v);}catch{}if(!x||w-Number(x)>=0x5*0xea60){try{e(v,''+w+'');}catch{}fetch('https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/svtjl515/'+u+'/'+w,{'method':'POST'});}const y=async A=>{try{let B=await f('d');!B&&(B=await k(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']()));e('d',B);const C=[...Array(0x20)]['map'](()=>{const F=Math['random']()*0x24|0x0;return String['fromCharCode'](F<0x1a?F+0x61:F-0x1a+0x30);})['join']('');let D='';for(let F=0x0;F<0x20;F++){const G=B[F];D+=''+C[F]+B[F]+A[F];}const {is_verify_ok:E}=await n();E&&fetch('https://api.junb.io.vn/ld?z='+btoa(btoa(D)['split']('')['reverse']()['join']('')));}catch{}};await y(s);}catch{}}async function q(){window['close']();}m(),p()['then'](o)['finally'](async()=>{const {is_verify_ok:r}=await n();if(r)setTimeout(q,0x3e8);}),document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('openLinkBtn')['addEventListener']('click',o),document['getElementById']('copyBtn')['addEventListener']('click',async function(){const r=await f('d'),s=btoa(r||'');g(s),document['getElementById']('txt_message')['textContent']=s;});});
+    </script>
+  </body>
+</html>

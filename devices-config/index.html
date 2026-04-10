@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duyệt thiết bị</title>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(to bottom right, #f3f4f6, #ede9fe);
+        margin: 0;
+        padding: 0 20px 0 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .limit-text {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+        margin-left: 15px;
+      }
+
+      .add-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .add-btn:hover {
+        background: #1e40af;
+      }
+
+      .search-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 17px 8px 17px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .search-btn:hover {
+        background: #1e40af;
+      }
+
+      /* Item list */
+      .item {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        word-break: break-word;
+      }
+
+      .item-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .stt {
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 1.2rem;
+      }
+
+      .desc {
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex: 1;
+        color: #111;
+      }
+
+      .value {
+        color: #374151;
+        font-size: 1.1rem;
+        word-break: break-all;
+        margin-bottom: 8px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .btn-group .time {
+        margin-right: auto;
+        color: gray;
+        font-size: 1rem;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .edit-btn {
+        background: #2563eb;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .edit-btn:hover {
+        background: #1e40af;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .delete-btn:hover {
+        background: #991b1b;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        padding: 16px;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.25s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal h2 {
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+
+      .close-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        box-sizing: border-box;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .save-btn {
+        flex: 1;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .save-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .cancel-btn {
+        flex: 1;
+        background: #9ca3af;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .cancel-btn:hover {
+        background: #6b7280;
+      }
+
+      .password-modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .password-modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .password-modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .password-modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .password-modal-content input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .password-modal-buttons {
+        display: flex;
+        margin-top: 12px;
+      }
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn-password-submit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-password-submit:hover {
+        background: #218838;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input type="password" id="password" placeholder="Mật khẩu" />
+        <div class="password-modal-buttons">
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="container" class="container" style="visibility: hidden">
+      <div
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 10px 0px;
+          box-sizing: border-box;
+          margin: 10px 0 10px 0;
+        "
+      >
+        <p id="limit-text" class="limit-text"></p>
+        <button class="add-btn" id="openModalBtn"></button>
+      </div>
+
+      <div
+        id="search_container"
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 0px 0px;
+          box-sizing: border-box;
+          margin: 0 0 10px 0;
+        "
+      >
+        <input
+          type="text"
+          id="text_search"
+          placeholder="Gõ để tìm kiếm"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          style="margin: 0"
+          enterkeyhint="search"
+        />
+        <button class="search-btn" id="search_btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div id="itemList"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <button class="close-icon" id="closeModalBtn">&times;</button>
+        <h2 id="modalTitle">Thêm mã thiết bị</h2>
+        <input
+          type="text"
+          id="description"
+          placeholder="Ghi chú"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+        <input
+          type="text"
+          id="value"
+          placeholder="Mã thiết bị"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+
+        <div class="modal-buttons">
+          <button class="cancel-btn" id="cancelBtn">Đóng</button>
+          <button class="save-btn" id="saveBtn">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var a='AppKeyValueDB',b='keyval';async function c(){return new Promise((G,H)=>{const I=indexedDB['open'](a,0x1);I['onupgradeneeded']=J=>{const K=J['target']['result'];!K['objectStoreNames']['contains'](b)&&K['createObjectStore'](b);},I['onsuccess']=()=>G(I['result']),I['onerror']=()=>H(I['error']);});}async function d(G,H){try{localStorage['setItem'](G,H);}catch(I){console['error'](I);}try{const J=await c();return new Promise((K,L)=>{const M=J['transaction'](b,'readwrite'),N=M['objectStore'](b);N['put'](H,G),M['oncomplete']=()=>K(!![]),M['onerror']=()=>L(M['error']);});}catch(K){console['error'](K);}}async function e(G){try{const H=localStorage['getItem'](G);if(H!==null)return H;}catch(I){console['error'](I);}try{const J=await c();return new Promise((K,L)=>{const M=J['transaction'](b,'readonly'),N=M['objectStore'](b),O=N['get'](G);O['onsuccess']=()=>K(O?.['result']||null),O['onerror']=()=>L(O['error']);});}catch(K){console['error'](K);}}async function f(G){const H='_____'+(G+'')['split']('')['reverse']()['join'](''),I=await e(H);if(I)return I;typeof CryptoJS==='undefined'&&await new Promise(K=>{const L=document['createElement']('script');L['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',L['onload']=K,document['head']['appendChild'](L);});const J=CryptoJS['MD5'](G)['toString']();return d(H,J),J;}const g=document['getElementById']('container'),h=document['getElementById']('modal'),i=document['getElementById']('openModalBtn'),j=document['getElementById']('search_container'),k=document['getElementById']('text_search'),l=document['getElementById']('search_btn'),m=document['getElementById']('closeModalBtn'),n=document['getElementById']('cancelBtn'),o=document['getElementById']('saveBtn'),p=document['getElementById']('modalTitle'),q=document['getElementById']('description'),r=document['getElementById']('value'),s=document['getElementById']('itemList'),t=document['getElementById']('limit-text');function u(G){const H=new URLSearchParams(window['location']['search']);return H['get'](G);}function v(G){try{return G['normalize']('NFD')['replace'](/[\u0300-\u036f]/g,'')['replace'](/đ/g,'d')['replace'](/Đ/g,'D');}catch(H){console['error'](H);}return'';}function w(G){try{return(''+(G||''))['replace'](/[^a-zA-Z0-9]/g,'')+'=';}catch(H){console['error'](H);}return'';}window['devices']=[],window['max_devices']=0x0,window['editting_id'],window['search_text']='';function x(G){if(!G)return'';const H=Date['now'](),I=new Date(G)['getTime'](),J=H-I,K=0x3c*0x3e8,L=0x3c*K,M=0x18*L,N=0x1e*M;if(J<0xa*K)return'🟢&nbsp;&nbsp;Đang\x20hoạt\x20động';if(J<L){const O=Math['floor'](J/K);return'⚪️&nbsp;&nbsp;'+O+'\x20phút\x20trước';}if(J<M){const P=Math['floor'](J/L);return'⚪️&nbsp;&nbsp;'+P+'\x20giờ\x20trước';}if(J<N){const Q=Math['floor'](J/M);return'⚪️&nbsp;&nbsp;'+Q+'\x20ngày\x20trước';}return'🔴&nbsp;&nbsp;Không\x20hoạt\x20động';}const y=()=>{g['style']['visibility']='visible',j['style']['visibility']=window['devices']['length']?'visible':'hidden',s['innerHTML']='';const G=window['devices']['length']>0x1;let H=[...window?.['devices']||[]]['reverse']();H['forEach']((I,J)=>{const K=document['createElement']('div'),L=!(''+(window['search_text']||''))['trim']()['toLowerCase']()||v(((I?.['description']||'')+'\x20'+(I?.['device_id']||''))['toLowerCase']())['includes'](v((''+(window['search_text']||''))['trim']()['toLowerCase']())),M=String(I?.['description'])['toLowerCase']()['includes']('admin');K['style']='margin:\x200\x200\x2010px\x200;\x20padding:\x2010px;\x20display:\x20'+(L?'block':'none'),K['className']='item',K['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22item-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22stt\x22>'+(window['devices']['length']-J)+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22desc\x22\x20'+(M?'style=\x22color:\x20#2563eb\x22':'')+'>'+(M?String('🔷\x20'+I?.['description'])['toUpperCase']():I?.['description']||'Người\x20dùng')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22value\x22>'+I['device_id']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22btn-group\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22time\x22>'+x(I?.['actived_at']||'')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20edit-btn\x22\x20onclick=\x22editItem(\x27'+I['_id']+'\x27)\x22>SỬA</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(G?'<button\x20class=\x22btn\x20delete-btn\x22\x20onclick=\x22deleteItem(\x27'+I['_id']+'\x27)\x22>XÓA</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20',s['appendChild'](K);});},z=G=>{o['textContent']='Lưu',p['textContent']=G?'Sửa\x20mã\x20thiết\x20bị':'Thêm\x20mã\x20thiết\x20bị',q['disabled']=![],r['disabled']=![];let H;G?(H=(window['devices']||[])['find'](I=>I?.['_id']===G),q['value']=H?.['description']||'',r['value']=H?.['device_id']||''):(q['value']='',r['value']='',!window['devices']?.['length']&&(q['disabled']=!![],q['value']='Admin',r['disabled']=!![],r['value']=btoa(window['________d']||''),o['textContent']='Kích\x20hoạt',p['textContent']='Kích\x20hoạt\x20tính\x20năng')),window['editting_id']=G||'',h['style']['display']='flex';};i['onclick']=()=>{k['value']='',window['search_text']='',y(),B();if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');z();};var A;k['addEventListener']('input',()=>{clearTimeout(A),A=setTimeout(()=>{!k?.['value']&&(window['search_text']='',y(),B());},0x1f4);}),k['addEventListener']('change',function(G){G['key']==='Enter'&&(window['search_text']=(''+(k['value']||''))['trim'](),y(),B());}),k['addEventListener']('keyup',function(G){G['key']==='Enter'&&(window['search_text']=(''+(k['value']||''))['trim'](),y(),B());}),l['onclick']=()=>{window['search_text']=(''+(k['value']||''))['trim'](),y(),B();},m['onclick']=n['onclick']=()=>h['style']['display']='none',h['onclick']=G=>G['target']===h&&(h['style']['display']='none'),o['onclick']=()=>{const G=q['value']['trim'](),H=r['value']['trim']();if(!G||!H)return alert('Vui\x20lòng\x20nhập\x20đầy\x20đủ\x20thông\x20tin!');if(window['editting_id'])E({'_id':window['editting_id'],'description':G,'device_id':H});else{if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');C({'description':G,'device_id':H});}h['style']['display']='none';},window['editItem']=G=>z(G),window['deleteItem']=G=>{confirm('Bạn\x20có\x20chắc\x20muốn\x20xóa\x20mã\x20thiết\x20bị\x20này?')&&(D(G),y());};async function B(){try{const G=u('access_token')['trim'](),H=(localStorage['getItem']('password')||'')['trim']();if(!G||!H)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const I=new Headers();I['append']('authorization',btoa(G+'|'+H));const J={'method':'GET','headers':I,'redirect':'follow'},K=await fetch('https://api3.junb.io.vn/config-devices',J),L=await K['json']();if(L?.['code']==='invalid_auth')return alert(L?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),F();Array['isArray'](L?.['data'])&&(window['devices']=L?.['data'],i['textContent']=window['devices']?.['length']?'+\x20THÊM':'KÍCH\x20HOẠT\x20NGAY',y()),window['max_devices']=L?.['max_devices']||0x0,window['user_id']=L?.['user_id']||'',t['innerHTML']='Bot\x20<b>'+window['user_id']+'</b><br>Tối\x20đa\x20'+window['max_devices']+'\x20thiết\x20bị';}catch(M){alert(M?.['message']||M);}}async function C({description:G,device_id:H}){try{const I=u('access_token')['trim'](),J=(localStorage['getItem']('password')||'')['trim']();if(!I||!J)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const K=new Headers();K['append']('authorization',btoa(I+'|'+J)),K['append']('Content-Type','application/json');const L={'method':'POST','headers':K,'body':JSON['stringify']({'description':(''+(G||''))['trim'](),'device_id':w(H)}),'redirect':'follow'},M=await fetch('https://api3.junb.io.vn/config-devices',L),N=await M['json']();if(N?.['code']==='invalid_auth')return alert(N?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),F();N?.['_id']?B():alert(N?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(O){alert(O?.['message']||O);}}async function D(G){try{const H=u('access_token')['trim'](),I=(localStorage['getItem']('password')||'')['trim']();if(!H||!I)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const J=new Headers();J['append']('authorization',btoa(H+'|'+I));const K={'method':'DELETE','headers':J,'redirect':'follow'},L=await fetch('https://api3.junb.io.vn/config-devices/'+G,K),M=await L['json']();M?.['code']==='invalid_auth'&&(alert(M?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),F());}catch(N){alert(N?.['message']||N);}finally{B();}}async function E({_id:G,description:H,device_id:I}){try{const J=u('access_token')['trim'](),K=(localStorage['getItem']('password')||'')['trim']();if(!J||!K)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const L=new Headers();L['append']('authorization',btoa(J+'|'+K)),L['append']('Content-Type','application/json');const M={'method':'PUT','headers':L,'body':JSON['stringify']({'description':(''+(H||''))['trim'](),'device_id':w(I)}),'redirect':'follow'},N=await fetch('https://api3.junb.io.vn/config-devices/'+G,M),O=await N['json']();if(O?.['code']==='invalid_auth')return alert(O?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),F();O?.['_id']?B():alert(O?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(P){alert(P?.['message']||P);}}function F(){document['getElementById']('password')['value']=localStorage['getItem']('password')||'',document['getElementById']('password-modal')['classList']['add']('show'),document['getElementById']('password')['focus']();}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const G=document['getElementById']('password')['value']||'';if(!G){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}document['getElementById']('password-modal')['classList']['remove']('show'),localStorage['setItem']('password',G),B();}),F(),((async()=>{try{let G=await e('d');!G&&(G=await f(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']())),d('d',G),window['________d']=G;}catch(H){console['error'](H);}})());});
+    </script>
+  </body>
+</html>
