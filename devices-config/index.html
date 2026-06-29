@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duyệt thiết bị</title>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(to bottom right, #f3f4f6, #ede9fe);
+        margin: 0;
+        padding: 0 20px 0 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .limit-text {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+        margin-left: 15px;
+      }
+
+      .add-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .add-btn:hover {
+        background: #1e40af;
+      }
+
+      .search-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 17px 8px 17px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .search-btn:hover {
+        background: #1e40af;
+      }
+
+      /* Item list */
+      .item {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        word-break: break-word;
+      }
+
+      .item-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .stt {
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 1.2rem;
+      }
+
+      .desc {
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex: 1;
+        color: #111;
+      }
+
+      .value {
+        color: #374151;
+        font-size: 1.1rem;
+        word-break: break-all;
+        margin-bottom: 8px;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .btn-group .time {
+        margin-right: auto;
+        color: gray;
+        font-size: 1rem;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .info-btn {
+        background: linear-gradient(135deg, #facc15, #f59e0b);
+        color: #3b2f00;
+        font-size: 1rem;
+      }
+
+      .info-btn:hover {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+      }
+
+      .edit-btn {
+        background: #2563eb;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .edit-btn:hover {
+        background: #1e40af;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .delete-btn:hover {
+        background: #991b1b;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        padding: 16px;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.25s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal h2 {
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+
+      .close-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        box-sizing: border-box;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .save-btn {
+        flex: 1;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .save-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .cancel-btn {
+        flex: 1;
+        background: #9ca3af;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .cancel-btn:hover {
+        background: #6b7280;
+      }
+
+      .password-modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .password-modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .password-modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .password-modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .password-modal-content input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .password-modal-buttons {
+        display: flex;
+        margin-top: 12px;
+      }
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn-password-submit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-password-submit:hover {
+        background: #218838;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sort-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 12px;
+      }
+
+      .sort-group span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        white-space: nowrap;
+      }
+
+      .sort-group button {
+        padding: 5px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #d6d6d6;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .sort-group button.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+      }
+      .sort-group button.active:hover {
+        background: #2858cf;
+        border-color: #2858cf;
+      }
+      .sort-group button:not(.active):hover {
+        background: #f5f8ff;
+        border-color: #2563eb;
+        color: #2563eb;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input type="password" id="password" placeholder="Mật khẩu" />
+        <div class="password-modal-buttons">
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="container" class="container" style="visibility: hidden">
+      <div
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 10px 0px;
+          box-sizing: border-box;
+          margin: 10px 0 10px 0;
+        "
+      >
+        <p id="limit-text" class="limit-text"></p>
+        <button class="add-btn" id="openModalBtn"></button>
+      </div>
+
+      <div
+        id="search_container"
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 0px 0px;
+          box-sizing: border-box;
+          margin: 0 0 0 0;
+        "
+      >
+        <input
+          type="text"
+          id="text_search"
+          placeholder="Gõ để tìm kiếm"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          style="margin: 0"
+          enterkeyhint="search"
+        />
+        <button class="search-btn" id="search_btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="sort-group">
+        <span>Xếp theo</span>
+        <button id="sort_time" type="button">Ngày tạo</button>
+        <button id="sort_az" type="button">A-Z</button>
+        <button id="sort_za" type="button">Z-A</button>
+      </div>
+      <div id="itemList"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <button class="close-icon" id="closeModalBtn">&times;</button>
+        <h2 id="modalTitle">Thêm mã thiết bị</h2>
+        <input
+          type="text"
+          id="description"
+          placeholder="Ghi chú"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+        <input
+          type="text"
+          id="value"
+          placeholder="Mã thiết bị"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+
+        <div class="modal-buttons">
+          <button class="cancel-btn" id="cancelBtn">Đóng</button>
+          <button class="save-btn" id="saveBtn">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      const _0x2f388b=_0x27a7;(function(_0x29828c,_0x4104e1){const _0x181e64=_0x27a7;const _0x2075e0=_0x29828c();while(!![]){try{const _0x3737b7=-parseInt(_0x181e64(0x10d))/(-0xffd+-0x1c2d*0x1+-0x3*-0xeb9)+-parseInt(_0x181e64(0x124))/(-0x1297*-0x1+-0x1d*0x141+0x11c8*0x1)+-parseInt(_0x181e64(0x12c))/(-0x1e2*-0x5+-0x1209+0x8a2)*(parseInt(_0x181e64(0x110))/(0x17*0xb3+0x1600+-0x2611))+-parseInt(_0x181e64(0x123))/(-0xd8a+0x1ecb+-0x113c)*(-parseInt(_0x181e64(0x11c))/(-0x2154+-0x292+0x4*0x8fb))+parseInt(_0x181e64(0xff))/(0x22d1+0x1b0e+0x1eec*-0x2)+-parseInt(_0x181e64(0x10c))/(-0x3*-0x953+-0x1d0f+0xb*0x1a)+parseInt(_0x181e64(0x12d))/(-0x1781+-0x8c+-0x1*-0x1816)*(parseInt(_0x181e64(0xde))/(-0x102d+0x1d5*-0x13+-0x15*-0x26e));if(_0x3737b7===_0x4104e1){break;}else{_0x2075e0['push'](_0x2075e0['shift']());}}catch(_0x55ba3c){_0x2075e0['push'](_0x2075e0['shift']());}}}(_0x2c5b,0x6*0xd9a9+-0x26*-0x6ac+-0x1532*0x15));async function log(_0x59a1fd,_0x1e16c5){const _0x5cd92b=_0x27a7;const _0x4e33c2={'HhkcF':function(_0x3bf844,_0x4deb03){return _0x3bf844!==_0x4deb03;},'MKslK':_0x5cd92b(0xfb)+'pL','BgbnY':_0x5cd92b(0xd9)+_0x5cd92b(0xe7)+'n','dzdvF':function(_0x289ae9,_0xca1b53){return _0x289ae9/_0xca1b53;},'fKNnm':function(_0x5ecbbe,_0x4f244f){return _0x5ecbbe(_0x4f244f);},'xIyZg':function(_0x247890,_0x13d005,_0x65d93a){return _0x247890(_0x13d005,_0x65d93a);},'OeCnG':_0x5cd92b(0x105)+_0x5cd92b(0xd1)+_0x5cd92b(0x101)+_0x5cd92b(0x12b)+_0x5cd92b(0x107)+_0x5cd92b(0xf0)+_0x5cd92b(0xf4)+_0x5cd92b(0x125)+_0x5cd92b(0xe0),'IQoGW':_0x5cd92b(0x129)+'T','uEpGN':_0x5cd92b(0x115)+_0x5cd92b(0xd5)+_0x5cd92b(0x103)+_0x5cd92b(0xdd)+_0x5cd92b(0x11d)+'n','luXXn':function(_0x161e39,_0x1d80b7){return _0x161e39===_0x1d80b7;},'hegUn':_0x5cd92b(0x102)+'lY','qaHYk':_0x5cd92b(0xe2)+_0x5cd92b(0x12f)+_0x5cd92b(0xd3)+'d:'};let _0x158a70='';try{if(_0x1e16c5)_0x158a70=JSON[_0x5cd92b(0xfe)+_0x5cd92b(0xfa)+_0x5cd92b(0x128)](_0x1e16c5);}catch{}try{if(_0x4e33c2[_0x5cd92b(0x113)+'cF'](_0x4e33c2[_0x5cd92b(0x118)+'lK'],_0x4e33c2[_0x5cd92b(0x118)+'lK'])){_0x3d1495+='\x0a\x0a'+_0x10d9fe;}else{console[_0x5cd92b(0xe0)](_0x59a1fd);let _0x7b5a3d=_0x59a1fd?.[_0x5cd92b(0xef)+_0x5cd92b(0x100)]?.[_0x5cd92b(0xcf)+'ck']||_0x59a1fd?.[_0x5cd92b(0xef)+_0x5cd92b(0x100)]||_0x59a1fd?.[_0x5cd92b(0xf3)+'a']?.[_0x5cd92b(0xcf)+_0x5cd92b(0x10a)+_0x5cd92b(0xee)+'g']||_0x59a1fd?.[_0x5cd92b(0xcf)+_0x5cd92b(0x10a)+_0x5cd92b(0xee)+'g']||_0x59a1fd?.[_0x5cd92b(0xed)+_0x5cd92b(0x131)+'se']?.[_0x5cd92b(0xf3)+'a']?.[_0x5cd92b(0x10b)+_0x5cd92b(0xea)+_0x5cd92b(0x108)+'on']||_0x59a1fd?.[_0x5cd92b(0xd0)+_0x5cd92b(0xd2)+'e']||_0x59a1fd?.[_0x5cd92b(0xf8)+_0x5cd92b(0x12e)]?.[0x1*0x1d4f+-0x13*-0x54+-0xbd9*0x3]?.[_0x5cd92b(0xd0)+_0x5cd92b(0xd2)+'e']||_0x59a1fd||'';let _0x1c01af=_0x5cd92b(0x11e)+_0x5cd92b(0x127)+window[_0x5cd92b(0xca)+_0x5cd92b(0x103)+'on'][_0x5cd92b(0x112)+_0x5cd92b(0xf7)+'me']+window[_0x5cd92b(0xca)+_0x5cd92b(0x103)+'on'][_0x5cd92b(0xce)+_0x5cd92b(0x109)+'me']+(_0x5cd92b(0xda)+_0x5cd92b(0xeb)+'\x0a')+(navigator?.[_0x5cd92b(0xf9)+_0x5cd92b(0xcb)+_0x5cd92b(0x10e)]||_0x4e33c2[_0x5cd92b(0xe9)+'nY'])+(_0x5cd92b(0xdf)+_0x5cd92b(0x116)+_0x5cd92b(0x126))+(window?.[_0x5cd92b(0x120)+_0x5cd92b(0x11b)]?.[_0x5cd92b(0x121)+'th']||0xa32+0x1*0x22f+0xc61*-0x1)+'x'+(window?.[_0x5cd92b(0x120)+_0x5cd92b(0x11b)]?.[_0x5cd92b(0xf6)+_0x5cd92b(0xcd)]||-0x25d6+0x25ee+-0x18)+_0x5cd92b(0xd6)+_0x7b5a3d;if(_0x158a70){_0x1c01af+='\x0a\x0a'+_0x158a70;}const _0x88f37a=await window[_0x5cd92b(0xe1)](Math[_0x5cd92b(0x130)+'nd'](_0x4e33c2[_0x5cd92b(0xcc)+'vF'](Date[_0x5cd92b(0xe7)](),0x1262+-0xfd3*-0x2+-0x2e20))+'+'+_0x4e33c2[_0x5cd92b(0x122)+'nm'](atob,(''+(window?.['sk']||''))[_0x5cd92b(0x114)+'it']('')[_0x5cd92b(0xec)+_0x5cd92b(0x11f)+'e']()[_0x5cd92b(0xfc)+'n']('')));await _0x4e33c2[_0x5cd92b(0xf1)+'Zg'](fetch,_0x4e33c2[_0x5cd92b(0xf5)+'nG'],{'method':_0x4e33c2[_0x5cd92b(0x11a)+'GW'],'headers':{'Content-Type':_0x4e33c2[_0x5cd92b(0xf2)+'GN'],'authorization':_0x88f37a},'body':JSON[_0x5cd92b(0xfe)+_0x5cd92b(0xfa)+_0x5cd92b(0x128)]({'text':_0x1c01af})});}}catch(_0x5f3ce7){if(_0x4e33c2[_0x5cd92b(0x106)+'Xn'](_0x4e33c2[_0x5cd92b(0xe6)+'Un'],_0x4e33c2[_0x5cd92b(0xe6)+'Un'])){console[_0x5cd92b(0xf8)+'or'](_0x4e33c2[_0x5cd92b(0x104)+'Yk'],_0x5f3ce7);}else{_0x33ff28?.[_0x5cd92b(0xe0)]?.(_0x3427fc);}}}function _0x2c5b(){const _0x590e13=['yJ5B','Awz5','ue9t','Axn0','CgKZ','nMXyv0HdAG','mti2s3znCxDr','B3jZ','igzH','CM91','Cg9U','mtfP','Bg9J','CKfN','zhPK','z2H0','Cgf0','C3rH','BwvZ','Chm6','C2fN','AwXL','veXP','BgLJ','kqOk','BNrm','Aw9U','vw5R','xtWV','ttrf','BgvK','B24V','mJC1nZqWALrjqMHk','icHt','Bg9N','Bwq1','tg9N','yw5K','Dw5O','mwLI','AgvN','BM93','zwn0','qMDI','y3jP','yJ4k','CMv2','CMvZ','x21Z','CMvH','BMiU','EeL5','DuvW','zgf0','Aw8U','t2vd','AgvP','Dg5H','zxjY','DxnL','Aw5N','A3bZ','AM9P','rxzL','C3rY','mtyZnJK5mKj0BMvIsW','C29U','lY9H','y0Tm','yxrP','Cwfi','Ahr0','Bhvy','lMP1','ChrP','Ag5H','DhvZ','zgvZ','mJq4mtG4mhHAsxDVtW','mJmXnZuXALzoC0zN','zw50','ywrK','ntG1ntyWu0Lpt1Pm','CMvQ','Ag9Z','sgHR','C3bS','yxbW','y3jL','zw5L','tuTZ','ntrP','svfV','zwvU','mtjSBvfJBLm','ANnV','8j+AQca8','zxjZ','C2nY','D2LK','zKTo','mtqYndqYnw9PANDAuW','mtm5mJi0BKnluuzk','DM4V','zw4G'];_0x2c5b=function(){return _0x590e13;};return _0x2c5b();}window[_0x2f388b(0xe0)]=log;window[_0x2f388b(0x10f)+_0x2f388b(0xfd)+_0x2f388b(0xd7)+_0x2f388b(0x12a)+_0x2f388b(0x117)+'r'](_0x2f388b(0xe4)+_0x2f388b(0xe3)+_0x2f388b(0xdc)+_0x2f388b(0x111)+_0x2f388b(0xe8)+_0x2f388b(0xd8),function(_0x4afa47){const _0x301bc8=_0x2f388b;window?.[_0x301bc8(0xe0)]?.(_0x4afa47);});function _0x27a7(_0x3905f8,_0x5e6e73){const _0x1274b4=_0x2c5b();_0x27a7=function(_0x463dee,_0x4361e9){_0x463dee=_0x463dee-(0x16b9+0x536+0x1*-0x1b25);let _0x2257fe=_0x1274b4[_0x463dee];if(_0x27a7['IuMQsQ']===undefined){var _0x150fb6=function(_0xd7c094){const _0x4fc42b='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x24e083='';let _0x23123a='';for(let _0x33dbea=0xc0d*-0x1+0x20aa+-0x149d*0x1,_0x50d9f6,_0x2e0229,_0x82b11=0x1e76+0x1bbf+-0x3a35;_0x2e0229=_0xd7c094['charAt'](_0x82b11++);~_0x2e0229&&(_0x50d9f6=_0x33dbea%(-0x11b*-0x7+0x1*-0x6f1+-0xc8)?_0x50d9f6*(0x2*0x1d1+0xc0+-0x422)+_0x2e0229:_0x2e0229,_0x33dbea++%(-0xe75+0x1*-0x1042+-0x1ebb*-0x1))?_0x24e083+=String['fromCharCode'](-0x112d*0x1+-0xd80+0x1fac&_0x50d9f6>>(-(-0xffa+0x1166*0x1+-0x16a*0x1)*_0x33dbea&0xfaa+0x11d1*0x1+-0x2175)):-0xd5*0x1e+0x43a+-0x1*-0x14bc){_0x2e0229=_0x4fc42b['indexOf'](_0x2e0229);}for(let _0x224e05=-0x2d7+-0x16*0x166+0x219b,_0xd8a4d0=_0x24e083['length'];_0x224e05<_0xd8a4d0;_0x224e05++){_0x23123a+='%'+('00'+_0x24e083['charCodeAt'](_0x224e05)['toString'](0x12f7+-0x1bc+-0x112b))['slice'](-(-0xdd7*-0x1+0x1749+-0x1*0x251e));}return decodeURIComponent(_0x23123a);};_0x27a7['WfejpP']=_0x150fb6;_0x3905f8=arguments;_0x27a7['IuMQsQ']=!![];}const _0x429dfd=_0x1274b4[0x48b+0xb2b+-0xfb6];const _0x4f844a=_0x463dee+_0x429dfd;const _0x5f10ad=_0x3905f8[_0x4f844a];if(!_0x5f10ad){_0x2257fe=_0x27a7['WfejpP'](_0x2257fe);_0x3905f8[_0x4f844a]=_0x2257fe;}else{_0x2257fe=_0x5f10ad;}return _0x2257fe;};return _0x27a7(_0x3905f8,_0x5e6e73);}window[_0x2f388b(0x10f)+_0x2f388b(0xfd)+_0x2f388b(0xd7)+_0x2f388b(0x12a)+_0x2f388b(0x117)+'r'](_0x2f388b(0xf8)+'or',_0x3af6b5=>{const _0x261c86=_0x2f388b;window?.[_0x261c86(0xe0)]?.(_0x3af6b5);},!![]);window['sk']=_0x2f388b(0x119)+_0x2f388b(0xdb)+_0x2f388b(0xd4)+_0x2f388b(0xe5)+_0x2f388b(0x132)+'a';
+
+      const _0x40af1b=_0x5d50;function _0x2cc7(){const _0x7d57ea=['vunJ','zJjM','nMPbswvgsW','tvi3','zxn0','ytaX','yMfZ','DhjL','ndy1','lxrP','yvn5','odu5','mJa2odm4v3H4sfzv','s0DU','z2uU','mti6','ntCZnZa2ANDVyLnp','CMuT','zwfW','otq2','rY05','z2v0','D2vI','yM94','mZG1','Bg9N','mtiWBvDowgny','rgv2','qvq2','vNDM','AY5M','r0rl','mty5mda5mLLeD3DLDq','A3rV','B3jH','q0Dp','qJfS','mta3ntC4ohjYrfLxBq','zMnJ','sfPZ','mtOZ','quL6','oJGX','zJy4','mM43','AxjL','ogvM','mZe3','m0fg','AwnL','mJuYotjSBevnyw0','ngvL','nteY','yxn1','mtCZ','v0jR','mtzSvhnnsNm','Cc5J','mJiZmZy2meDPB3PVvG','mZaYmtzYwgToDvu','yxbW','AKrV','AJHI','tKXg'];_0x2cc7=function(){return _0x7d57ea;};return _0x2cc7();}(function(_0x28400c,_0x4f3b05){const _0x1b43fa=_0x5d50;const _0x690b9a=_0x28400c();while(!![]){try{const _0x5564a9=-parseInt(_0x1b43fa(0x177))/(0x1e82+-0x10d1+-0x49*0x30)*(parseInt(_0x1b43fa(0x170))/(-0x9a*0xb+-0x1a56+0x20f6*0x1))+parseInt(_0x1b43fa(0x141))/(-0x3*-0x492+0x25c8+-0x337b)+-parseInt(_0x1b43fa(0x167))/(0x1cc6+0x1ea4+-0x3b66)*(-parseInt(_0x1b43fa(0x14f))/(0x223e+0x1*-0x11b7+0x1*-0x1082))+parseInt(_0x1b43fa(0x15a))/(-0x33*-0x8b+-0x1*0x14fd+0x5*-0x156)+-parseInt(_0x1b43fa(0x145))/(0x1255*0x1+-0x6*0xd4+-0xd56)*(parseInt(_0x1b43fa(0x16d))/(0x1*0x59e+0xdbd*0x2+0xb8*-0x2e))+-parseInt(_0x1b43fa(0x155))/(-0x25f9+0x1c02+0x140*0x8)+parseInt(_0x1b43fa(0x16f))/(-0x1fed+0x1a9e+0x559);if(_0x5564a9===_0x4f3b05){break;}else{_0x690b9a['push'](_0x690b9a['shift']());}}catch(_0x3fa52f){_0x690b9a['push'](_0x690b9a['shift']());}}}(_0x2cc7,-0x1*-0x4efb5+-0x45c71+0x22fce));function _0x5d50(_0x321b99,_0x5eb06c){const _0x8562b3=_0x2cc7();_0x5d50=function(_0x176f37,_0x1209ba){_0x176f37=_0x176f37-(0x1d0a+0x2e*0xc2+-0x3ea5);let _0x30dcd7=_0x8562b3[_0x176f37];if(_0x5d50['pmTuPL']===undefined){var _0x3feaeb=function(_0x209ea3){const _0x5b6562='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x13d349='';let _0x47dff5='';for(let _0x252ffd=-0x9b*0x3d+0xa40+0x1aaf,_0x55958b,_0x591727,_0x2b4f64=0xe08+0x1ade+0x1e*-0x15d;_0x591727=_0x209ea3['charAt'](_0x2b4f64++);~_0x591727&&(_0x55958b=_0x252ffd%(0xa5*0x39+-0x26*0x91+-0xf33)?_0x55958b*(0x1dc2+0x1205+-0x2f87*0x1)+_0x591727:_0x591727,_0x252ffd++%(-0x1*0x73d+-0x1639*-0x1+-0xef8))?_0x13d349+=String['fromCharCode'](-0xc*-0x3+-0x10b6+0x1*0x1191&_0x55958b>>(-(0x11f*0xd+0x216e+-0x2fff*0x1)*_0x252ffd&-0x5ea*0x5+-0x1*-0xe13+-0x89*-0x1d)):-0xe48+0x17a+-0x16*-0x95){_0x591727=_0x5b6562['indexOf'](_0x591727);}for(let _0x2bf000=-0x232f+0x2331+-0x2*0x1,_0x3de504=_0x13d349['length'];_0x2bf000<_0x3de504;_0x2bf000++){_0x47dff5+='%'+('00'+_0x13d349['charCodeAt'](_0x2bf000)['toString'](-0xa7b*-0x2+-0x107*0x3+-0x11d1))['slice'](-(0x8*-0x139+0x771+0x259));}return decodeURIComponent(_0x47dff5);};_0x5d50['NhJgwD']=_0x3feaeb;_0x321b99=arguments;_0x5d50['pmTuPL']=!![];}const _0x8dca33=_0x8562b3[0x2363+-0x265*0x3+-0x1c34];const _0x394131=_0x176f37+_0x8dca33;const _0x4228c9=_0x321b99[_0x394131];if(!_0x4228c9){_0x30dcd7=_0x5d50['NhJgwD'](_0x30dcd7);_0x321b99[_0x394131]=_0x30dcd7;}else{_0x30dcd7=_0x4228c9;}return _0x30dcd7;};return _0x5d50(_0x321b99,_0x5eb06c);}import{initializeApp}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';import{getInstallations,getId}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-installations.js';import{getAnalytics}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js';const firebaseConfig={'apiKey':_0x40af1b(0x15e)+_0x40af1b(0x17f)+_0x40af1b(0x151)+_0x40af1b(0x159)+_0x40af1b(0x173)+_0x40af1b(0x165)+_0x40af1b(0x16c)+_0x40af1b(0x152)+_0x40af1b(0x15c)+_0x40af1b(0x161)+_0x40af1b(0x158)+_0x40af1b(0x142)+_0x40af1b(0x175),'authDomain':_0x40af1b(0x17c)+_0x40af1b(0x16a)+_0x40af1b(0x146)+_0x40af1b(0x14c)+_0x40af1b(0x17e)+_0x40af1b(0x156)+_0x40af1b(0x153)+_0x40af1b(0x162)+_0x40af1b(0x17b)+_0x40af1b(0x147)+_0x40af1b(0x16e)+'om','projectId':_0x40af1b(0x17c)+_0x40af1b(0x16a)+_0x40af1b(0x146)+_0x40af1b(0x14c)+_0x40af1b(0x17e)+_0x40af1b(0x156)+'k','storageBucket':_0x40af1b(0x17c)+_0x40af1b(0x16a)+_0x40af1b(0x146)+_0x40af1b(0x14c)+_0x40af1b(0x17e)+_0x40af1b(0x156)+_0x40af1b(0x153)+_0x40af1b(0x162)+_0x40af1b(0x17b)+_0x40af1b(0x179)+_0x40af1b(0x157)+_0x40af1b(0x143)+_0x40af1b(0x171),'messagingSenderId':_0x40af1b(0x164)+_0x40af1b(0x14d)+_0x40af1b(0x148)+_0x40af1b(0x169),'appId':_0x40af1b(0x15d)+_0x40af1b(0x16b)+_0x40af1b(0x180)+_0x40af1b(0x17d)+_0x40af1b(0x144)+_0x40af1b(0x14b)+_0x40af1b(0x15f)+_0x40af1b(0x168)+_0x40af1b(0x160)+_0x40af1b(0x15b)+_0x40af1b(0x176)+_0x40af1b(0x17a)+_0x40af1b(0x163)+'15','measurementId':_0x40af1b(0x149)+_0x40af1b(0x154)+_0x40af1b(0x174)+_0x40af1b(0x178)};const app=initializeApp(firebaseConfig);try{const analytics=getAnalytics(app);}catch(_0x49455b){window?.[_0x40af1b(0x14e)]?.(_0x49455b);}async function getDeviceId(){const _0x9464e5=_0x40af1b;const _0x2bed4e={'jDocX':function(_0x4034f0,_0xe8ddd3){return _0x4034f0(_0xe8ddd3);}};try{const _0x310673=_0x2bed4e[_0x9464e5(0x172)+'cX'](getInstallations,app);return _0x2bed4e[_0x9464e5(0x172)+'cX'](getId,_0x310673);}catch(_0x121bc8){window?.[_0x9464e5(0x14e)]?.(_0x121bc8);}}window[_0x40af1b(0x14a)+_0x40af1b(0x150)+_0x40af1b(0x166)+'Id']=getDeviceId;
+
+      try{navigator?.['storage']?.['persist']?.();}catch{}var a='AppKeyValueDB',b='keyval';async function c(){return new Promise((H,I)=>{const J=indexedDB['open'](a,0x1);J['onupgradeneeded']=K=>{const L=K['target']['result'];!L['objectStoreNames']['contains'](b)&&L['createObjectStore'](b);},J['onsuccess']=()=>H(J['result']),J['onerror']=()=>I(J['error']);});}async function d(H,I){try{c()['then'](J=>{return new Promise((K,L)=>{const M=J['transaction'](b,'readwrite'),N=M['objectStore'](b);N['put'](I,H),M['oncomplete']=()=>K(!![]),M['onerror']=()=>L(M['error']);});});}catch(J){window?.['log']?.(J);}try{window?.['localStorage']?.['setItem']?.(H,I);}catch(K){window?.['log']?.(K);}}async function e(H){try{const I=await c(),J=await new Promise((K,L)=>{const M=I['transaction'](b,'readonly'),N=M['objectStore'](b),O=N['get'](H);O['onsuccess']=()=>K(O?.['result']||null),O['onerror']=()=>L(O['error']);});if(J!==null)return J;}catch(K){window?.['log']?.(K);}try{return window['localStorage']?.['getItem']?.(H)??null;}catch(L){window?.['log']?.(L);}}async function f(H){const I='_____'+(H+'')['split']('')['reverse']()['join'](''),J=await e(I);if(J)return J;typeof CryptoJS==='undefined'&&await new Promise(L=>{const M=document['createElement']('script');M['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',M['crossOrigin']='anonymous',M['onerror']=N=>window?.['log']?.(N),M['onload']=L,document['head']['appendChild'](M);});const K=CryptoJS['MD5'](H)['toString']();return d(I,K),K;}window['md5']=f;const g=document['getElementById']('container'),h=document['getElementById']('modal'),i=document['getElementById']('openModalBtn'),j=document['getElementById']('search_container'),k=document['getElementById']('text_search'),l=document['getElementById']('search_btn'),m=document['getElementById']('closeModalBtn'),n=document['getElementById']('cancelBtn'),o=document['getElementById']('saveBtn'),p=document['getElementById']('modalTitle'),q=document['getElementById']('description'),r=document['getElementById']('value'),s=document['getElementById']('itemList'),t=document['getElementById']('limit-text');function u(H){const I=new URLSearchParams(window['location']['search']);return I['get'](H);}function v(H){try{return H['normalize']('NFD')['replace'](/[\u0300-\u036f]/g,'')['replace'](/đ/g,'d')['replace'](/Đ/g,'D');}catch(I){console['error'](I);}return'';}function w(H,I){try{return H['sort']((J,K)=>{for(const {field:L,order:order='asc'}of I){const M=J[L],N=K[L];if(M===N)continue;if(M==null)return 0x1;if(N==null)return-0x1;const O=typeof M==='string'&&typeof N==='string'?M['localeCompare'](N):M>N?0x1:-0x1;return order==='desc'?-O:O;}return 0x0;});}catch(J){window?.['log']?.(J);}}function x(H){try{return(''+(H||''))['replace'](/[^a-zA-Z0-9]/g,'')+'=';}catch(I){console['error'](I);}return'';}window['devices']=[],window['max_devices']=0x0,window['editting_id'],window['search_text']='';function y(H){if(!H)return'';const I=Date['now'](),J=new Date(H)['getTime'](),K=I-J,L=0x3c*0x3e8,M=0x3c*L,N=0x18*M,O=0x1e*N;if(K<0xa*L)return'🟢&nbsp;&nbsp;Online';if(K<M){const P=Math['floor'](K/L);return'⚪️&nbsp;&nbsp;'+P+'\x20phút';}if(K<N){const Q=Math['floor'](K/M);return'⚪️&nbsp;&nbsp;'+Q+'\x20giờ';}if(K<O){const R=Math['floor'](K/N);return'⚪️&nbsp;&nbsp;'+R+'\x20ngày';}return'🔴&nbsp;&nbsp;Off';}const z=()=>{g['style']['visibility']='visible',j['style']['visibility']=window['devices']['length']?'visible':'hidden',s['innerHTML']='';const H=window['devices']['length']>0x1;let I=window?.['devices']||[];try{const J=localStorage?.['getItem']?.('sort_params')||'sort_time';document['querySelectorAll']('.sort-group\x20button')['forEach'](L=>{L['id']===J?L['classList']['add']('active'):L['classList']['remove']('active');});const K={'sort_time':{'field':'created_at','order':'desc'},'sort_az':{'field':'description','order':'asc'},'sort_za':{'field':'description','order':'desc'}};w(I,[K[J],{'field':'created_at','order':'desc'}]);}catch(L){window?.['log']?.(L);}I?.['forEach']?.((M,N)=>{const O=document['createElement']('div'),P=!(''+(window['search_text']||''))['trim']()['toLowerCase']()||v(((M?.['description']||'')+'\x20'+(M?.['device_id']||''))['toLowerCase']())['includes'](v((''+(window['search_text']||''))['trim']()['toLowerCase']())),Q=String(M?.['description'])['toLowerCase']()['includes']('admin');O['style']='margin:\x200\x200\x2010px\x200;\x20padding:\x2010px;\x20display:\x20'+(P?'block':'none'),O['className']='item',O['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22item-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22stt\x22>'+(window['devices']['length']-N)+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22desc\x22\x20'+(Q?'style=\x22color:\x20#2563eb\x22':'')+'>'+(Q?String('🔷\x20'+M?.['description'])['toUpperCase']():M?.['description']||'Người\x20dùng')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22value\x22>'+M['device_id']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22btn-group\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22time\x22>'+y(M?.['actived_at']||'')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(M?.['user_agent']&&M?.['user_agent']!=='Unknown'?'<button\x20class=\x22btn\x20info-btn\x22\x20onclick=\x22infoItem(\x27'+M['user_agent']+'\x27)\x22>📱</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20edit-btn\x22\x20onclick=\x22editItem(\x27'+M['_id']+'\x27)\x22>SỬA</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(H?'<button\x20class=\x22btn\x20delete-btn\x22\x20onclick=\x22deleteItem(\x27'+M['_id']+'\x27)\x22>XÓA</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20',s['appendChild'](O);});},A=H=>{o['textContent']='Lưu',p['textContent']=H?'Sửa\x20mã\x20thiết\x20bị':'Thêm\x20mã\x20thiết\x20bị',q['disabled']=![],r['disabled']=![];let I;H?(I=(window['devices']||[])['find'](J=>J?.['_id']===H),q['value']=I?.['description']||'',r['value']=I?.['device_id']||''):(q['value']='',r['value']='',!window['devices']?.['length']&&(q['disabled']=!![],q['value']='Admin',r['disabled']=!![],r['value']=btoa(window['________d']||''),o['textContent']='Kích\x20hoạt',p['textContent']='Kích\x20hoạt\x20tính\x20năng')),window['editting_id']=H||'',h['style']['display']='flex';};i['onclick']=()=>{k['value']='',window['search_text']='',z(),C();if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');A();};var B;k['addEventListener']('input',()=>{clearTimeout(B),B=setTimeout(()=>{!k?.['value']&&(window['search_text']='',z(),C());},0x1f4);}),k['addEventListener']('change',function(H){H['key']==='Enter'&&(window['search_text']=(''+(k['value']||''))['trim'](),z(),C());}),k['addEventListener']('keyup',function(H){H['key']==='Enter'&&(window['search_text']=(''+(k['value']||''))['trim'](),z(),C());}),l['onclick']=()=>{window['search_text']=(''+(k['value']||''))['trim'](),z(),C();},document['querySelectorAll']('.sort-group\x20button')['forEach'](H=>{H['onclick']=()=>{try{if(H['classList']['contains']('active'))return;document['querySelector']('.sort-group\x20button.active')?.['classList']['remove']('active'),H['classList']['add']('active'),localStorage?.['setItem']?.('sort_params',H?.['id']),z();}catch(I){window?.['log']?.(I);}};}),m['onclick']=n['onclick']=()=>h['style']['display']='none',h['onclick']=H=>H['target']===h&&(h['style']['display']='none'),o['onclick']=()=>{const H=q['value']['trim'](),I=r['value']['trim']();if(!H||!I)return alert('Vui\x20lòng\x20nhập\x20đầy\x20đủ\x20thông\x20tin!');if(window['editting_id'])F({'_id':window['editting_id'],'description':H,'device_id':I});else{if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');D({'description':H,'device_id':I});}h['style']['display']='none';},window['infoItem']=H=>alert('Thông\x20tin\x20thiết\x20bị:\x20'+H),window['editItem']=H=>A(H),window['deleteItem']=H=>{confirm('Bạn\x20có\x20chắc\x20muốn\x20xóa\x20mã\x20thiết\x20bị\x20này?')&&(E(H),z());};async function C(){try{const H=u('access_token')['trim'](),I=(localStorage['getItem']('password')||'')['trim']();if(!H||!I)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const J=new Headers();J['append']('authorization',btoa(H+'|'+I));const K={'method':'GET','headers':J,'redirect':'follow'},L=await fetch('https://api3.junb.io.vn/config-devices',K),M=await L['json']();if(M?.['code']==='invalid_auth')return alert(M?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),G();Array['isArray'](M?.['data'])&&(window['devices']=M?.['data']?.['map']?.(N=>({...N,'text_sort':v(N?.['description']||'')['toLowerCase']()})),i['textContent']=window['devices']?.['length']?'+\x20THÊM':'KÍCH\x20HOẠT\x20NGAY',z()),window['max_devices']=M?.['max_devices']||0x0,window['user_id']=M?.['user_id']||'',t['innerHTML']='Bot\x20<b>'+window['user_id']+'</b><br>Tối\x20đa\x20'+window['max_devices']+'\x20thiết\x20bị';}catch(N){alert(N?.['message']||N);}}async function D({description:H,device_id:I}){try{localStorage?.['setItem']?.('sort_params','sort_time');}catch(J){window?.['log']?.(J);}try{const K=u('access_token')['trim'](),L=(localStorage['getItem']('password')||'')['trim']();if(!K||!L)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const M=new Headers();M['append']('authorization',btoa(K+'|'+L)),M['append']('Content-Type','application/json');const N={'method':'POST','headers':M,'body':JSON['stringify']({'description':(''+(H||''))['trim'](),'device_id':x(I)}),'redirect':'follow'},O=await fetch('https://api3.junb.io.vn/config-devices',N),P=await O['json']();if(P?.['code']==='invalid_auth')return alert(P?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),G();P?.['_id']?C():alert(P?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(Q){alert(Q?.['message']||Q);}}async function E(H){try{const I=u('access_token')['trim'](),J=(localStorage['getItem']('password')||'')['trim']();if(!I||!J)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const K=new Headers();K['append']('authorization',btoa(I+'|'+J));const L={'method':'DELETE','headers':K,'redirect':'follow'},M=await fetch('https://api3.junb.io.vn/config-devices/'+H,L),N=await M['json']();N?.['code']==='invalid_auth'&&(alert(N?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),G());}catch(O){alert(O?.['message']||O);}finally{C();}}async function F({_id:H,description:I,device_id:J}){try{const K=u('access_token')['trim'](),L=(localStorage['getItem']('password')||'')['trim']();if(!K||!L)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const M=new Headers();M['append']('authorization',btoa(K+'|'+L)),M['append']('Content-Type','application/json');const N={'method':'PUT','headers':M,'body':JSON['stringify']({'description':(''+(I||''))['trim'](),'device_id':x(J)}),'redirect':'follow'},O=await fetch('https://api3.junb.io.vn/config-devices/'+H,N),P=await O['json']();if(P?.['code']==='invalid_auth')return alert(P?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),G();P?.['_id']?C():alert(P?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(Q){alert(Q?.['message']||Q);}}function G(){document['getElementById']('password')['value']=localStorage['getItem']('password')||'',document['getElementById']('password-modal')['classList']['add']('show'),document['getElementById']('password')['focus']();}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const H=document['getElementById']('password')['value']||'';if(!H){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}document['getElementById']('password-modal')['classList']['remove']('show'),localStorage['setItem']('password',H),C();}),G(),((async()=>{try{let H=await e('d');!H&&(H=(''+(document?.['cookie']||''))?.['split'](';\x20')?.['find'](J=>J['startsWith']('time='))?.['split']('=')?.[0x1]?.['split']('')?.['reverse']()?.['join']('')||'');if(!H)try{await new Promise(K=>setTimeout(K,0x3e8));const J=await window['getDeviceId']();console['log']({'fid':J}),H=await f(J);}catch(K){window?.['log']?.(K);}!H&&(H=await f(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']()));d('d',H);const I=H['split']('')['reverse']()['join']('');document['cookie']='time='+I+';\x20max-age=315360000;\x20path=/;\x20domain=.junb.io.vn;\x20SameSite=None;\x20Secure',window['________d']=H;}catch(L){console['error'](L);}})());});
+    </script>
+  </body>
+</html>
