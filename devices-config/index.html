@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duyệt thiết bị</title>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(to bottom right, #f3f4f6, #ede9fe);
+        margin: 0;
+        padding: 0 20px 0 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .limit-text {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+        margin-left: 15px;
+      }
+
+      .add-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .add-btn:hover {
+        background: #1e40af;
+      }
+
+      .search-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 17px 8px 17px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .search-btn:hover {
+        background: #1e40af;
+      }
+
+      /* Item list */
+      .item {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        word-break: break-word;
+      }
+
+      .item-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .stt {
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 1.2rem;
+      }
+
+      .desc {
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex: 1;
+        color: #111;
+      }
+
+      .value {
+        color: #374151;
+        font-size: 1.1rem;
+        word-break: break-all;
+        margin-bottom: 8px;
+        /* device_id dễ bị đọc/gõ nhầm "0"/"O" ở font thường — monospace phân biệt rõ hình dạng
+           ký tự hơn, slashed-zero ép số 0 có gạch chéo, không thể lẫn với chữ O nữa. */
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Consolas,
+          "Liberation Mono", Menlo, monospace;
+        font-variant-numeric: slashed-zero;
+      }
+
+      /* Ô nhập mã thiết bị (khi admin gõ tay từ mã khách gửi) — cùng lý do như .value ở trên. */
+      #value {
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Consolas,
+          "Liberation Mono", Menlo, monospace;
+        font-variant-numeric: slashed-zero;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .btn-group .time {
+        margin-right: auto;
+        color: gray;
+        font-size: 1rem;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .info-btn {
+        background: linear-gradient(135deg, #facc15, #f59e0b);
+        color: #3b2f00;
+        font-size: 1rem;
+      }
+
+      .info-btn:hover {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+      }
+
+      .edit-btn {
+        background: #2563eb;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .edit-btn:hover {
+        background: #1e40af;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .delete-btn:hover {
+        background: #991b1b;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        padding: 16px;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.25s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal h2 {
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+
+      .close-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        box-sizing: border-box;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .save-btn {
+        flex: 1;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .save-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .cancel-btn {
+        flex: 1;
+        background: #9ca3af;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .cancel-btn:hover {
+        background: #6b7280;
+      }
+
+      .password-modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .password-modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .password-modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .password-modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .password-modal-content input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .password-modal-buttons {
+        display: flex;
+        margin-top: 12px;
+      }
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn-password-submit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-password-submit:hover {
+        background: #218838;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sort-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 12px;
+      }
+
+      .sort-group span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        white-space: nowrap;
+      }
+
+      .sort-group button {
+        padding: 5px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #d6d6d6;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .sort-group button.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+      }
+      .sort-group button.active:hover {
+        background: #2858cf;
+        border-color: #2858cf;
+      }
+      .sort-group button:not(.active):hover {
+        background: #f5f8ff;
+        border-color: #2563eb;
+        color: #2563eb;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input type="password" id="password" placeholder="Mật khẩu" />
+        <div class="password-modal-buttons">
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="container" class="container" style="visibility: hidden">
+      <div
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 10px 0px;
+          box-sizing: border-box;
+          margin: 10px 0 10px 0;
+        "
+      >
+        <p id="limit-text" class="limit-text"></p>
+        <button class="add-btn" id="openModalBtn"></button>
+      </div>
+
+      <div
+        id="search_container"
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 0px 0px;
+          box-sizing: border-box;
+          margin: 0 0 0 0;
+        "
+      >
+        <input
+          type="text"
+          id="text_search"
+          placeholder="Gõ để tìm kiếm"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          style="margin: 0"
+          enterkeyhint="search"
+        />
+        <button class="search-btn" id="search_btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="sort-group">
+        <span>Xếp theo</span>
+        <button id="sort_time" type="button">Ngày tạo</button>
+        <button id="sort_az" type="button">A-Z</button>
+        <button id="sort_za" type="button">Z-A</button>
+      </div>
+      <div id="itemList"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <button class="close-icon" id="closeModalBtn">&times;</button>
+        <h2 id="modalTitle">Thêm mã thiết bị</h2>
+        <input
+          type="text"
+          id="description"
+          placeholder="Ghi chú"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+        <input
+          type="text"
+          id="value"
+          placeholder="Mã thiết bị"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+        />
+
+        <div class="modal-buttons">
+          <button class="cancel-btn" id="cancelBtn">Đóng</button>
+          <button class="save-btn" id="saveBtn">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      const _0x4b9b7e=_0x1288;function _0x1288(_0x5cfe2e,_0x2d0f67){const _0xadbc9b=_0x2723();_0x1288=function(_0x5e398d,_0x25c2a9){_0x5e398d=_0x5e398d-(0x221c+0xc1b+-0x1*0x2cd4);let _0x5e3b24=_0xadbc9b[_0x5e398d];if(_0x1288['FhOrfz']===undefined){var _0x38c2c8=function(_0xe38d11){const _0x47b458='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x367ed7='';let _0x2dc4ed='';for(let _0x2f454a=0x2227*-0x1+0x4bc+0x1d6b,_0x56ebde,_0x56ec50,_0x4a2244=-0x2*-0x121d+-0x1*-0xdfd+0xf*-0x359;_0x56ec50=_0xe38d11['charAt'](_0x4a2244++);~_0x56ec50&&(_0x56ebde=_0x2f454a%(-0x17b*0x8+0x40a+0x5b*0x16)?_0x56ebde*(-0x121e+0x1a73+-0x815)+_0x56ec50:_0x56ec50,_0x2f454a++%(0x1*-0x22bd+-0x66e+-0xd*-0x32b))?_0x367ed7+=String['fromCharCode'](0x25*0x65+0x1c7c+-0x1*0x2a16&_0x56ebde>>(-(-0x164a+0x2d1*-0x7+0x2a03)*_0x2f454a&0x52b*-0x1+-0x2141*-0x1+-0x704*0x4)):-0xb51+0x1*-0x98f+-0xa70*-0x2){_0x56ec50=_0x47b458['indexOf'](_0x56ec50);}for(let _0x8496f5=0x1c74+0x14b*0x19+-0x3cc7,_0x4e6605=_0x367ed7['length'];_0x8496f5<_0x4e6605;_0x8496f5++){_0x2dc4ed+='%'+('00'+_0x367ed7['charCodeAt'](_0x8496f5)['toString'](0x1*-0x19ee+0xd5e+-0x8*-0x194))['slice'](-(0x22a1*-0x1+0x20d*0x5+0xc31*0x2));}return decodeURIComponent(_0x2dc4ed);};_0x1288['cvzeCG']=_0x38c2c8;_0x5cfe2e=arguments;_0x1288['FhOrfz']=!![];}const _0x4f4752=_0xadbc9b[0x2*0x98a+0x2585+0x3899*-0x1];const _0x143d4e=_0x5e398d+_0x4f4752;const _0x270d5d=_0x5cfe2e[_0x143d4e];if(!_0x270d5d){_0x5e3b24=_0x1288['cvzeCG'](_0x5e3b24);_0x5cfe2e[_0x143d4e]=_0x5e3b24;}else{_0x5e3b24=_0x270d5d;}return _0x5e3b24;};return _0x1288(_0x5cfe2e,_0x2d0f67);}(function(_0x50f207,_0x465e43){const _0x39f0d8=_0x1288;const _0x200825=_0x50f207();while(!![]){try{const _0x245aa9=parseInt(_0x39f0d8(0x1c9))/(-0x2149*0x1+-0x74*0x1f+0x17ab*0x2)*(-parseInt(_0x39f0d8(0x181))/(-0x1175*-0x1+0x2b8*-0x7+0x1b*0xf))+parseInt(_0x39f0d8(0x175))/(0x109c+0x93b+-0x19d4)+parseInt(_0x39f0d8(0x174))/(-0x47+0x1d52+-0x9ad*0x3)+parseInt(_0x39f0d8(0x164))/(0x1*-0xf59+-0xb5+-0x1*-0x1013)*(parseInt(_0x39f0d8(0x16c))/(-0x5*0x4e1+0x9*-0x25f+0x1*0x2dc2))+parseInt(_0x39f0d8(0x1b9))/(-0x6*-0x5cb+0x1*0x74+0x232f*-0x1)*(parseInt(_0x39f0d8(0x1ba))/(-0xcce+-0x1*-0x6b1+0xd*0x79))+parseInt(_0x39f0d8(0x1a2))/(0x14*0x143+0x14a4+-0x2dd7)*(-parseInt(_0x39f0d8(0x1a4))/(-0x1810+-0xc32*0x3+0x3cb0))+-parseInt(_0x39f0d8(0x19f))/(-0x129*-0xb+-0xa79*0x1+-0x23f*0x1);if(_0x245aa9===_0x465e43){break;}else{_0x200825['push'](_0x200825['shift']());}}catch(_0x272cf3){_0x200825['push'](_0x200825['shift']());}}}(_0x2723,0x6ca*0x11e+-0x1*0x1f09c+0x1*-0x1a1b1));async function log(_0x1e8f37,_0x29629d){const _0x2a0022=_0x1288;const _0x2b7478={'yfZuZ':_0x2a0022(0x19d)+_0x2a0022(0x16d)+'n','DyzVV':function(_0x4230be,_0x5caa06){return _0x4230be!==_0x5caa06;},'QNUAT':_0x2a0022(0x18b)+'nZ','DpJWe':function(_0x52d2d7,_0x53b58a){return _0x52d2d7/_0x53b58a;},'JUCPd':function(_0x20fcc1,_0x17bbc0){return _0x20fcc1(_0x17bbc0);},'lDUvk':function(_0x21bc3d,_0x4487bc,_0x18542f){return _0x21bc3d(_0x4487bc,_0x18542f);},'opNyq':_0x2a0022(0x17b)+_0x2a0022(0x198)+_0x2a0022(0x189)+_0x2a0022(0x1b2)+_0x2a0022(0x1bd)+_0x2a0022(0x1b0)+_0x2a0022(0x18c)+_0x2a0022(0x18a)+_0x2a0022(0x1b5),'fauSm':_0x2a0022(0x1be)+'T','RSQwJ':_0x2a0022(0x163)+_0x2a0022(0x193)+_0x2a0022(0x17d)+_0x2a0022(0x183)+_0x2a0022(0x191)+'n','UcZlf':_0x2a0022(0x192)+'WD','zXwiL':_0x2a0022(0x185)+_0x2a0022(0x16f)+_0x2a0022(0x188)+'d:'};let _0x32e324='';try{if(_0x29629d)_0x32e324=JSON[_0x2a0022(0x178)+_0x2a0022(0x1b7)+_0x2a0022(0x170)](_0x29629d);}catch{}try{console[_0x2a0022(0x1b5)](_0x1e8f37);let _0x136fdc=_0x1e8f37?.[_0x2a0022(0x1b6)+_0x2a0022(0x16a)]?.[_0x2a0022(0x172)+'ck']||_0x1e8f37?.[_0x2a0022(0x1b6)+_0x2a0022(0x16a)]||_0x1e8f37?.[_0x2a0022(0x1c1)+'a']?.[_0x2a0022(0x172)+_0x2a0022(0x165)+_0x2a0022(0x1b4)+'g']||_0x1e8f37?.[_0x2a0022(0x172)+_0x2a0022(0x165)+_0x2a0022(0x1b4)+'g']||_0x1e8f37?.[_0x2a0022(0x194)+_0x2a0022(0x19a)+'se']?.[_0x2a0022(0x1c1)+'a']?.[_0x2a0022(0x19c)+_0x2a0022(0x199)+_0x2a0022(0x171)+'on']||_0x1e8f37?.[_0x2a0022(0x1ad)+_0x2a0022(0x19e)+'e']||_0x1e8f37?.[_0x2a0022(0x16b)+_0x2a0022(0x1c0)]?.[0x7f*-0x1b+-0xbf7*0x1+-0xcae*-0x2]?.[_0x2a0022(0x1ad)+_0x2a0022(0x19e)+'e']||_0x1e8f37||'';let _0x41c306=_0x2a0022(0x17c)+_0x2a0022(0x196)+window[_0x2a0022(0x1c7)+_0x2a0022(0x17d)+'on'][_0x2a0022(0x17f)+_0x2a0022(0x184)+'me']+window[_0x2a0022(0x1c7)+_0x2a0022(0x17d)+'on'][_0x2a0022(0x1a8)+_0x2a0022(0x1c8)+'me']+(_0x2a0022(0x1bf)+_0x2a0022(0x1af)+'\x0a')+(navigator?.[_0x2a0022(0x179)+_0x2a0022(0x1c4)+_0x2a0022(0x168)]||_0x2b7478[_0x2a0022(0x186)+'uZ'])+(_0x2a0022(0x1b8)+_0x2a0022(0x18e)+_0x2a0022(0x1c2))+(window?.[_0x2a0022(0x1b1)+_0x2a0022(0x1aa)]?.[_0x2a0022(0x1a1)+'th']||0x1289+0x1195+-0x120f*0x2)+'x'+(window?.[_0x2a0022(0x1b1)+_0x2a0022(0x1aa)]?.[_0x2a0022(0x1a3)+_0x2a0022(0x190)]||0x242f+0xf17+-0x1*0x3346)+_0x2a0022(0x1ab)+_0x136fdc;if(_0x32e324){if(_0x2b7478[_0x2a0022(0x1c3)+'VV'](_0x2b7478[_0x2a0022(0x1cb)+'AT'],_0x2b7478[_0x2a0022(0x1cb)+'AT'])){_0x4ff8ec?.[_0x2a0022(0x1b5)]?.(_0x24c0a7);}else{_0x41c306+='\x0a\x0a'+_0x32e324;}}const _0x30a310=await window[_0x2a0022(0x197)](Math[_0x2a0022(0x1ca)+'nd'](_0x2b7478[_0x2a0022(0x195)+'We'](Date[_0x2a0022(0x16d)](),-0x14d1+0x2e6+0x15d3))+'+'+_0x2b7478[_0x2a0022(0x1c6)+'Pd'](atob,(''+(window?.['sk']||''))[_0x2a0022(0x1c5)+'it']('')[_0x2a0022(0x17e)+_0x2a0022(0x1a6)+'e']()[_0x2a0022(0x1ac)+'n']('')));await _0x2b7478[_0x2a0022(0x1bc)+'vk'](fetch,_0x2b7478[_0x2a0022(0x1b3)+'yq'],{'method':_0x2b7478[_0x2a0022(0x166)+'Sm'],'headers':{'Content-Type':_0x2b7478[_0x2a0022(0x1a0)+'wJ'],'authorization':_0x30a310},'body':JSON[_0x2a0022(0x178)+_0x2a0022(0x1b7)+_0x2a0022(0x170)]({'text':_0x41c306})});}catch(_0x30f059){if(_0x2b7478[_0x2a0022(0x1c3)+'VV'](_0x2b7478[_0x2a0022(0x16e)+'lf'],_0x2b7478[_0x2a0022(0x16e)+'lf'])){if(_0x4e7342)_0x21796f=_0x4dfd56[_0x2a0022(0x178)+_0x2a0022(0x1b7)+_0x2a0022(0x170)](_0x1aafb1);}else{console[_0x2a0022(0x16b)+'or'](_0x2b7478[_0x2a0022(0x176)+'iL'],_0x30f059);}}}function _0x2723(){const _0x15658f=['ANnV','vhn3','BgLJ','CMvZ','rhbk','yJ5B','Bwq1','Chm6','y3jP','Cg9U','Aw9U','zgvZ','vw5R','C2fN','otq2nZi5m3nZthnvAa','uLnr','D2LK','mZi0BuXpD3Lw','AgvP','ntGZmgDOruretq','yw5K','zxjZ','ntrP','Cgf0','BNrm','zwvU','kqOk','AM9P','BwvZ','zw5L','yJ4k','BMiU','C2nY','CgKZ','B3bo','x21Z','Bg9N','CMvH','Aw5N','icHt','n0H0sfDlAa','mZG4mJG2nfnHuNbWAa','veXP','Berv','lMP1','ue9t','xtWV','B3jZ','zgf0','zw4G','rhL6','CKfN','C3bS','sLvd','Bg9J','Ag5H','mZq2AwXYCNrg','CM91','uu5v','yxbW','mtm5mduXnvPIAM5Rsq','DhvZ','zMf1','ywrK','zw50','zwn0','C29U','zxjY','nMTVC1r3tW','BM93','vwnA','igzH','Awz5','ChrP','C3rH','mwLI','mty0nJqZmNvqrgP0ua','ntu3nte3ufPvBfnv','ELH3','mtfP','C3rY','DxnL','Axn0','Ahr0','8j+AQca8','yxrP','CMv2','Ag9Z','BgvK','mti1mgLSvLLeDq','ttrf','B24V','Dg5H','tg9N','EwzA','CMvQ','AwXL','lY9H','DM4V','u0zk','Aw8U','rxzL','y3jL','Dw5O','z2H0'];_0x2723=function(){return _0x15658f;};return _0x2723();}window[_0x4b9b7e(0x1b5)]=log;window[_0x4b9b7e(0x167)+_0x4b9b7e(0x18d)+_0x4b9b7e(0x1a9)+_0x4b9b7e(0x17a)+_0x4b9b7e(0x1ae)+'r'](_0x4b9b7e(0x18f)+_0x4b9b7e(0x1a5)+_0x4b9b7e(0x180)+_0x4b9b7e(0x187)+_0x4b9b7e(0x169)+_0x4b9b7e(0x19b),function(_0x229c4d){const _0x1f6c20=_0x4b9b7e;window?.[_0x1f6c20(0x1b5)]?.(_0x229c4d);});window[_0x4b9b7e(0x167)+_0x4b9b7e(0x18d)+_0x4b9b7e(0x1a9)+_0x4b9b7e(0x17a)+_0x4b9b7e(0x1ae)+'r'](_0x4b9b7e(0x16b)+'or',_0xf33397=>{const _0x5418b7=_0x4b9b7e;window?.[_0x5418b7(0x1b5)]?.(_0xf33397);},!![]);window['sk']=_0x4b9b7e(0x1a7)+_0x4b9b7e(0x182)+_0x4b9b7e(0x1bb)+_0x4b9b7e(0x173)+_0x4b9b7e(0x177)+'a';
+
+      const _0x2eeb79=_0x40bf;(function(_0x43a7d2,_0x3ba187){const _0x5d56a8=_0x40bf;const _0x39f3d2=_0x43a7d2();while(!![]){try{const _0xe132d9=parseInt(_0x5d56a8(0x189))/(0x71*-0x37+-0x1*-0x2273+-0xa2b*0x1)+-parseInt(_0x5d56a8(0x1a5))/(0x3a6+0x1698+-0x17*0x124)*(-parseInt(_0x5d56a8(0x171))/(-0x85b+0x153c+0x16e*-0x9))+-parseInt(_0x5d56a8(0x18e))/(-0x36c+0x3f4+-0x3*0x2c)+-parseInt(_0x5d56a8(0x17f))/(-0x2d*0xa2+-0x1c2b*-0x1+0x54*0x1)*(parseInt(_0x5d56a8(0x19b))/(0xd1*-0x5+-0x1755*0x1+0x2*0xdb8))+-parseInt(_0x5d56a8(0x1a1))/(0x17b*0xe+-0x144f+-0x64)+-parseInt(_0x5d56a8(0x18d))/(-0x58*0x6d+0x249+-0x2337*-0x1)+-parseInt(_0x5d56a8(0x174))/(-0x2238+-0x4*-0x443+0x1135)*(-parseInt(_0x5d56a8(0x1a8))/(-0x1c0a+-0x2*0x100f+0x14f*0x2e));if(_0xe132d9===_0x3ba187){break;}else{_0x39f3d2['push'](_0x39f3d2['shift']());}}catch(_0x2460b2){_0x39f3d2['push'](_0x39f3d2['shift']());}}}(_0xa9ef,0x2f*-0x899f+-0x63d5a+0x2d51ed));import{initializeApp}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';function _0x40bf(_0x370fbb,_0xee5315){const _0xd76d6c=_0xa9ef();_0x40bf=function(_0x3fcfb5,_0x258615){_0x3fcfb5=_0x3fcfb5-(-0xac5+-0x8cf+-0x11b*-0x13);let _0x146d7c=_0xd76d6c[_0x3fcfb5];if(_0x40bf['wooujc']===undefined){var _0xd30725=function(_0x425f06){const _0x134d7f='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x511c64='';let _0x1a02b2='';for(let _0x171936=-0x924+-0x427*-0x1+0x4fd,_0xf87b0a,_0x32dbe0,_0x5b18e0=0x6f9+-0x1208+0xb0f;_0x32dbe0=_0x425f06['charAt'](_0x5b18e0++);~_0x32dbe0&&(_0xf87b0a=_0x171936%(0xd9e+0x1560+-0x22fa)?_0xf87b0a*(0x1*0x4bd+0xc9+-0x546)+_0x32dbe0:_0x32dbe0,_0x171936++%(-0xb8*0x13+0x11ac+-0x10*0x40))?_0x511c64+=String['fromCharCode'](-0x1*-0x38f+0x1d2e+-0x1fbe&_0xf87b0a>>(-(0x18*0x47+-0x23b5+0x2b*0xad)*_0x171936&-0x3*-0x89+-0x11*0x15c+-0xa7*-0x21)):0x41b*-0x2+-0x3*-0x327+0x1*-0x13f){_0x32dbe0=_0x134d7f['indexOf'](_0x32dbe0);}for(let _0x47c721=0xe90+-0x17e0+0x950,_0xde843e=_0x511c64['length'];_0x47c721<_0xde843e;_0x47c721++){_0x1a02b2+='%'+('00'+_0x511c64['charCodeAt'](_0x47c721)['toString'](-0xde6+0xa59+0x39d))['slice'](-(0x1d79+0x1d9*0x6+0x1*-0x288d));}return decodeURIComponent(_0x1a02b2);};_0x40bf['OFskYC']=_0xd30725;_0x370fbb=arguments;_0x40bf['wooujc']=!![];}const _0x3f2e16=_0xd76d6c[-0x897+-0x1436+0x1ccd];const _0x2209f7=_0x3fcfb5+_0x3f2e16;const _0x1f95f5=_0x370fbb[_0x2209f7];if(!_0x1f95f5){_0x146d7c=_0x40bf['OFskYC'](_0x146d7c);_0x370fbb[_0x2209f7]=_0x146d7c;}else{_0x146d7c=_0x1f95f5;}return _0x146d7c;};return _0x40bf(_0x370fbb,_0xee5315);}import{getInstallations,getId}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-installations.js';function _0xa9ef(){const _0x140603=['sfPZ','mtu1sxDAs1f3','yxn1','yM94','nteY','quL6','rY05','ytaX','yMfZ','r0rl','q0Dp','mtGWnta3ohjlA1nVBq','qJfS','z2uU','yxbW','nJm1mteYofPmCMzLqW','mtu5mJu2oe16t2jYsW','s0DU','zxn0','tKXg','ogvM','qvq2','otq2','ngvL','mM43','v0jR','mti6','D2vI','lxrP','mtGXmZi2A1D1BNPZ','AY5M','vNDM','zMnJ','Cc5J','tvi3','otaXmdqWmfLcDMD3tq','odu5','mtOZ','vunJ','nduYmJjPqLHoAfm','rgv2','mtCZ','mJiYmJm3nZb6C3zZD04','A3rV','AwnL','ndy1','zJjM','AJHI','z2v0','m0fg','B3jH','mZLlsgXyuLm','zwfW','CMuT','owfHAfbiEq','AxjL','quPR','DhjL','oJGX','mZe3','mZG1','Bg9N','yvn5','zJy4'];_0xa9ef=function(){return _0x140603;};return _0xa9ef();}import{getAnalytics}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js';const firebaseConfig={'apiKey':_0x2eeb79(0x183)+_0x2eeb79(0x17c)+_0x2eeb79(0x193)+_0x2eeb79(0x18a)+_0x2eeb79(0x16d)+_0x2eeb79(0x16f)+_0x2eeb79(0x197)+_0x2eeb79(0x19d)+_0x2eeb79(0x17e)+_0x2eeb79(0x196)+_0x2eeb79(0x188)+_0x2eeb79(0x18f)+_0x2eeb79(0x1a4),'authDomain':_0x2eeb79(0x177)+_0x2eeb79(0x180)+_0x2eeb79(0x173)+_0x2eeb79(0x181)+_0x2eeb79(0x19a)+_0x2eeb79(0x1a9)+_0x2eeb79(0x19c)+_0x2eeb79(0x175)+_0x2eeb79(0x186)+_0x2eeb79(0x172)+_0x2eeb79(0x19f)+'om','projectId':_0x2eeb79(0x177)+_0x2eeb79(0x180)+_0x2eeb79(0x173)+_0x2eeb79(0x181)+_0x2eeb79(0x19a)+_0x2eeb79(0x1a9)+'k','storageBucket':_0x2eeb79(0x177)+_0x2eeb79(0x180)+_0x2eeb79(0x173)+_0x2eeb79(0x181)+_0x2eeb79(0x19a)+_0x2eeb79(0x1a9)+_0x2eeb79(0x19c)+_0x2eeb79(0x175)+_0x2eeb79(0x186)+_0x2eeb79(0x190)+_0x2eeb79(0x170)+_0x2eeb79(0x18b)+_0x2eeb79(0x18c),'messagingSenderId':_0x2eeb79(0x179)+_0x2eeb79(0x17a)+_0x2eeb79(0x194)+_0x2eeb79(0x182),'appId':_0x2eeb79(0x1a3)+_0x2eeb79(0x1a7)+_0x2eeb79(0x1a2)+_0x2eeb79(0x1ab)+_0x2eeb79(0x198)+_0x2eeb79(0x199)+_0x2eeb79(0x178)+_0x2eeb79(0x195)+_0x2eeb79(0x17d)+_0x2eeb79(0x19e)+_0x2eeb79(0x1ac)+_0x2eeb79(0x185)+_0x2eeb79(0x192)+'15','measurementId':_0x2eeb79(0x184)+_0x2eeb79(0x187)+_0x2eeb79(0x191)+_0x2eeb79(0x1a0)};const app=initializeApp(firebaseConfig);try{const analytics=getAnalytics(app);}catch(_0x28e3c6){window?.[_0x2eeb79(0x17b)]?.(_0x28e3c6);}async function getDeviceId(){const _0x2ca6c5=_0x2eeb79;const _0x272754={'AJkik':function(_0x53a94f,_0x3d386b){return _0x53a94f(_0x3d386b);}};try{const _0x1e0128=_0x272754[_0x2ca6c5(0x176)+'ik'](getInstallations,app);return _0x272754[_0x2ca6c5(0x176)+'ik'](getId,_0x1e0128);}catch(_0x320506){window?.[_0x2ca6c5(0x17b)]?.(_0x320506);}}window[_0x2eeb79(0x16e)+_0x2eeb79(0x1a6)+_0x2eeb79(0x1aa)+'Id']=getDeviceId;
+
+      try{navigator?.['storage']?.['persist']?.();}catch{}var a='AppKeyValueDB',b='keyval';async function c(){return new Promise((L,M)=>{const N=indexedDB['open'](a,0x1);N['onupgradeneeded']=O=>{const P=O['target']['result'];!P['objectStoreNames']['contains'](b)&&P['createObjectStore'](b);},N['onsuccess']=()=>L(N['result']),N['onerror']=()=>M(N['error']);});}var d=0xbb8,e=['_____','sds_'];function f(L){try{const M=(''+(document?.['cookie']||''))['split'](';\x20')['find'](N=>N['startsWith'](L+'='));return M?decodeURIComponent(M['slice'](L['length']+0x1)):null;}catch{return null;}}function g(L,M){try{document['cookie']=L+'='+encodeURIComponent(M)+';\x20max-age=315360000;\x20path=/;\x20domain=.junb.io.vn;\x20SameSite=None;\x20Secure';}catch{}}async function h(L,M){try{c()['then'](N=>{return new Promise((O,P)=>{const Q=N['transaction'](b,'readwrite'),R=Q['objectStore'](b);R['put'](M,L),Q['oncomplete']=()=>O(!![]),Q['onerror']=()=>P(Q['error']);});});}catch(N){window?.['log']?.(N);}try{window?.['localStorage']?.['setItem']?.(L,M);}catch(O){window?.['log']?.(O);}try{!e['some'](P=>(''+L)['startsWith'](P))&&(''+(M??''))['length']<=d&&g('ck_'+L,M);}catch(P){window?.['log']?.(P);}}async function i(L){try{const M=await c(),N=await new Promise((O,P)=>{const Q=M['transaction'](b,'readonly'),R=Q['objectStore'](b),S=R['get'](L);S['onsuccess']=()=>O(S?.['result']||null),S['onerror']=()=>P(S['error']);});if(N!==null)return N;}catch(O){window?.['log']?.(O);}try{const P=window['localStorage']?.['getItem']?.(L);if(P!==null&&P!==undefined)return P;}catch(Q){window?.['log']?.(Q);}try{const R=f('ck_'+L);if(R!==null&&R!==undefined)return R;}catch(S){window?.['log']?.(S);}if(L==='d')try{const T=(''+(document?.['cookie']||''))?.['split'](';\x20')?.['find'](U=>U['startsWith']('time='))?.['split']('=')?.[0x1]?.['split']('')?.['reverse']()?.['join']('');if(T)return T;}catch(U){window?.['log']?.(U);}return null;}async function j(L){const M='_____'+(L+'')['split']('')['reverse']()['join'](''),N=await i(M);if(N)return N;typeof CryptoJS==='undefined'&&await new Promise(P=>{const Q=document['createElement']('script');Q['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',Q['crossOrigin']='anonymous',Q['onerror']=R=>window?.['log']?.(R),Q['onload']=P,document['head']['appendChild'](Q);});const O=CryptoJS['MD5'](L)['toString']();return h(M,O),O;}window['md5']=j;const k=document['getElementById']('container'),l=document['getElementById']('modal'),m=document['getElementById']('openModalBtn'),n=document['getElementById']('search_container'),o=document['getElementById']('text_search'),p=document['getElementById']('search_btn'),q=document['getElementById']('closeModalBtn'),r=document['getElementById']('cancelBtn'),s=document['getElementById']('saveBtn'),t=document['getElementById']('modalTitle'),u=document['getElementById']('description'),v=document['getElementById']('value'),w=document['getElementById']('itemList'),x=document['getElementById']('limit-text');function y(L){const M=new URLSearchParams(window['location']['search']);return M['get'](L);}function z(L){try{return L['normalize']('NFD')['replace'](/[\u0300-\u036f]/g,'')['replace'](/đ/g,'d')['replace'](/Đ/g,'D');}catch(M){console['error'](M);}return'';}function A(L,M){try{return L['sort']((N,O)=>{for(const {field:P,order:order='asc'}of M){const Q=N[P],R=O[P];if(Q===R)continue;if(Q==null)return 0x1;if(R==null)return-0x1;const S=typeof Q==='string'&&typeof R==='string'?Q['localeCompare'](R):Q>R?0x1:-0x1;return order==='desc'?-S:S;}return 0x0;});}catch(N){window?.['log']?.(N);}}function B(L){try{return(''+(L||''))['replace'](/[^a-zA-Z0-9]/g,'')+'=';}catch(M){console['error'](M);}return'';}window['devices']=[],window['max_devices']=0x0,window['editting_id'],window['search_text']='';function C(L){if(!L)return'';const M=Date['now'](),N=new Date(L)['getTime'](),O=M-N,P=0x3c*0x3e8,Q=0x3c*P,R=0x18*Q,S=0x1e*R;if(O<0xa*P)return'🟢&nbsp;&nbsp;Online';if(O<Q){const T=Math['floor'](O/P);return'⚪️&nbsp;&nbsp;'+T+'\x20phút';}if(O<R){const U=Math['floor'](O/Q);return'⚪️&nbsp;&nbsp;'+U+'\x20giờ';}if(O<S){const V=Math['floor'](O/R);return'⚪️&nbsp;&nbsp;'+V+'\x20ngày';}return'🔴&nbsp;&nbsp;Off';}const D=()=>{k['style']['visibility']='visible',n['style']['visibility']=window['devices']['length']?'visible':'hidden',w['innerHTML']='';const L=window['devices']['length']>0x1;let M=window?.['devices']||[];try{const N=localStorage?.['getItem']?.('sort_params')||'sort_time';document['querySelectorAll']('.sort-group\x20button')['forEach'](P=>{P['id']===N?P['classList']['add']('active'):P['classList']['remove']('active');});const O={'sort_time':{'field':'created_at','order':'desc'},'sort_az':{'field':'description','order':'asc'},'sort_za':{'field':'description','order':'desc'}};A(M,[O[N],{'field':'created_at','order':'desc'}]);}catch(P){window?.['log']?.(P);}M?.['forEach']?.((Q,R)=>{const S=document['createElement']('div'),T=!(''+(window['search_text']||''))['trim']()['toLowerCase']()||z(((Q?.['description']||'')+'\x20'+(Q?.['device_id']||''))['toLowerCase']())['includes'](z((''+(window['search_text']||''))['trim']()['toLowerCase']())),U=String(Q?.['description'])['toLowerCase']()['includes']('admin');S['style']='margin:\x200\x200\x2010px\x200;\x20padding:\x2010px;\x20display:\x20'+(T?'block':'none'),S['className']='item',S['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22item-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22stt\x22>'+(window['devices']['length']-R)+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22desc\x22\x20'+(U?'style=\x22color:\x20#2563eb\x22':'')+'>'+(U?String('🔷\x20'+Q?.['description'])['toUpperCase']():Q?.['description']||'Người\x20dùng')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22value\x22>'+Q['device_id']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22btn-group\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22time\x22>'+C(Q?.['actived_at']||'')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(Q?.['user_agent']&&Q?.['user_agent']!=='Unknown'?'<button\x20class=\x22btn\x20info-btn\x22\x20onclick=\x22infoItem(\x27'+Q['user_agent']+'\x27)\x22>📱</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20edit-btn\x22\x20onclick=\x22editItem(\x27'+Q['_id']+'\x27)\x22>SỬA</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(L?'<button\x20class=\x22btn\x20delete-btn\x22\x20onclick=\x22deleteItem(\x27'+Q['_id']+'\x27)\x22>XÓA</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20',w['appendChild'](S);});},E=L=>{s['textContent']='Lưu',t['textContent']=L?'Sửa\x20mã\x20thiết\x20bị':'Thêm\x20mã\x20thiết\x20bị',u['disabled']=![],v['disabled']=![];let M;L?(M=(window['devices']||[])['find'](N=>N?.['_id']===L),u['value']=M?.['description']||'',v['value']=M?.['device_id']||''):(u['value']='',v['value']='',!window['devices']?.['length']&&(u['disabled']=!![],u['value']='Admin',v['disabled']=!![],v['value']=btoa(window['________d']||''),s['textContent']='Kích\x20hoạt',t['textContent']='Kích\x20hoạt\x20tính\x20năng')),window['editting_id']=L||'',l['style']['display']='flex';};m['onclick']=()=>{o['value']='',window['search_text']='',D(),G();if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');E();};var F;o['addEventListener']('input',()=>{clearTimeout(F),F=setTimeout(()=>{!o?.['value']&&(window['search_text']='',D(),G());},0x1f4);}),o['addEventListener']('change',function(L){L['key']==='Enter'&&(window['search_text']=(''+(o['value']||''))['trim'](),D(),G());}),o['addEventListener']('keyup',function(L){L['key']==='Enter'&&(window['search_text']=(''+(o['value']||''))['trim'](),D(),G());}),p['onclick']=()=>{window['search_text']=(''+(o['value']||''))['trim'](),D(),G();},document['querySelectorAll']('.sort-group\x20button')['forEach'](L=>{L['onclick']=()=>{try{if(L['classList']['contains']('active'))return;document['querySelector']('.sort-group\x20button.active')?.['classList']['remove']('active'),L['classList']['add']('active'),localStorage?.['setItem']?.('sort_params',L?.['id']),D();}catch(M){window?.['log']?.(M);}};}),q['onclick']=r['onclick']=()=>l['style']['display']='none',l['onclick']=L=>L['target']===l&&(l['style']['display']='none'),s['onclick']=()=>{const L=u['value']['trim'](),M=v['value']['trim']();if(!L||!M)return alert('Vui\x20lòng\x20nhập\x20đầy\x20đủ\x20thông\x20tin!');if(window['editting_id'])J({'_id':window['editting_id'],'description':L,'device_id':M});else{if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');H({'description':L,'device_id':M});}l['style']['display']='none';},window['infoItem']=L=>alert('Thông\x20tin\x20thiết\x20bị:\x20'+L),window['editItem']=L=>E(L),window['deleteItem']=L=>{confirm('Bạn\x20có\x20chắc\x20muốn\x20xóa\x20mã\x20thiết\x20bị\x20này?')&&(I(L),D());};async function G(){try{const L=y('access_token')['trim'](),M=(localStorage['getItem']('password')||'')['trim']();if(!L||!M)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const N=new Headers();N['append']('authorization',btoa(L+'|'+M));const O={'method':'GET','headers':N,'redirect':'follow'},P=await fetch('https://api3.junb.io.vn/config-devices',O),Q=await P['json']();if(Q?.['code']==='invalid_auth')return alert(Q?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K();Array['isArray'](Q?.['data'])&&(window['devices']=Q?.['data']?.['map']?.(R=>({...R,'text_sort':z(R?.['description']||'')['toLowerCase']()})),m['textContent']=window['devices']?.['length']?'+\x20THÊM':'KÍCH\x20HOẠT\x20NGAY',D()),window['max_devices']=Q?.['max_devices']||0x0,window['user_id']=Q?.['user_id']||'',x['innerHTML']='Bot\x20<b>'+window['user_id']+'</b><br>Tối\x20đa\x20'+window['max_devices']+'\x20thiết\x20bị';}catch(R){alert(R?.['message']||R);}}async function H({description:L,device_id:M}){try{localStorage?.['setItem']?.('sort_params','sort_time');}catch(N){window?.['log']?.(N);}try{const O=y('access_token')['trim'](),P=(localStorage['getItem']('password')||'')['trim']();if(!O||!P)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const Q=new Headers();Q['append']('authorization',btoa(O+'|'+P)),Q['append']('Content-Type','application/json');const R={'method':'POST','headers':Q,'body':JSON['stringify']({'description':(''+(L||''))['trim'](),'device_id':B(M)}),'redirect':'follow'},S=await fetch('https://api3.junb.io.vn/config-devices',R),T=await S['json']();if(T?.['code']==='invalid_auth')return alert(T?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K();T?.['_id']?G():alert(T?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(U){alert(U?.['message']||U);}}async function I(L){try{const M=y('access_token')['trim'](),N=(localStorage['getItem']('password')||'')['trim']();if(!M||!N)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const O=new Headers();O['append']('authorization',btoa(M+'|'+N));const P={'method':'DELETE','headers':O,'redirect':'follow'},Q=await fetch('https://api3.junb.io.vn/config-devices/'+L,P),R=await Q['json']();R?.['code']==='invalid_auth'&&(alert(R?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K());}catch(S){alert(S?.['message']||S);}finally{G();}}async function J({_id:L,description:M,device_id:N}){try{const O=y('access_token')['trim'](),P=(localStorage['getItem']('password')||'')['trim']();if(!O||!P)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const Q=new Headers();Q['append']('authorization',btoa(O+'|'+P)),Q['append']('Content-Type','application/json');const R={'method':'PUT','headers':Q,'body':JSON['stringify']({'description':(''+(M||''))['trim'](),'device_id':B(N)}),'redirect':'follow'},S=await fetch('https://api3.junb.io.vn/config-devices/'+L,R),T=await S['json']();if(T?.['code']==='invalid_auth')return alert(T?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K();T?.['_id']?G():alert(T?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(U){alert(U?.['message']||U);}}function K(){document['getElementById']('password')['value']=localStorage['getItem']('password')||'',document['getElementById']('password-modal')['classList']['add']('show'),document['getElementById']('password')['focus']();}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const L=document['getElementById']('password')['value']||'';if(!L){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}document['getElementById']('password-modal')['classList']['remove']('show'),localStorage['setItem']('password',L),G();}),K(),((async()=>{try{let L=await i('d');!L&&(L=(''+(document?.['cookie']||''))?.['split'](';\x20')?.['find'](N=>N['startsWith']('time='))?.['split']('=')?.[0x1]?.['split']('')?.['reverse']()?.['join']('')||'');if(!L)try{await new Promise(O=>setTimeout(O,0x3e8));const N=await window['getDeviceId']();console['log']({'fid':N}),L=await j(N);}catch(O){window?.['log']?.(O);}!L&&(L=await j(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']()));h('d',L);const M=L['split']('')['reverse']()['join']('');document['cookie']='time='+M+';\x20max-age=315360000;\x20path=/;\x20domain=.junb.io.vn;\x20SameSite=None;\x20Secure',window['________d']=L;}catch(P){console['error'](P);}})());});
+    </script>
+  </body>
+</html>

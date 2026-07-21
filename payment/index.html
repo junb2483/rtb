@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gia hạn bot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #e9ecef;
+        color: #495057;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff; /* Không mờ */
+        display: none; /* Ẩn lớp overlay mặc định */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Đặt z-index để hiển thị trên tất cả các thành phần khác */
+      }
+      .loading-message {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: bold;
+        text-align: center;
+        width: 90%;
+      }
+      .hidden {
+        display: none;
+      }
+      .error {
+        color: red;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 0 10px; /* Thêm margin ngang */
+      }
+      h1 {
+        font-size: 1.8em;
+        color: #007bff;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .price-info {
+        margin-bottom: 20px;
+      }
+
+      .price-info p {
+        font-size: 1.2em;
+        margin: 10px 0;
+        text-align: center;
+      }
+
+      .price-info strong {
+        color: #007bff;
+      }
+
+      .payment-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .payment-options label {
+        display: block;
+        text-align: center;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        background-color: #fff;
+        transition: background-color 0.3s, border-color 0.3s;
+        box-sizing: border-box;
+      }
+
+      .payment-options input[type="radio"] {
+        display: none;
+      }
+
+      .payment-options input[type="radio"]:checked + label {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+      }
+
+      .total-price,
+      .time-info {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2em;
+      }
+
+      .open-button {
+        margin-right: 15px;
+        display: block;
+        padding: 15px;
+        background-color: orange;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+
+      .backup-button {
+        margin-right: 15px;
+        display: block;
+        padding: 15px;
+        background-color: orange;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+
+      .backup-button:hover {
+        background-color: #e6954e;
+      }
+
+      .payment-button {
+        flex-grow: 1;
+        display: block;
+        padding: 15px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.2em;
+        text-align: center;
+        transition: background-color 0.3s;
+      }
+
+      .payment-button:hover {
+        background-color: #0056b3;
+      }
+
+      .note {
+        font-size: 1.2rem;
+        color: #555;
+        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+      }
+      .promote-percent {
+        position: absolute;
+        background-color: red;
+        top: -5px;
+        right: 0;
+        padding: 2px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border-radius: 5px;
+        color: white;
+      }
+      .note i {
+        display: block;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 0 20px; /* Tăng margin ngang cho các màn hình nhỏ hơn */
+        }
+        .payment-options {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .password-modal {
+        display: none;
+        position: fixed;
+        z-index: 1001; /* Đặt z-index để hiển thị trên tất cả các thành phần khác */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .password-modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .password-modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .password-modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .password-modal-content input {
+        font-size: 1.2rem;
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .password-modal-buttons {
+        display: flex;
+        margin-top: 12px;
+      }
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn-password-submit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-password-submit:hover {
+        background: #218838;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input type="password" id="password" placeholder="Mật khẩu" />
+        <div class="password-modal-buttons">
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="loading-overlay" class="loading-overlay">
+      <div id="loading-message" class="loading-message">
+        Đang tải dữ liệu...
+      </div>
+    </div>
+    <div id="container" class="container">
+      <h1 id="pageTitle">Gia hạn thêm ngày</h1>
+      <div class="price-info">
+        <p id="descriptionPrice" class="description"></p>
+        <p id="descriptionBxh" class="bxhNote"></p>
+        <p>
+          Giá:
+          <strong id="newPrice">0đ/ngày</strong>
+          <strong
+            id="oldPrice"
+            style="
+              font-family: 'Times New Roman', Times, serif;
+              color: gray;
+              padding-right: 5px;
+              padding-left: 5px;
+              text-decoration: line-through;
+              -webkit-text-decoration-line: line-through;
+            "
+          ></strong>
+        </p>
+        <p id="max_devices" style="color: #007bff"></p>
+      </div>
+
+      <div class="payment-options">
+        <div id="div_1_days" style="position: relative">
+          <input type="radio" id="day1" name="days" value="1" />
+          <label for="day1"
+            >+1 ngày
+            <div id="km1day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div id="div_2_days" style="position: relative">
+          <input type="radio" id="day2" name="days" value="2" />
+          <label for="day2"
+            >+2 ngày
+            <div id="km2day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div id="div_3_days" style="position: relative">
+          <input type="radio" id="day3" name="days" value="3" />
+          <label for="day3"
+            >+3 ngày
+            <div id="km3day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day5" name="days" value="5" />
+          <label for="day5"
+            >+5 ngày
+            <div id="km5day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day7" name="days" value="7" />
+          <label for="day7"
+            >+7 ngày
+            <div id="km7day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+        <div style="position: relative">
+          <input type="radio" id="day10" name="days" value="10" />
+          <label for="day10"
+            >+10 ngày
+            <div id="km10day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+
+        <div id="div_15_days" style="position: relative">
+          <input type="radio" id="day15" name="days" value="15" />
+          <label for="day15"
+            >+15 ngày
+            <div id="km15day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+
+        <div id="div_30_days" style="position: relative">
+          <input type="radio" id="day30" name="days" value="30" />
+          <label for="day30"
+            >+30 ngày
+            <div id="km30day" class="promote-percent">- 1%</div></label
+          >
+        </div>
+      </div>
+
+      <div class="time-info">
+        <p id="newHours"></p>
+      </div>
+      <div class="total-price">
+        Tổng:
+        <strong id="newTotal">0đ</strong>
+        <strong
+          id="oldTotal"
+          style="
+            font-family: 'Times New Roman', Times, serif;
+            color: gray;
+            padding-right: 5px;
+            padding-left: 5px;
+            text-decoration: line-through;
+            -webkit-text-decoration-line: line-through;
+          "
+        ></strong>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; width: 100%">
+        <button class="open-button" id="openButton">Mở bot</button>
+        <button class="backup-button" id="backupButton">Bảo lưu</button>
+        <button class="payment-button" id="paymentButton">Thanh toán</button>
+      </div>
+
+      <div class="note">
+        <i id="schedule_backup_note"></i>
+      </div>
+    </div>
+
+    <script>
+      var a;let b=(p,q)=>document['getElementById'](p)['textContent']=q,c=![];function d(){try{return JSON['parse'](localStorage['getItem']('idm')||'0')||0x0;}catch{return 0x0;}}function e(p){try{return Number(p)['toLocaleString']('vi-VN')+'\x20đ';}catch{return'';}}async function f(p){const q=document['createElement']('script');return q['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',q['crossOrigin']='anonymous',document['head']['appendChild'](q),new Promise(r=>{q['onload']=()=>{const s=CryptoJS['MD5'](p)['toString']();r(s);};});}function g(p,q=window['location']['href']){try{const r=new URL(p,q);return r['href'];}catch(s){return null;}}function h(p){const q=new URLSearchParams(window['location']['search']);return q['get'](p);}const i=h('access_token'),j=h('skipLT');function k(p,q,r,s={}){const t=s[r]||0x0,u=Math['ceil'](q*(0x1-t)/0x3e8)*0x3e8,v=u*r,w=q*r,x=Math['round']((new Date(p)-Date['now']())/0x36ee80),y=x+r*0x18;b('newPrice',e(u)),b('oldPrice',s[r]?e(q):''),b('newTotal',e(v)),b('oldTotal',s[r]?e(w):''),b('newHours','Thời\x20gian:\x20'+x+'\x20giờ\x20➙\x20'+y+'\x20giờ');}function l(){document['getElementById']('password')['value']=localStorage['getItem']('password')||'',document['getElementById']('password-modal')['classList']['add']('show'),document['getElementById']('password')['focus'](),document['getElementById']('container')['style']['display']='none';}function m(){document['getElementById']('password-modal')['classList']['remove']('show'),document['getElementById']('container')['style']['display']='';}async function n(){const p=(localStorage?.['getItem']?.('password')||'')['trim']();if(!p)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const q=document['getElementById']('loading-overlay'),r=document['getElementById']('loading-message');r['textContent']='Đang\x20tải\x20dữ\x20liệu...',q['style']['display']='flex';try{const s=await fetch('https://admin.junb.io.vn/api/bots/info-with-password?access_token='+i+'&password='+p);if(!s['ok'])throw new Error('Network\x20response\x20was\x20not\x20ok');const t=await s['json']();if(t?.['code']==='invalid_auth'){alert(t?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),l();return;}let u;if(d())try{const w=await f(i),x=await fetch('https://api.junb.io.vn/devices?lt='+w),y=await x['json']();u=y?.['total_devices'];}catch(z){console['log'](z);}if(t?.['region']!=='VN'){window['location']['href']=g('./en.html')+'?'+new URLSearchParams(window['location']['search'])['toString']();return;}a=!!t?.['has_password'],b('pageTitle','Gia\x20hạn\x20bot\x20'+t['bot_name']),b('descriptionPrice',''+(t?.['price_note']||'')),b('descriptionBxh',t?.['bxh_note']?'BXH:\x20'+(t?.['bxh_note']||''):''),b('max_devices',u>=0x0?'Cho\x20phép\x20'+t?.['max_devices']+'\x20người\x20dùng\x20('+(u>t?.['max_devices']?'🆘\x20':'')+u+'\x20👤)':'Cho\x20phép\x20'+t?.['max_devices']+'\x20người\x20dùng');if(t?.['bot_status']==='running'){document['getElementById']('openButton')['style']['display']='none',document['getElementById']('backupButton')['style']['display']='flex';const A=Math['floor']((new Date(t['package_end_date'])['getTime']()-Date['now']())/0x5265c00);A>=0x0?b('backupButton','Bảo\x20lưu\x20khi\x20còn\x20'+A*0x18+'h'):b('backupButton','Bảo\x20lưu\x20'+Math['round']((new Date(t['package_end_date'])-Date['now']())/0x36ee80)+'h');}!t?.['show_renew_30_days']&&''+t?.['last_renew_days']!=='30'&&(document['getElementById']('div_30_days')['style']='position:\x20relative;\x20display:\x20none');t?.['promotion_obj']?.['1']===undefined&&(document['getElementById']('div_1_days')['style']='position:\x20relative;\x20display:\x20none');t?.['promotion_obj']?.['2']===undefined&&(document['getElementById']('div_2_days')['style']='position:\x20relative;\x20display:\x20none');t?.['promotion_obj']?.['3']===undefined&&(document['getElementById']('div_3_days')['style']='position:\x20relative;\x20display:\x20none');t?.['promotion_obj']?.['15']===undefined&&(document['getElementById']('div_15_days')['style']='position:\x20relative;\x20display:\x20none');t?.['bot_status']==='backed_up'&&(document['getElementById']('openButton')['style']['display']='flex',document['getElementById']('backupButton')['style']['display']='none');(t?.['bot_status']==='?'||t?.['schedule_backup_at'])&&(document['getElementById']('openButton')['style']['display']='none',document['getElementById']('backupButton')['style']['display']='none');if(t?.['schedule_backup_at']){const B=Math['round']((new Date(t?.['package_end_date'])['getTime']()-new Date(t?.['schedule_backup_at'])['getTime']())/0x36ee80);b('schedule_backup_note','Sẽ\x20bảo\x20lưu\x20vào\x20'+new Date(t?.['schedule_backup_at'])['toLocaleString']()+'\x20(bot\x20~\x20'+B+'h)'),document['getElementById']('schedule_backup_note')['style']='color:\x20red;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px';}else document['getElementById']('schedule_backup_note')['style']='color:\x20#495057;\x20margin-bottom:\x2010px',document['getElementById']('schedule_backup_note')['innerHTML']='<i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20🔥\x20Tạo\x20bot,\x20liên\x20hệ\x20telegram\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<a\x20href=\x22https://t.me/cp_junb_bot_2483\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>JunB</a>,\x20giá\x20công\x20khai\x20<a\x20href=\x22https://i.junb.io.vn\x22\x20style=\x22color:\x20#007bff;\x20font-weight:\x20bold;\x20margin-bottom:\x2010px\x22>tại\x20đây</a>\x20!\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</i>';document['querySelectorAll']('input[name=\x22days\x22]')['forEach'](C=>{const D='km'+C['value']+'day';t?.['promotion_obj']?.[C?.['value']]?b(D,'-\x20'+t['promotion_obj'][C['value']]*0x64+'%'):document['getElementById'](D)['style']='display:\x20none;',C['addEventListener']('change',function(){k(t['package_end_date'],t['price'],parseInt(this['value']),t['promotion_obj']);});}),document['getElementById']('paymentButton')['addEventListener']('click',async function(){const C=document['getElementById']('loading-overlay'),D=document['getElementById']('loading-message'),E=document['querySelector']('input[name=\x22days\x22]:checked');if(E&&!c){c=!![],D['textContent']='Đang\x20tạo\x20mã\x20QR\x20thanh\x20toán,\x20mỗi\x20lần\x20thanh\x20toán\x20là\x201\x20mã\x20QR\x20khác\x20nhau,\x20các\x20bạn\x20chú\x20ý\x20nhé\x20!',C['style']['display']='flex';const F=E['value'],G=window['location']['href'],H=g('./success.html');try{const I='https://admin.junb.io.vn/api/payment/bank-qr?access_token='+i+'&total_days='+F+'&return_url='+encodeURIComponent(H)+'&cancel_url='+encodeURIComponent(G),J=await fetch(I,{'method':'POST'}),K=await J['json']();K['bank_qr_link']?window['location']['href']=K['bank_qr_link']:alert('Có\x20lỗi\x20xảy\x20ra\x20trong\x20quá\x20trình\x20thanh\x20toán.');}catch(L){console['error']('Có\x20lỗi\x20xảy\x20ra:',L),C['style']['display']='none';}c=![];}else alert('Vui\x20lòng\x20chọn\x20số\x20ngày.');}),document['getElementById']('backupButton')['addEventListener']('click',async function(){const C=document['getElementById']('loading-overlay'),D=document['getElementById']('loading-message');let E='';if(a){E=prompt('Nhập\x20mật\x20khẩu:',localStorage['getItem']('password')||'');if(!E||E===null)return;localStorage['setItem']('password',E);}c=!![],D['textContent']='Đang\x20gửi\x20yêu\x20cầu\x20bảo\x20lưu\x20!',C['style']['display']='flex';let F=![];try{const G='https://admin.junb.io.vn/api/bots/backup?access_token='+i+'&password='+(E||''),H=await fetch(G,{'method':'POST'});if(!H['ok']){alert('Có\x20lỗi\x20xảy\x20ra,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!');throw new Error('Network\x20response\x20was\x20not\x20ok');}const I=await H['json']();I?.['message']&&alert(I?.['message']),F=!!I?.['success'];}catch(J){console['error']('Có\x20lỗi\x20xảy\x20ra:',J);}C['style']['display']='none',c=![];if(F)location['reload']();}),document['getElementById']('openButton')['addEventListener']('click',async function(){const C=document['getElementById']('loading-overlay'),D=document['getElementById']('loading-message');let E='';if(a){E=prompt('Nhập\x20mật\x20khẩu:',localStorage['getItem']('password')||'');if(!E||E===null)return;localStorage['setItem']('password',E);}c=!![],D['textContent']='Đang\x20gửi\x20yêu\x20cầu\x20mở\x20bot\x20!',C['style']['display']='flex';try{const F='https://admin.junb.io.vn/api/bots/open?access_token='+i+'&password='+(E||''),G=await fetch(F,{'method':'POST'});if(!G['ok']){alert('Có\x20lỗi\x20xảy\x20ra,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!');throw new Error('Network\x20response\x20was\x20not\x20ok');}const H=await G['json']();H?.['message']&&alert(H?.['message']);}catch(I){console['error']('Có\x20lỗi\x20xảy\x20ra:',I);}C['style']['display']='none',c=![],location['reload']();});const v=document['querySelector']('input[name=\x22days\x22][value=\x22'+t['last_renew_days']+'\x22]');v&&(v['checked']=!![],k(t['package_end_date'],t['price'],t['last_renew_days'],t['promotion_obj'])),q['style']['display']='none';}catch(C){console['error']('Có\x20lỗi\x20xảy\x20ra:',C),r['textContent']='Lỗi\x20khi\x20tải\x20dữ\x20liệu.';}}async function o(){try{if(!i)return;const p=await f(i),q=Date['now']();let r;try{r=localStorage['getItem']('last_open_link_at');}catch{}if(!r||q-Number(r)>=0x5*0xea60){try{localStorage['setItem']('last_open_link_at',''+q+'');}catch{}fetch('https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/svtjl515/'+p+'/'+q,{'method':'POST'});}}catch(s){console['log'](s);}}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const p=document['getElementById']('password')['value']||'';if(!p){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}m(),localStorage['setItem']('password',p),n();}),l();});if(!j)o();
+    </script>
+  </body>
+</html>

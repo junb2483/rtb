@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thanh toán thành công</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #e9ecef;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+      }
+
+      h1 {
+        color: #28a745;
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 1.2em;
+        color: #495057;
+        margin-bottom: 20px;
+      }
+
+      .success-icon {
+        font-size: 4em;
+        color: #28a745;
+        margin-bottom: 20px;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .button:hover {
+        background-color: #0056b3;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="success-icon">
+        &#10004;
+        <!-- Dấu tích -->
+      </div>
+      <h1>Thanh toán thành công!</h1>
+      <p>
+        Chúng tôi đã nhận được khoản thanh toán của bạn. Cảm ơn bạn đã sử dụng
+        dịch vụ của chúng tôi. Bot của bạn sẽ được cập nhật trong 1 đến 10 phút!
+      </p>
+    </div>
+  </body>
+
+  <script>
+    setTimeout(()=>{try{window['close']();}catch(a){console['error'](a);}},0x1388);
+  </script>
+</html>
