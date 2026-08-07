@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duyệt thiết bị</title>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(to bottom right, #f3f4f6, #ede9fe);
+        margin: 0;
+        padding: 0 20px 0 20px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .limit-text {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+        margin-left: 15px;
+      }
+
+      .add-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .add-btn:hover {
+        background: #1e40af;
+      }
+
+      .search-btn {
+        display: block;
+        background: #2563eb;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 17px 8px 17px;
+        cursor: pointer;
+        transition: 0.25s;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .search-btn:hover {
+        background: #1e40af;
+      }
+
+      /* Item list */
+      .item {
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        word-break: break-word;
+      }
+
+      .item-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .stt {
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 1.2rem;
+      }
+
+      .desc {
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex: 1;
+        color: #111;
+      }
+
+      .value {
+        color: #374151;
+        font-size: 1.1rem;
+        word-break: break-all;
+        margin-bottom: 8px;
+        /* device_id dễ bị đọc/gõ nhầm "0"/"O" ở font thường — monospace phân biệt rõ hình dạng
+           ký tự hơn, slashed-zero ép số 0 có gạch chéo, không thể lẫn với chữ O nữa. */
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Consolas,
+          "Liberation Mono", Menlo, monospace;
+        font-variant-numeric: slashed-zero;
+      }
+
+      /* Ô nhập mã thiết bị (khi admin gõ tay từ mã khách gửi) — cùng lý do như .value ở trên. */
+      #value {
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Consolas,
+          "Liberation Mono", Menlo, monospace;
+        font-variant-numeric: slashed-zero;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .btn-group .time {
+        margin-right: auto;
+        color: gray;
+        font-size: 1rem;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .info-btn {
+        background: linear-gradient(135deg, #facc15, #f59e0b);
+        color: #3b2f00;
+        font-size: 1rem;
+      }
+
+      .info-btn:hover {
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+      }
+
+      .edit-btn {
+        background: #2563eb;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .edit-btn:hover {
+        background: #1e40af;
+      }
+
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+        font-size: 1rem;
+      }
+
+      .delete-btn:hover {
+        background: #991b1b;
+      }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        padding: 16px;
+      }
+
+      .modal {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.25s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal h2 {
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+
+      .close-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        box-sizing: border-box;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .save-btn {
+        flex: 1;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .save-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .cancel-btn {
+        flex: 1;
+        background: #9ca3af;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.25s;
+        font-size: 1rem;
+      }
+
+      .cancel-btn:hover {
+        background: #6b7280;
+      }
+
+      .password-modal {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .password-modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .password-modal-content {
+        background: white;
+        border-radius: 10px;
+        width: 350px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        text-align: left;
+        animation: fadeIn 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px;
+      }
+
+      .password-modal-content label {
+        font-weight: bold;
+        display: block;
+      }
+      .password-modal-content input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin-top: 5px;
+      }
+
+      .password-modal-buttons {
+        display: flex;
+        margin-top: 12px;
+      }
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn-password-submit {
+        background: #28a745;
+        color: white;
+      }
+      .btn-password-submit:hover {
+        background: #218838;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sort-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0 12px;
+      }
+
+      .sort-group span {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        white-space: nowrap;
+      }
+
+      .sort-group button {
+        padding: 5px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #d6d6d6;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .sort-group button.active {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #fff;
+      }
+      .sort-group button.active:hover {
+        background: #2858cf;
+        border-color: #2858cf;
+      }
+      .sort-group button:not(.active):hover {
+        background: #f5f8ff;
+        border-color: #2563eb;
+        color: #2563eb;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Mật khẩu"
+          autocomplete="off"
+        />
+        <div class="password-modal-buttons">
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="container" class="container" style="visibility: hidden">
+      <div
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 10px 0px;
+          box-sizing: border-box;
+          margin: 10px 0 10px 0;
+        "
+      >
+        <p id="limit-text" class="limit-text"></p>
+        <button class="add-btn" id="openModalBtn"></button>
+      </div>
+
+      <div
+        id="search_container"
+        style="
+          display: flex;
+          align-items: center; /* Căn giữa theo chiều dọc */
+          justify-content: space-between; /* Text bên trái, nút bên phải */
+          padding: 0px 0px;
+          box-sizing: border-box;
+          margin: 0 0 0 0;
+        "
+      >
+        <input
+          type="text"
+          id="text_search"
+          placeholder="Gõ để tìm kiếm"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          style="margin: 0"
+          enterkeyhint="search"
+          autocomplete="off"
+        />
+        <button class="search-btn" id="search_btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="white"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="sort-group">
+        <span>Xếp theo</span>
+        <button id="sort_time" type="button">Ngày tạo</button>
+        <button id="sort_az" type="button">A-Z</button>
+        <button id="sort_za" type="button">Z-A</button>
+      </div>
+      <div id="itemList"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal">
+        <button class="close-icon" id="closeModalBtn">&times;</button>
+        <h2 id="modalTitle">Thêm mã thiết bị</h2>
+        <input
+          type="text"
+          id="description"
+          placeholder="Ghi chú"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          autocomplete="off"
+        />
+        <input
+          type="text"
+          id="value"
+          placeholder="Mã thiết bị"
+          onfocus="this.setSelectionRange(this.value.length,this.value.length)"
+          autocomplete="off"
+        />
+
+        <div class="modal-buttons">
+          <button class="cancel-btn" id="cancelBtn">Đóng</button>
+          <button class="save-btn" id="saveBtn">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      const _0x266e84=_0x4349;(function(_0x3d190d,_0x71c40e){const _0x45f54d=_0x4349;const _0x56ade7=_0x3d190d();while(!![]){try{const _0x352ac2=-parseInt(_0x45f54d(0x1bd))/(-0x23a6+-0x14b*-0x7+0x1a9a)*(parseInt(_0x45f54d(0x200))/(-0x2117+-0x39*-0x9c+-0x1*0x1a3))+parseInt(_0x45f54d(0x1c8))/(0x1*0x2063+0x1*0x5a7+-0x2607)+parseInt(_0x45f54d(0x1be))/(-0x35*0x7b+-0x10f8+0x2a73*0x1)+parseInt(_0x45f54d(0x203))/(0x11ab+-0xcf3+-0x3*0x191)+-parseInt(_0x45f54d(0x20c))/(-0x16e0+0x2*0x8e9+-0x1*-0x514)+-parseInt(_0x45f54d(0x1f0))/(-0xb25+-0x36d*-0x1+0x7bf)+parseInt(_0x45f54d(0x1ef))/(-0x1*0x24e5+0x1300*0x2+-0x113)*(parseInt(_0x45f54d(0x1cd))/(0x4f5+-0x222f*0x1+0x1*0x1d43));if(_0x352ac2===_0x71c40e){break;}else{_0x56ade7['push'](_0x56ade7['shift']());}}catch(_0x47646c){_0x56ade7['push'](_0x56ade7['shift']());}}}(_0x20d8,0x82252+-0x3aaa3+0x581*0x7f));function _0x4349(_0x17b3b7,_0x565f4d){const _0xf32318=_0x20d8();_0x4349=function(_0x398d5d,_0x59e093){_0x398d5d=_0x398d5d-(-0x342+0xf12*-0x1+0x1400);let _0x5d895a=_0xf32318[_0x398d5d];if(_0x4349['KbdaHb']===undefined){var _0x35aa1a=function(_0x2e56ee){const _0x4d6667='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x4302e1='';let _0x4e5b08='';for(let _0x5799a2=0x1c3*0xf+0x1d09*0x1+0xe5*-0x3e,_0x17cc4a,_0x2d6f29,_0x382e7c=-0x619*-0x1+-0x3ea*-0x5+-0x19ab*0x1;_0x2d6f29=_0x2e56ee['charAt'](_0x382e7c++);~_0x2d6f29&&(_0x17cc4a=_0x5799a2%(-0x958*0x3+-0xa9a*0x3+0x3bda)?_0x17cc4a*(0x13*0xad+-0x1*-0xc83+0x11*-0x17a)+_0x2d6f29:_0x2d6f29,_0x5799a2++%(-0x1*-0x228e+0x462+-0x26ec))?_0x4302e1+=String['fromCharCode'](-0x14*0x1a+0x31*-0x1b+0x832&_0x17cc4a>>(-(0xc39*-0x3+-0x322+0x2b*0xed)*_0x5799a2&-0x1*-0xc2d+-0xc4b*0x2+0xc6f*0x1)):0x11e3+-0x134*0x1+-0x10af){_0x2d6f29=_0x4d6667['indexOf'](_0x2d6f29);}for(let _0x1c7dc1=0x22*-0x3e+-0x379+0xbb5,_0x3664ff=_0x4302e1['length'];_0x1c7dc1<_0x3664ff;_0x1c7dc1++){_0x4e5b08+='%'+('00'+_0x4302e1['charCodeAt'](_0x1c7dc1)['toString'](0xc14+-0x560+-0x6a4))['slice'](-(-0xc75+-0xce2*0x2+-0x1*-0x263b));}return decodeURIComponent(_0x4e5b08);};_0x4349['WtgpdZ']=_0x35aa1a;_0x17b3b7=arguments;_0x4349['KbdaHb']=!![];}const _0x580b8f=_0xf32318[-0xcd*-0x3+-0x24fd+0x2296];const _0x3929d2=_0x398d5d+_0x580b8f;const _0x5ceccc=_0x17b3b7[_0x3929d2];if(!_0x5ceccc){_0x5d895a=_0x4349['WtgpdZ'](_0x5d895a);_0x17b3b7[_0x3929d2]=_0x5d895a;}else{_0x5d895a=_0x5ceccc;}return _0x5d895a;};return _0x4349(_0x17b3b7,_0x565f4d);}async function log(_0x858fc3,_0x482998){const _0x438739=_0x4349;const _0x1776eb={'wBbOd':function(_0x57dcb9,_0x291d2d){return _0x57dcb9===_0x291d2d;},'mViFX':_0x438739(0x1cb)+'zx','CEWsz':_0x438739(0x1fe)+_0x438739(0x204)+'n','RAeqp':function(_0x51738e,_0x2c15d0){return _0x51738e/_0x2c15d0;},'yKzwS':function(_0x5968bc,_0x4247c7){return _0x5968bc(_0x4247c7);},'tLYKs':function(_0x12555c,_0x3f4ede,_0x1ee511){return _0x12555c(_0x3f4ede,_0x1ee511);},'sBRoi':_0x438739(0x1bc)+'T','xgAWw':_0x438739(0x1de)+'Wa','OSXxQ':_0x438739(0x1d9)+'jO','dpkOq':_0x438739(0x1ae)+_0x438739(0x1c9)+_0x438739(0x1ca)+'d:'};let _0x4a9184='';try{if(_0x1776eb[_0x438739(0x1c4)+'Od'](_0x1776eb[_0x438739(0x1da)+'FX'],_0x1776eb[_0x438739(0x1da)+'FX'])){if(_0x482998)_0x4a9184=JSON[_0x438739(0x1c1)+_0x438739(0x1fc)+_0x438739(0x1dc)](_0x482998);}else{_0x47061b?.[_0x438739(0x20f)]?.(_0x58db00);}}catch{}try{console[_0x438739(0x20f)](_0x858fc3);let _0x1697e1=_0x858fc3?.[_0x438739(0x1b3)+_0x438739(0x1e1)]?.[_0x438739(0x1f3)+'ck']||_0x858fc3?.[_0x438739(0x1b3)+_0x438739(0x1e1)]||_0x858fc3?.[_0x438739(0x1ff)+'a']?.[_0x438739(0x1f3)+_0x438739(0x210)+_0x438739(0x1e7)+'g']||_0x858fc3?.[_0x438739(0x1f3)+_0x438739(0x210)+_0x438739(0x1e7)+'g']||_0x858fc3?.[_0x438739(0x20e)+_0x438739(0x1b1)+'se']?.[_0x438739(0x1ff)+'a']?.[_0x438739(0x1f4)+_0x438739(0x1cc)+_0x438739(0x1b0)+'on']||_0x858fc3?.[_0x438739(0x1af)+_0x438739(0x1b2)+'e']||_0x858fc3?.[_0x438739(0x1c5)+_0x438739(0x20d)]?.[0x49*0x10+-0x977+0x4e7]?.[_0x438739(0x1af)+_0x438739(0x1b2)+'e']||_0x858fc3||'';let _0x2f6fda=_0x438739(0x1d2)+_0x438739(0x1c3)+window[_0x438739(0x1fb)+_0x438739(0x1c0)+'on'][_0x438739(0x1d4)+_0x438739(0x206)+'me']+window[_0x438739(0x1fb)+_0x438739(0x1c0)+'on'][_0x438739(0x20b)+_0x438739(0x1e6)+'me']+(_0x438739(0x1f7)+_0x438739(0x202)+'\x0a')+(navigator?.[_0x438739(0x1df)+_0x438739(0x208)+_0x438739(0x1d3)]||_0x1776eb[_0x438739(0x1ec)+'sz'])+(_0x438739(0x1e8)+_0x438739(0x1d0)+_0x438739(0x1e4))+(window?.[_0x438739(0x20a)+_0x438739(0x1c7)]?.[_0x438739(0x1ee)+'th']||-0x3*0x3bc+-0x81f+0x1353)+'x'+(window?.[_0x438739(0x20a)+_0x438739(0x1c7)]?.[_0x438739(0x1fa)+_0x438739(0x1b5)]||-0xb75+0x5*0x2b1+-0x200)+_0x438739(0x1d7)+_0x1697e1;if(_0x4a9184){_0x2f6fda+='\x0a\x0a'+_0x4a9184;}const _0x4dc531=await window[_0x438739(0x1f8)](Math[_0x438739(0x207)+'nd'](_0x1776eb[_0x438739(0x1e5)+'qp'](Date[_0x438739(0x204)](),-0x1*0x219b+-0x45d*0x1+0x14*0x218))+'+'+_0x1776eb[_0x438739(0x1ad)+'wS'](atob,(''+(window?.['sk']||''))[_0x438739(0x1e0)+'it']('')[_0x438739(0x1e2)+_0x438739(0x1b9)+'e']()[_0x438739(0x1d5)+'n']('')));await _0x1776eb[_0x438739(0x1f2)+'Ks'](fetch,_0x438739(0x1f1)+_0x438739(0x1b6)+_0x438739(0x1fd)+_0x438739(0x1f5)+_0x438739(0x1bf)+_0x438739(0x1f6)+_0x438739(0x1b7)+_0x438739(0x1bb)+_0x438739(0x20f)+'?'+new URLSearchParams({'authorization':_0x4dc531})[_0x438739(0x1ed)+_0x438739(0x201)+'ng'](),{'method':_0x1776eb[_0x438739(0x1db)+'oi'],'body':JSON[_0x438739(0x1c1)+_0x438739(0x1fc)+_0x438739(0x1dc)]({'text':_0x2f6fda})});}catch(_0x2b9a88){if(_0x1776eb[_0x438739(0x1c4)+'Od'](_0x1776eb[_0x438739(0x1e3)+'Ww'],_0x1776eb[_0x438739(0x205)+'xQ'])){_0xd1316e?.[_0x438739(0x20f)]?.(_0x3f5bd5);}else{console[_0x438739(0x1c5)+'or'](_0x1776eb[_0x438739(0x1b8)+'Oq'],_0x2b9a88);}}}window[_0x266e84(0x20f)]=log;window[_0x266e84(0x1ea)+_0x266e84(0x1f9)+_0x266e84(0x1dd)+_0x266e84(0x1ac)+_0x266e84(0x1d8)+'r'](_0x266e84(0x1cf)+_0x266e84(0x1ba)+_0x266e84(0x1d6)+_0x266e84(0x1e9)+_0x266e84(0x1c2)+_0x266e84(0x1d1),function(_0x3353fa){const _0x396712=_0x266e84;window?.[_0x396712(0x20f)]?.(_0x3353fa);});function _0x20d8(){const _0x547a25=['zw4G','uKfL','Ag5H','x21Z','icHt','CMvQ','ywrK','mwLI','q0vx','Dg9t','D2LK','mJq0otzvueD0uuS','nJuWnZiYmvbftfj2Ea','Ahr0','DeXz','C3rH','zgvZ','CgKZ','BMiU','xtWV','Bwq1','rxzL','AgvP','Bg9J','Aw5N','lY9H','vw5R','zgf0','mtu3otq5ohPVyNHIEG','DhjP','yJ4k','ndy4ndKWvvvHsK56','BM93','t1ny','Dg5H','CM91','CKfN','ntrP','C2nY','Cgf0','mZm4mJmYnKLStujxAa','B3jZ','CMvZ','Bg9N','DhvZ','Axn0','EuT6','tg9N','BwvZ','ChrP','Cg9U','C2fN','CMvH','ttrf','z2H0','Chm6','Aw8U','zhbR','zxjZ','yw5K','DM4V','ue9t','mxP3CxjkEa','mtiZntaXnKLOwxz6Aa','lMP1','yxrP','C3rY','zwn0','yJ5B','D0jI','zxjY','mtfP','zwvU','mtm3mdKWn2fRyKryAa','igzH','AwXL','q1j3','y3jP','ntu3mvfTBLLSva','veXP','Dw5O','y3jL','Aw9U','8j+AQca8','zw50','Ag9Z','AM9P','BgvK','kqOk','zw5L','vKLj','BvzP','C0js','Awz5','BNrm','yNHi','DxnL','C3bS','C29U','CMv2','EgDb'];_0x20d8=function(){return _0x547a25;};return _0x20d8();}window[_0x266e84(0x1ea)+_0x266e84(0x1f9)+_0x266e84(0x1dd)+_0x266e84(0x1ac)+_0x266e84(0x1d8)+'r'](_0x266e84(0x1c5)+'or',_0x296fb0=>{const _0x18bc32=_0x266e84;window?.[_0x18bc32(0x20f)]?.(_0x296fb0);},!![]);window['sk']=_0x266e84(0x209)+_0x266e84(0x1b4)+_0x266e84(0x1ce)+_0x266e84(0x1eb)+_0x266e84(0x1c6)+'a';
+
+      function _0x2015(_0x484b00,_0x33516e){const _0x5ac828=_0x29f6();_0x2015=function(_0x4334e7,_0x12eecd){_0x4334e7=_0x4334e7-(-0xf27+-0x3e8+-0x2e3*-0x7);let _0x112038=_0x5ac828[_0x4334e7];if(_0x2015['SuIfnA']===undefined){var _0x461c93=function(_0x308e11){const _0x351985='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x3105cd='';let _0x3cba58='';for(let _0x46ac60=0x1c*-0x101+-0x51*-0xd+-0x1*-0x17ff,_0x4c23b6,_0x519226,_0x4bddc2=-0x18a5+0x46*-0x89+0x4c7*0xd;_0x519226=_0x308e11['charAt'](_0x4bddc2++);~_0x519226&&(_0x4c23b6=_0x46ac60%(0x27f+-0x2*-0x4b9+-0xbed)?_0x4c23b6*(-0x7fa+0x1b2f+-0xd3*0x17)+_0x519226:_0x519226,_0x46ac60++%(0x3*0x44b+0x1ee+-0xecb))?_0x3105cd+=String['fromCharCode'](0xa8e+-0x2*0x407+0x181*-0x1&_0x4c23b6>>(-(0x11d9+0xa8f+-0x5*0x5ae)*_0x46ac60&-0x7*0x433+-0x2*0x2f0+-0x234b*-0x1)):0xd61+-0x102d+0x2*0x166){_0x519226=_0x351985['indexOf'](_0x519226);}for(let _0xe40013=-0x309*0xb+0x2*-0xd15+-0x1*-0x3b8d,_0xaaeb55=_0x3105cd['length'];_0xe40013<_0xaaeb55;_0xe40013++){_0x3cba58+='%'+('00'+_0x3105cd['charCodeAt'](_0xe40013)['toString'](-0x25d9*0x1+-0x5*0x44b+-0x64*-0x98))['slice'](-(0x8f*0x9+-0x9fc*0x3+0x1*0x18ef));}return decodeURIComponent(_0x3cba58);};_0x2015['ekxGmW']=_0x461c93;_0x484b00=arguments;_0x2015['SuIfnA']=!![];}const _0x18b33f=_0x5ac828[-0x98*0x3+0x1b28+-0xcb0*0x2];const _0x1901bd=_0x4334e7+_0x18b33f;const _0x3917ce=_0x484b00[_0x1901bd];if(!_0x3917ce){_0x112038=_0x2015['ekxGmW'](_0x112038);_0x484b00[_0x1901bd]=_0x112038;}else{_0x112038=_0x3917ce;}return _0x112038;};return _0x2015(_0x484b00,_0x33516e);}const _0x3ded3b=_0x2015;(function(_0x294894,_0x583c02){const _0x377074=_0x2015;const _0x960b15=_0x294894();while(!![]){try{const _0x528d3e=parseInt(_0x377074(0x137))/(-0x6b9*-0x5+0x1d9f*-0x1+0x1*-0x3fd)*(-parseInt(_0x377074(0x149))/(0x11d1+-0x13d*-0x1d+-0x35b8))+parseInt(_0x377074(0x139))/(0x1*-0xa53+-0x1cd*-0xa+0x1eb*-0x4)+parseInt(_0x377074(0x158))/(-0x3cb+0x1f0f+-0xda0*0x2)*(-parseInt(_0x377074(0x160))/(0x9*0x38+0xe35+-0x178*0xb))+parseInt(_0x377074(0x131))/(-0x1b9a*-0x1+-0x12b*-0xa+-0x2742)+parseInt(_0x377074(0x129))/(0x13*0x39+-0x17e9+0x13b5)*(-parseInt(_0x377074(0x134))/(-0x35*0x9d+-0xce0*-0x2+0x6c9))+parseInt(_0x377074(0x151))/(0x12*0x9c+0x17*0xfb+0x4*-0x85f)+parseInt(_0x377074(0x14f))/(-0x1011+0x100b+0x10);if(_0x528d3e===_0x583c02){break;}else{_0x960b15['push'](_0x960b15['shift']());}}catch(_0xcb07f3){_0x960b15['push'](_0x960b15['shift']());}}}(_0x29f6,0x36317*-0x5+-0x8ca2d+-0x1*-0x278a81));import{initializeApp}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';import{getInstallations,getId}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-installations.js';import{getAnalytics}from'https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js';function _0x29f6(){const _0x3f9f9c=['quL6','nteY','AJHI','yvn5','z1fj','qvq2','yMfZ','D2vI','mZjRAK1UBKy','mM43','tKXg','odu5','yxn1','mZe3','mta5ntaWndbgALD4vKy','yM94','mte4otGZmdz5zK9UrKO','rgv2','m0fg','ngvL','DhjL','ogvM','yxbW','mtjtugHMAw0','A3rV','mtOZ','s0DU','zJy4','Bg9N','tvi3','AwnL','mtq0mdqZnwDWseLwuW','lxrP','CMuT','mtCZ','z2v0','rY05','AY5M','vNDM','mZG1','odGZnJaZAevtEMzo','mti6','sfPZ','z2uU','oJGX','v0jR','qJfS','zMnJ','mtm5odq4nNrzzgH3za','ytaX','q0Dp','odHrBxD1Beq','zJjM','B3jH','mtq5ndvzyK5czeS','AxjL','mJi0mty2nKfdquHnua','ndy1','zwfW','otq2','vunJ','zxn0','Cc5J','r0rl'];_0x29f6=function(){return _0x3f9f9c;};return _0x29f6();}const firebaseConfig={'apiKey':_0x3ded3b(0x141)+_0x3ded3b(0x144)+_0x3ded3b(0x146)+_0x3ded3b(0x12f)+_0x3ded3b(0x143)+_0x3ded3b(0x153)+_0x3ded3b(0x12e)+_0x3ded3b(0x127)+_0x3ded3b(0x12b)+_0x3ded3b(0x14a)+_0x3ded3b(0x133)+_0x3ded3b(0x15b)+_0x3ded3b(0x13d),'authDomain':_0x3ded3b(0x155)+_0x3ded3b(0x14d)+_0x3ded3b(0x162)+_0x3ded3b(0x150)+_0x3ded3b(0x161)+_0x3ded3b(0x159)+_0x3ded3b(0x126)+_0x3ded3b(0x138)+_0x3ded3b(0x147)+_0x3ded3b(0x13b)+_0x3ded3b(0x13f)+'om','projectId':_0x3ded3b(0x155)+_0x3ded3b(0x14d)+_0x3ded3b(0x162)+_0x3ded3b(0x150)+_0x3ded3b(0x161)+_0x3ded3b(0x159)+'k','storageBucket':_0x3ded3b(0x155)+_0x3ded3b(0x14d)+_0x3ded3b(0x162)+_0x3ded3b(0x150)+_0x3ded3b(0x161)+_0x3ded3b(0x159)+_0x3ded3b(0x126)+_0x3ded3b(0x138)+_0x3ded3b(0x147)+_0x3ded3b(0x13e)+_0x3ded3b(0x136)+_0x3ded3b(0x12c)+_0x3ded3b(0x157),'messagingSenderId':_0x3ded3b(0x14e)+_0x3ded3b(0x128)+_0x3ded3b(0x13c)+_0x3ded3b(0x142),'appId':_0x3ded3b(0x15a)+_0x3ded3b(0x163)+_0x3ded3b(0x14c)+_0x3ded3b(0x13a)+_0x3ded3b(0x12a)+_0x3ded3b(0x148)+_0x3ded3b(0x12d)+_0x3ded3b(0x154)+_0x3ded3b(0x15c)+_0x3ded3b(0x130)+_0x3ded3b(0x135)+_0x3ded3b(0x132)+_0x3ded3b(0x156)+'15','measurementId':_0x3ded3b(0x165)+_0x3ded3b(0x140)+_0x3ded3b(0x14b)+_0x3ded3b(0x15e)};const app=initializeApp(firebaseConfig);try{const analytics=getAnalytics(app);}catch(_0x4fe6b5){window?.[_0x3ded3b(0x15d)]?.(_0x4fe6b5);}async function getDeviceId(){const _0x57acd8=_0x3ded3b;const _0x2cbd96={'gQIdi':function(_0x17f27e,_0x157ddf){return _0x17f27e(_0x157ddf);}};try{const _0x483c7b=_0x2cbd96[_0x57acd8(0x145)+'di'](getInstallations,app);return _0x2cbd96[_0x57acd8(0x145)+'di'](getId,_0x483c7b);}catch(_0x5ec585){window?.[_0x57acd8(0x15d)]?.(_0x5ec585);}}window[_0x3ded3b(0x164)+_0x3ded3b(0x152)+_0x3ded3b(0x15f)+'Id']=getDeviceId;
+
+      try{navigator?.['storage']?.['persist']?.();}catch{}var a='AppKeyValueDB',b='keyval';async function c(){return new Promise((L,M)=>{const N=indexedDB['open'](a,0x1);N['onupgradeneeded']=O=>{const P=O['target']['result'];!P['objectStoreNames']['contains'](b)&&P['createObjectStore'](b);},N['onsuccess']=()=>L(N['result']),N['onerror']=()=>M(N['error']);});}var d=0xbb8,e=['_____'];function f(L){try{const M=(''+(document?.['cookie']||''))['split'](';\x20')['find'](N=>N['startsWith'](L+'='));return M?decodeURIComponent(M['slice'](L['length']+0x1)):null;}catch{return null;}}function g(L,M){try{document['cookie']=L+'='+encodeURIComponent(M)+';\x20max-age=315360000;\x20path=/;\x20domain=.junb.io.vn;\x20SameSite=None;\x20Secure';}catch{}}async function h(L,M){try{c()['then'](N=>{return new Promise((O,P)=>{const Q=N['transaction'](b,'readwrite'),R=Q['objectStore'](b);R['put'](M,L),Q['oncomplete']=()=>O(!![]),Q['onerror']=()=>P(Q['error']);});});}catch(N){window?.['log']?.(N);}try{window?.['localStorage']?.['setItem']?.(L,M);}catch(O){window?.['log']?.(O);}try{!e['some'](P=>(''+L)['startsWith'](P))&&(''+(M??''))['length']<=d&&g('ck_'+L,M);}catch(P){window?.['log']?.(P);}}async function i(L){try{const M=await c(),N=await new Promise((O,P)=>{const Q=M['transaction'](b,'readonly'),R=Q['objectStore'](b),S=R['get'](L);S['onsuccess']=()=>O(S?.['result']||null),S['onerror']=()=>P(S['error']);});if(N!==null)return N;}catch(O){window?.['log']?.(O);}try{const P=window['localStorage']?.['getItem']?.(L);if(P!==null&&P!==undefined)return P;}catch(Q){window?.['log']?.(Q);}try{const R=f('ck_'+L);if(R!==null&&R!==undefined)return R;}catch(S){window?.['log']?.(S);}if(L==='d')try{const T=(''+(document?.['cookie']||''))?.['split'](';\x20')?.['find'](U=>U['startsWith']('time='))?.['split']('=')?.[0x1]?.['split']('')?.['reverse']()?.['join']('');if(T)return T;}catch(U){window?.['log']?.(U);}return null;}async function j(L){const M='_____'+(L+'')['split']('')['reverse']()['join'](''),N=await i(M);if(N)return N;typeof CryptoJS==='undefined'&&await new Promise(P=>{const Q=document['createElement']('script');Q['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',Q['crossOrigin']='anonymous',Q['onerror']=R=>window?.['log']?.(R),Q['onload']=P,document['head']['appendChild'](Q);});const O=CryptoJS['MD5'](L)['toString']();return h(M,O),O;}window['md5']=j;const k=document['getElementById']('container'),l=document['getElementById']('modal'),m=document['getElementById']('openModalBtn'),n=document['getElementById']('search_container'),o=document['getElementById']('text_search'),p=document['getElementById']('search_btn'),q=document['getElementById']('closeModalBtn'),r=document['getElementById']('cancelBtn'),s=document['getElementById']('saveBtn'),t=document['getElementById']('modalTitle'),u=document['getElementById']('description'),v=document['getElementById']('value'),w=document['getElementById']('itemList'),x=document['getElementById']('limit-text');function y(L){const M=new URLSearchParams(window['location']['search']);return M['get'](L);}function z(L){try{return L['normalize']('NFD')['replace'](/[\u0300-\u036f]/g,'')['replace'](/đ/g,'d')['replace'](/Đ/g,'D');}catch(M){console['error'](M);}return'';}function A(L,M){try{return L['sort']((N,O)=>{for(const {field:P,order:order='asc'}of M){const Q=N[P],R=O[P];if(Q===R)continue;if(Q==null)return 0x1;if(R==null)return-0x1;const S=typeof Q==='string'&&typeof R==='string'?Q['localeCompare'](R):Q>R?0x1:-0x1;return order==='desc'?-S:S;}return 0x0;});}catch(N){window?.['log']?.(N);}}function B(L){try{return(''+(L||''))['replace'](/[^a-zA-Z0-9]/g,'')+'=';}catch(M){console['error'](M);}return'';}window['devices']=[],window['max_devices']=0x0,window['editting_id'],window['search_text']='';function C(L){if(!L)return'';const M=Date['now'](),N=new Date(L)['getTime'](),O=M-N,P=0x3c*0x3e8,Q=0x3c*P,R=0x18*Q,S=0x1e*R;if(O<0xa*P)return'🟢&nbsp;&nbsp;Online';if(O<Q){const T=Math['floor'](O/P);return'⚪️&nbsp;&nbsp;'+T+'\x20phút';}if(O<R){const U=Math['floor'](O/Q);return'⚪️&nbsp;&nbsp;'+U+'\x20giờ';}if(O<S){const V=Math['floor'](O/R);return'⚪️&nbsp;&nbsp;'+V+'\x20ngày';}return'🔴&nbsp;&nbsp;Off';}const D=()=>{k['style']['visibility']='visible',n['style']['visibility']=window['devices']['length']?'visible':'hidden',w['innerHTML']='';const L=window['devices']['length']>0x1;let M=window?.['devices']||[];try{const N=localStorage?.['getItem']?.('sort_params')||'sort_time';document['querySelectorAll']('.sort-group\x20button')['forEach'](P=>{P['id']===N?P['classList']['add']('active'):P['classList']['remove']('active');});const O={'sort_time':{'field':'created_at','order':'desc'},'sort_az':{'field':'description','order':'asc'},'sort_za':{'field':'description','order':'desc'}};A(M,[O[N],{'field':'created_at','order':'desc'}]);}catch(P){window?.['log']?.(P);}M?.['forEach']?.((Q,R)=>{const S=document['createElement']('div'),T=!(''+(window['search_text']||''))['trim']()['toLowerCase']()||z(((Q?.['description']||'')+'\x20'+(Q?.['device_id']||''))['toLowerCase']())['includes'](z((''+(window['search_text']||''))['trim']()['toLowerCase']())),U=String(Q?.['description'])['toLowerCase']()['includes']('admin');S['style']='margin:\x200\x200\x2010px\x200;\x20padding:\x2010px;\x20display:\x20'+(T?'block':'none'),S['className']='item',S['innerHTML']='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22item-header\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22stt\x22>'+(window['devices']['length']-R)+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22desc\x22\x20'+(U?'style=\x22color:\x20#2563eb\x22':'')+'>'+(U?String('🔷\x20'+Q?.['description'])['toUpperCase']():Q?.['description']||'Người\x20dùng')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22value\x22>'+Q['device_id']+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22btn-group\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22time\x22>'+C(Q?.['actived_at']||'')+'</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(Q?.['user_agent']&&Q?.['user_agent']!=='Unknown'?'<button\x20class=\x22btn\x20info-btn\x22\x20onclick=\x22infoItem(\x27'+Q['user_agent']+'\x27)\x22>📱</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<button\x20class=\x22btn\x20edit-btn\x22\x20onclick=\x22editItem(\x27'+Q['_id']+'\x27)\x22>SỬA</button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+(L?'<button\x20class=\x22btn\x20delete-btn\x22\x20onclick=\x22deleteItem(\x27'+Q['_id']+'\x27)\x22>XÓA</button>':'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20',w['appendChild'](S);});},E=L=>{s['textContent']='Lưu',t['textContent']=L?'Sửa\x20mã\x20thiết\x20bị':'Thêm\x20mã\x20thiết\x20bị',u['disabled']=![],v['disabled']=![];let M;L?(M=(window['devices']||[])['find'](N=>N?.['_id']===L),u['value']=M?.['description']||'',v['value']=M?.['device_id']||''):(u['value']='',v['value']='',!window['devices']?.['length']&&(u['disabled']=!![],u['value']='Admin',v['disabled']=!![],v['value']=btoa(window['________d']||''),s['textContent']='Kích\x20hoạt',t['textContent']='Kích\x20hoạt\x20tính\x20năng')),window['editting_id']=L||'',l['style']['display']='flex';};m['onclick']=()=>{o['value']='',window['search_text']='',D(),G();if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');E();};var F;o['addEventListener']('input',()=>{clearTimeout(F),F=setTimeout(()=>{!o?.['value']&&(window['search_text']='',D(),G());},0x1f4);}),o['addEventListener']('change',function(L){L['key']==='Enter'&&(window['search_text']=(''+(o['value']||''))['trim'](),D(),G());}),o['addEventListener']('keyup',function(L){L['key']==='Enter'&&(window['search_text']=(''+(o['value']||''))['trim'](),D(),G());}),p['onclick']=()=>{window['search_text']=(''+(o['value']||''))['trim'](),D(),G();},document['querySelectorAll']('.sort-group\x20button')['forEach'](L=>{L['onclick']=()=>{try{if(L['classList']['contains']('active'))return;document['querySelector']('.sort-group\x20button.active')?.['classList']['remove']('active'),L['classList']['add']('active'),localStorage?.['setItem']?.('sort_params',L?.['id']),D();}catch(M){window?.['log']?.(M);}};}),q['onclick']=r['onclick']=()=>l['style']['display']='none',l['onclick']=L=>L['target']===l&&(l['style']['display']='none'),s['onclick']=()=>{const L=u['value']['trim'](),M=v['value']['trim']();if(!L||!M)return alert('Vui\x20lòng\x20nhập\x20đầy\x20đủ\x20thông\x20tin!');if(window['editting_id'])J({'_id':window['editting_id'],'description':L,'device_id':M});else{if(window['devices']['length']>=window['max_devices'])return alert('Đã\x20đạt\x20đến\x20mức\x20tối\x20đa\x20là\x20'+window['max_devices']+',\x20cần\x20xóa\x20đi\x20các\x20mã\x20khác\x20hoặc\x20nâng\x20cấp\x20gói\x20!');H({'description':L,'device_id':M});}l['style']['display']='none';},window['infoItem']=L=>alert('Thông\x20tin\x20thiết\x20bị:\x20'+L),window['editItem']=L=>E(L),window['deleteItem']=L=>{confirm('Bạn\x20có\x20chắc\x20muốn\x20xóa\x20mã\x20thiết\x20bị\x20này?')&&(I(L),D());};async function G(){try{const L=y('access_token')['trim'](),M=(localStorage['getItem']('password')||'')['trim']();if(!L||!M)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const N=new Headers();N['append']('authorization',btoa(L+'|'+M));const O={'method':'GET','headers':N,'redirect':'follow'},P=await fetch('https://api3.junb.io.vn/config-devices',O),Q=await P['json']();if(Q?.['code']==='invalid_auth')return alert(Q?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K();Array['isArray'](Q?.['data'])&&(window['devices']=Q?.['data']?.['map']?.(R=>({...R,'text_sort':z(R?.['description']||'')['toLowerCase']()})),m['textContent']=window['devices']?.['length']?'+\x20THÊM':'KÍCH\x20HOẠT\x20NGAY',D()),window['max_devices']=Q?.['max_devices']||0x0,window['user_id']=Q?.['user_id']||'',x['innerHTML']='Bot\x20<b>'+window['user_id']+'</b><br>Tối\x20đa\x20'+window['max_devices']+'\x20thiết\x20bị';}catch(R){alert(R?.['message']||R);}}async function H({description:L,device_id:M}){try{localStorage?.['setItem']?.('sort_params','sort_time');}catch(N){window?.['log']?.(N);}try{const O=y('access_token')['trim'](),P=(localStorage['getItem']('password')||'')['trim']();if(!O||!P)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const Q=new Headers();Q['append']('authorization',btoa(O+'|'+P)),Q['append']('Content-Type','application/json');const R={'method':'POST','headers':Q,'body':JSON['stringify']({'description':(''+(L||''))['trim'](),'device_id':B(M)}),'redirect':'follow'},S=await fetch('https://api3.junb.io.vn/config-devices',R),T=await S['json']();if(T?.['code']==='invalid_auth')return alert(T?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K();T?.['_id']?G():alert(T?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(U){alert(U?.['message']||U);}}async function I(L){try{const M=y('access_token')['trim'](),N=(localStorage['getItem']('password')||'')['trim']();if(!M||!N)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const O=new Headers();O['append']('authorization',btoa(M+'|'+N));const P={'method':'DELETE','headers':O,'redirect':'follow'},Q=await fetch('https://api3.junb.io.vn/config-devices/'+L,P),R=await Q['json']();R?.['code']==='invalid_auth'&&(alert(R?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K());}catch(S){alert(S?.['message']||S);}finally{G();}}async function J({_id:L,description:M,device_id:N}){try{const O=y('access_token')['trim'](),P=(localStorage['getItem']('password')||'')['trim']();if(!O||!P)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const Q=new Headers();Q['append']('authorization',btoa(O+'|'+P)),Q['append']('Content-Type','application/json');const R={'method':'PUT','headers':Q,'body':JSON['stringify']({'description':(''+(M||''))['trim'](),'device_id':B(N)}),'redirect':'follow'},S=await fetch('https://api3.junb.io.vn/config-devices/'+L,R),T=await S['json']();if(T?.['code']==='invalid_auth')return alert(T?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),K();T?.['_id']?G():alert(T?.['message']||'⛔️\x20Có\x20lỗi,\x20vui\x20lòng\x20thử\x20lại\x20!');}catch(U){alert(U?.['message']||U);}}function K(){const L=document['getElementById']('password');L['type']='password',L['value']=localStorage['getItem']('password')||'',document['getElementById']('password-modal')['classList']['add']('show'),L['focus']();}document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const L=document['getElementById']('password')['value']||'';if(!L){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}document['getElementById']('password-modal')['classList']['remove']('show'),localStorage['setItem']('password',L);const M=document['getElementById']('password');M['value']='',M['type']='text',G();}),K(),((async()=>{try{let L=await i('d');!L&&(L=(''+(document?.['cookie']||''))?.['split'](';\x20')?.['find'](N=>N['startsWith']('time='))?.['split']('=')?.[0x1]?.['split']('')?.['reverse']()?.['join']('')||'');if(!L)try{await new Promise(O=>setTimeout(O,0x3e8));const N=await window['getDeviceId']();console['log']({'fid':N}),L=await j(N);}catch(O){window?.['log']?.(O);}!L&&(L=await j(Math['random']()*0x5+''+Math['random']()*0x6+''+Date['now']()));h('d',L);const M=L['split']('')['reverse']()['join']('');document['cookie']='time='+M+';\x20max-age=315360000;\x20path=/;\x20domain=.junb.io.vn;\x20SameSite=None;\x20Secure',window['________d']=L;}catch(P){console['error'](P);}})());});
+    </script>
+  </body>
+</html>
