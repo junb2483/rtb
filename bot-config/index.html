@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Bot Config</title>
+    <style>
+      :root {
+        --blue: #2563eb;
+        --blue-dark: #1d4ed8;
+        --ink: #0f172a;
+        --ink-soft: #475569;
+        --ink-faint: #94a3b8;
+        --line: #e2e8f0;
+        --card: #ffffff;
+        --danger: #e11d48;
+        --radius: 16px;
+        --primary-color: #2563eb;
+        --error-color: #e11d48;
+      }
+
+      * { -webkit-tap-highlight-color: transparent; }
+
+      html, body { height: 100%; margin: 0; padding: 0; }
+
+      body {
+        -webkit-text-size-adjust: 100%;
+        background: linear-gradient(180deg, #dbeafe 0%, #eff6ff 38%, #f8fafc 100%);
+        background-attachment: fixed;
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow-y: auto;
+      }
+
+      .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 28px 16px 40px;
+        min-height: 100vh;
+        min-height: 100dvh;
+        box-sizing: border-box;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 520px;
+        padding: 22px 20px 24px;
+        background-color: var(--card);
+        border-radius: var(--radius);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow:
+          0 1px 2px rgba(15, 23, 42, 0.04),
+          0 12px 32px -8px rgba(15, 23, 42, 0.16);
+      }
+
+      .title {
+        margin: 0 0 18px;
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+
+      .title::before {
+        content: "◈";
+        color: var(--blue);
+        margin-right: 8px;
+        font-size: 1.1rem;
+        vertical-align: 2px;
+      }
+
+      .field { margin-bottom: 14px; }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--ink-soft);
+      }
+
+      input[type="text"],
+      textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+        font-family: inherit;
+        background-color: #f8fafc;
+        color: var(--ink);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      }
+
+      textarea { line-height: 1.55; resize: vertical; }
+
+      textarea::placeholder,
+      input::placeholder { color: var(--ink-faint); }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        background-color: var(--card);
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--blue);
+        cursor: pointer;
+        margin: 0;
+      }
+
+      input[type="radio"] { accent-color: var(--blue); }
+
+      /* nhãn của ô tick nằm ngang -> không ăn style label khối ở trên */
+      .field label[style*="flex"] {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+        color: var(--ink);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .error {
+        color: var(--error-color);
+        font-size: 0.8rem;
+        margin-top: 6px;
+        text-align: left;
+      }
+
+      .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(180deg, #dbeafe 0%, #f8fafc 100%);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        flex-direction: column;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .loading-message {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue);
+        text-align: center;
+      }
+
+      .note {
+        font-size: 0.85rem;
+        color: var(--ink-faint);
+        margin: 10px 0 0;
+        font-style: italic;
+        text-align: center;
+      }
+
+      .note-important { color: var(--danger); font-style: normal; font-weight: 600; }
+
+      .note-link { font-size: 0.85rem; color: var(--ink-soft); text-align: center; margin-top: 14px; }
+
+      /* --- nút vùng: dạng chip --- */
+      .regionButton {
+        min-height: 44px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background-color: #f8fafc;
+        cursor: pointer;
+        margin-right: 6px;
+        margin-top: 4px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: inherit;
+        color: var(--ink-soft);
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      }
+
+      /* --- 2 nút hành động --- */
+      .restartButton,
+      .saveButton {
+        padding: 13px 20px;
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        box-sizing: border-box;
+        font-weight: 700;
+        font-size: 0.98rem;
+        font-family: inherit;
+        color: white;
+        transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+      }
+
+      .restartButton:active,
+      .saveButton:active { transform: translateY(1px); }
+
+      .restartButton {
+        background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
+        box-shadow: 0 4px 14px -4px rgba(225, 29, 72, 0.5);
+        width: 62%;
+      }
+
+      .saveButton {
+        background: linear-gradient(180deg, #3b82f6 0%, var(--blue-dark) 100%);
+        box-shadow: 0 4px 14px -4px rgba(37, 99, 235, 0.5);
+        width: 36%;
+      }
+
+      .restartButton:disabled,
+      .saveButton:disabled {
+        background: #e2e8f0;
+        color: var(--ink-faint);
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      /* --- modal mật khẩu --- */
+      .password-modal {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        display: flex;
+        z-index: 100000;
+        justify-content: center;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.72);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+      }
+
+      .password-modal.show { opacity: 1; visibility: visible; }
+
+      .password-modal-content {
+        background: var(--card);
+        border-radius: var(--radius);
+        width: 340px;
+        max-width: calc(100vw - 32px);
+        box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.45);
+        text-align: left;
+        animation: fadeIn 0.25s ease;
+        box-sizing: border-box;
+        padding: 22px;
+      }
+
+      .password-modal-content label {
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: block;
+        color: var(--ink);
+        margin-bottom: 0;
+      }
+
+      .password-modal-content input {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        box-sizing: border-box;
+        margin-top: 10px;
+        font-size: 16px;
+      }
+
+      .password-modal-buttons { display: flex; gap: 10px; margin-top: 16px; }
+
+      .password-modal-buttons button {
+        flex: 1;
+        padding: 11px;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .btn-password-submit { background: var(--blue); color: white; }      .btn-password-cancel { background: #f1f5f9; color: var(--ink-soft); }
+
+      /* ===== phần thêm cho bố cục mới ===== */
+      .sheet-head {
+        position: sticky;
+        top: 0;
+        z-index: 800;
+        background: var(--card);
+        margin: -22px -20px 16px;
+        padding: 16px 20px 12px;
+        border-radius: var(--radius) var(--radius) 0 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .sheet-head .title { margin: 0; font-size: 1.35rem; }
+      .subtitle { text-align: center; font-size: 0.82rem; color: var(--ink-faint); margin: 5px 0 0; }
+
+      /* tiêu đề nhóm: cho khách biết đang chỉnh phần nào thay vì một chồng ô rời rạc */
+      .sect-head {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin: 20px 0 10px;
+        padding-bottom: 7px;
+        border-bottom: 1px solid var(--line);
+      }
+      .form-content > .sect-head:first-child { margin-top: 0; }
+
+      .count-pill {
+        float: right;
+        font-weight: 700;
+        font-size: 0.76rem;
+        color: var(--blue);
+        background: #eff6ff;
+        border-radius: 999px;
+        padding: 2px 9px;
+        font-variant-numeric: tabular-nums;
+      }
+      .count-pill.over { color: #9f1239; background: #ffe4e6; }
+
+      .region-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+      .regionButton { margin: 0; }
+      .regionButton.on {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: #fff;
+      }
+
+      /* thanh hành động dính đáy — ngón cái luôn với tới, không phải cuộn xuống cuối để Lưu */
+      .actionbar {
+        position: sticky;
+        bottom: 0;
+        z-index: 800;
+        margin: 18px -20px -24px;
+        padding: 12px 20px calc(14px + env(safe-area-inset-bottom));
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid var(--line);
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+
+      .actionbar-row { display: flex; gap: 10px; align-items: stretch; }
+
+      /* Lưu là việc hay làm nhất -> chiếm chỗ. Khởi động lại là việc nặng (reboot VPS, chờ vài phút)
+         -> thu nhỏ, viền đỏ trên nền trắng, không tranh chỗ với nút chính. */
+      .saveButton { flex: 1; width: auto; }
+
+      .restartButton {
+        width: auto;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        padding: 8px 14px;
+        background: var(--card);
+        color: var(--danger);
+        border: 1px solid #fecdd3;
+        box-shadow: none;
+      }      .restart-ico { font-size: 1.05rem; line-height: 1; }
+      .restart-txt { font-size: 0.62rem; font-weight: 600; line-height: 1; }
+
+      .save-status {
+        display: none;
+        margin-bottom: 10px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+      .save-status.ok { display: block; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+      .save-status.warn { display: block; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+      .save-status.fail { display: block; background: #fff1f2; border: 1px solid #fecdd3; color: #be123c; }
+
+
+      /* Chỉ áp hover cho chuột: trên điện thoại hover DÍNH lại sau khi chạm,
+         nút cứ sáng mãi làm khách tưởng đang chọn. */
+      @media (hover: hover) {
+  .regionButton:hover {
+          background-color: #eff6ff;
+          border-color: var(--blue);
+          color: var(--blue);
+        }
+  .btn-password-submit:hover { background: var(--blue-dark); }
+  .btn-password-cancel:hover { background: var(--line); }
+  .restartButton:hover { background: #fff1f2; }
+      }
+
+      /* Bàn phím ảo bật lên, trình duyệt cuộn ô đang gõ vào tầm nhìn — chừa sẵn chỗ để nó
+         không nằm khuất sau thanh hành động dính đáy. */
+      input, textarea { scroll-margin-bottom: 130px; }
+
+      /* Màn hình hẹp (iPhone SE 375px, Zenfone 360px): bớt lề để nội dung rộng ra. */
+      @media (max-width: 420px) {
+        .wrapper { padding: 14px 10px 28px; }
+        .container { padding: 18px 14px 20px; border-radius: 14px; }
+        .sheet-head { margin: -18px -14px 14px; padding: 14px 14px 10px; }
+        .actionbar { margin: 16px -14px -20px; padding: 10px 14px calc(12px + env(safe-area-inset-bottom)); }
+        .title { font-size: 1.2rem; }
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="password-modal" class="password-modal">
+      <div class="password-modal-content">
+        <label>Nhập mật khẩu: </label>
+        <input type="password" id="password" placeholder="Mật khẩu" autocomplete="off" />
+        <div class="password-modal-buttons">
+          <button id="btn-password-cancel" class="btn-password-cancel">
+            Đóng
+          </button>
+          <button id="btn-password-submit" class="btn-password-submit">
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading-overlay" class="loading-overlay">
+      <div id="loading-message" class="loading-message">
+        Đang tải dữ liệu ...
+      </div>
+      <p class="note">
+        <i>
+          "🔥 Tạo bot, liên hệ telegram
+          <a
+            href="https://t.me/cp_junb_bot_2483"
+            style="color: #007bff; font-weight: bold; margin-bottom: 10px"
+            >JunB</a
+          >, giá công khai
+          <a
+            href="https://i.junb.io.vn"
+            style="color: #007bff; font-weight: bold; margin-bottom: 10px"
+            >tại đây</a
+          >
+          !"
+        </i>
+      </p>
+      <p class="note">"Những thay đổi cần khoảng 1 phút để bot tiếp nhận"</p>
+      <p class="note note-important">"Nếu để lộ link này, bot có thể hỏng"</p>
+    </div>
+    <div class="wrapper" id="wrapper">
+      <div class="container">
+        <div class="sheet-head">
+          <h2 id="bot-title" class="title">Bot Config</h2>
+          <p class="subtitle">Chỉnh xong nhớ bấm Lưu — bot nhận sau khoảng 1 phút</p>
+        </div>
+
+        <div class="form-content">
+          <div class="sect-head">1 · Bot nhặt gì</div>
+          <div class="field" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px 0">
+            <div style="display: flex; align-items: center">
+              <label
+                style="display: flex; align-items: center; margin-right: 10px"
+              >
+                <input type="checkbox" id="bag" name="mode" value="BAG" autocomplete="off" />
+                <span style="line-height: 1; margin-left: 3px">🟪 Túi</span>
+              </label>
+
+              <label
+                style="display: flex; align-items: center; margin-right: 10px"
+              >
+                <input type="checkbox" id="box" name="mode" value="BOX" autocomplete="off" />
+                <span style="line-height: 1; margin-left: 3px">🎁 Rương</span>
+              </label>
+
+              <label style="display: flex; align-items: center">
+                <input type="checkbox" id="filter_type" name="filter_type" autocomplete="off" />
+                <span style="line-height: 1; margin-left: 3px">Nâng cao</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="sect-head">2 · Điều kiện gửi</div>
+          <div id="levelField" class="field">
+            <label for="min_level">Gửi khi level nhỏ hơn/bằng:</label>
+            <input type="text" id="min_level" name="min_level" autocomplete="off" inputmode="numeric" />
+            <div id="max_level_error" class="error"></div>
+          </div>
+
+          <div id="minCoinsField" class="field">
+            <label for="min_coins">Gửi khi có xu tối thiểu:</label>
+            <input type="text" id="min_coins" name="min_coins" autocomplete="off" inputmode="numeric" />
+            <div id="min_coins_error" class="error"></div>
+          </div>
+          <div id="minRateField" class="field">
+            <label for="min_rate">Tỷ lệ tối thiểu (Số xu/Số người):</label>
+            <input type="text" id="min_rate" name="min_rate" autocomplete="off" />
+            <div id="min_rate_error" class="error"></div>
+          </div>
+          <div id="minSecsField" class="field">
+            <label for="min_secs">Gửi khi thời gian nhỏ hơn (giây):</label>
+            <input type="text" id="min_secs" name="min_secs" autocomplete="off" inputmode="numeric" />
+            <div id="min_secs_error" class="error"></div>
+          </div>
+
+          <div id="filterQueryField" class="field">
+            <div class="sect-head">3 · Mã lọc nâng cao</div>
+            <label id="filter_query_label" for="filter_query"
+              >Mã rương thông thường:</label
+            >
+            <textarea
+              id="filter_query"
+              name="filter_query"
+              rows="2"
+              placeholder="@IS_BAG, @IS_BOX, @TIME, @RATE, @IS_GOLDEN_BOX, @VIEWERS, @COINS, @LEVEL, @RECEIVERS, @HOURS"
+              oninput="this.value = this.value.toUpperCase()"
+            ></textarea>
+            <div id="filter_query_error" class="error"></div>
+          </div>
+
+          <div id="filterSpecialQueryField" class="field">
+            <label id="filter_special_query_label" for="filter_special_query"
+              >Mã rương tiềm năng:</label
+            >
+            <textarea
+              id="filter_special_query"
+              name="filter_special_query"
+              rows="2"
+              placeholder="@IS_BAG, @IS_BOX, @TIME, @RATE, @IS_GOLDEN_BOX, @VIEWERS, @COINS, @LEVEL, @RECEIVERS, @HOURS"
+              oninput="this.value = this.value.toUpperCase()"
+            ></textarea>
+            <div id="filter_special_query_error" class="error"></div>
+          </div>
+
+          <div
+            id="boxTypesField"
+            class="field"
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              padding-bottom: 0;
+              padding-top: 5px;
+              margin-bottom: 7px;
+              margin-top: -5px;
+            "
+          >
+            <div style="display: flex; align-items: center">
+              <label
+                style="display: flex; align-items: center; margin-right: 8px"
+              >
+                <input
+                  type="checkbox"
+                  id="use_golden_box"
+                  name="use_golden_box"
+                  value="1"
+                  autocomplete="off"
+                />
+                <span style="line-height: 1">🟡</span>
+                <span style="line-height: 1; margin-left: 2px">Rương vàng</span>
+              </label>
+
+              <label style="display: flex; align-items: center">
+                <input
+                  type="checkbox"
+                  id="use_hang_box"
+                  name="use_hang_box"
+                  value="1"
+                  autocomplete="off"
+                />
+                <span style="line-height: 1">🧤</span>
+                <span style="line-height: 1; margin-left: 2px">Rương treo</span>
+              </label>
+            </div>
+
+            <div style="display: flex; align-items: center">
+              <label style="display: flex; align-items: center">
+                <input
+                  type="checkbox"
+                  id="use_only_hang_box"
+                  name="use_only_hang_box"
+                  value="1"
+                  autocomplete="off"
+                />
+                <span style="line-height: 1">🧤</span>
+                <span style="line-height: 1; margin-left: 2px"
+                  >Chỉ gửi rương treo</span
+                >
+              </label>
+
+              <label style="display: flex; align-items: center">
+                <input
+                  type="checkbox"
+                  id="skip_golden_hang_box"
+                  name="skip_golden_hang_box"
+                  value="1"
+                  autocomplete="off"
+                />
+                <span style="line-height: 1">🟡</span>
+                <span style="line-height: 1; margin-left: 2px"
+                  >Bỏ rương vàng treo</span
+                >
+              </label>
+            </div>
+          </div>
+
+          <div class="field" id="div_accounts">
+            <div class="sect-head">4 · Id follow idol</div>
+            <label for="accounts">
+              Những id follow idol
+              <span class="count-pill" id="accounts_count"></span>
+            </label>
+
+            <textarea
+              id="accounts"
+              name="accounts"
+              rows="5"
+              placeholder=" id1, id2, ..."
+              style="width: 100%"
+            ></textarea>
+
+            <div id="accounts_error" class="error"></div>
+
+            <div class="sect-head">5 · Quốc gia lọc</div>
+            <label for="only_regions" class="region-row">
+              <button id="allButton" type="button" class="regionButton">
+                Tất cả vùng
+              </button>
+
+              <button id="asiaButton" type="button" class="regionButton">
+                Châu Á
+              </button>
+              <button id="europeButton" type="button" class="regionButton">
+                Châu Âu
+              </button>
+              <button
+                id="customButton"
+                type="button"
+                class="regionButton"
+                style="border: none"
+              >
+                Tùy chọn
+              </button>
+            </label>
+
+            <textarea
+              id="only_regions"
+              name="only_regions"
+              rows="1"
+              placeholder="Cờ 1, Cờ 2, ..."
+              style="width: 100%; margin-top: 5px"
+            ></textarea>
+            <div id="only_regions_error" class="error"></div>
+          </div>
+        </div>
+
+        <p class="note-important">Nếu để lộ link này, bot có thể hỏng.</p>
+
+        <div class="actionbar">
+          <div id="save_status" class="save-status"></div>
+          <div class="actionbar-row">
+            <button type="button" id="submitButton" class="saveButton">Lưu</button>
+            <button type="button" id="restartButton" class="restartButton" title="Khởi động lại bot">
+              <span class="restart-ico">⟳</span>
+              <span class="restart-txt">Khởi động lại</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var maxAccount = 50;
+
+      let a;function b(Q,R){const S=document['getElementById']('save_status');if(!S)return;S['textContent']=Q,S['className']='save-status\x20'+(R||'ok'),S['scrollIntoView']({'block':'nearest'});if(R==='ok')setTimeout(()=>{S['className']='save-status';},0x1f40);}function c(){const Q=document['getElementById']('accounts'),R=document['getElementById']('accounts_count');if(!Q||!R)return;const S=(''+(Q['value']||''))['trim']()['split'](/[\s\n\t,]+/g)['filter'](Boolean)['length'];R['textContent']=S+'\x20/\x20'+maxAccount+'\x20id',R['className']=S>maxAccount?'count-pill\x20over':'count-pill';}function d(Q){for(const R of['allButton','asiaButton','europeButton','customButton']){const S=document['getElementById'](R);if(S)S['classList']['toggle']('on',R===Q);}}function e(Q){const R=new URLSearchParams(window['location']['search']);return R['get'](Q);}const f=e('access_token'),g=Number(e('sub_bot')||0x0);!(0x0<=g&&g<Infinity)&&(alert('Hiện\x20tại\x20không\x20khả\x20dụng,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!'),window['location']['href']='https://i.junb.io.vn/price/custom-bot/');g>0x0&&(document['getElementById']('div_accounts')['style']['display']='none',document['getElementById']('restartButton')['style']['display']='none');let h,i;function j(){if((''+(i||''))['trim']()['toUpperCase']()==='QUERY')document['getElementById']('filterQueryField')['style']['display']='block',document['getElementById']('filterSpecialQueryField')['style']['display']='block',document['getElementById']('minCoinsField')['style']['display']='none',document['getElementById']('minRateField')['style']['display']='none',document['getElementById']('minSecsField')['style']['display']='none',document['getElementById']('levelField')['style']['display']='none';else{document['getElementById']('filterQueryField')['style']['display']='none',document['getElementById']('filterSpecialQueryField')['style']['display']='none',document['getElementById']('minCoinsField')['style']['display']='block',document['getElementById']('minRateField')['style']['display']='block',document['getElementById']('minSecsField')['style']['display']='block';if(h==='BOX')document['getElementById']('levelField')['style']['display']='none';else['BAG','BAG_BOX']['includes'](h)&&(document['getElementById']('levelField')['style']['display']='block');}if(h==='BOX')document['getElementById']('filter_query_label')['textContent']='Mã\x20rương\x20thông\x20thường:',document['getElementById']('filter_special_query_label')['textContent']='Mã\x20rương\x20tiềm\x20năng\x20🔥:';else{if(h==='BAG')document['getElementById']('filter_query_label')['textContent']='Mã\x20túi\x20thông\x20thường',document['getElementById']('filter_special_query_label')['textContent']='Mã\x20túi\x20tiềm\x20năng\x20🔥:';else h==='BAG_BOX'&&(document['getElementById']('filter_query_label')['textContent']='Mã\x20rương/túi\x20thông\x20thường',document['getElementById']('filter_special_query_label')['textContent']='Mã\x20rương/túi\x20tiềm\x20năng\x20🔥:');}['BOX','BAG_BOX']['includes'](h)?document['getElementById']('boxTypesField')['style']['display']='block':document['getElementById']('boxTypesField')['style']['display']='none';}function k(Q){if(!Q)return[];return Q['map'](R=>[...R]['map'](S=>S['codePointAt'](0x0)-0x1f1a5)['map'](S=>String['fromCharCode'](S))['join'](''));}async function l(Q){const R=document['createElement']('script');return R['src']='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js',R['crossOrigin']='anonymous',document['head']['appendChild'](R),new Promise(S=>{R['onload']=()=>{const T=CryptoJS['MD5'](Q)['toString']();S(T);};});}function m(Q){try{if(typeof Q!=='string'||!Q)return[];return Q['match'](/🏳️|🏴|🏴‍☠️|🏁|🚩|🏳️‍🌈|🏳️‍⚧️|🇺🇳|🇦🇫|🇦🇽|🇦🇱|🇩🇿|🇦🇸|🇦🇩|🇦🇴|🇦🇮|🇦🇶|🇦🇬|🇦🇷|🇦🇲|🇦🇼|🇦🇺|🇦🇹|🇦🇿|🇧🇸|🇧🇭|🇧🇩|🇧🇧|🇧🇾|🇧🇪|🇧🇿|🇧🇯|🇧🇲|🇧🇹|🇧🇴|🇧🇦|🇧🇼|🇧🇷|🇻🇬|🇧🇳|🇧🇬|🇧🇫|🇧🇮|🇰🇭|🇨🇲|🇨🇦|🇮🇨|🇨🇻|🇧🇶|🇰🇾|🇨🇫|🇹🇩|🇮🇴|🇨🇱|🇨🇳|🇨🇽|🇨🇨|🇨🇴|🇰🇲|🇨🇬|🇨🇩|🇨🇰|🇨🇷|🇨🇮|🇭🇷|🇨🇺|🇨🇼|🇨🇾|🇨🇿|🇩🇰|🇩🇯|🇩🇲|🇩🇴|🇪🇨|🇪🇬|🇸🇻|🇬🇶|🇪🇷|🇪🇪|🇸🇿|🇪🇹|🇪🇺|🇫🇰|🇫🇴|🇫🇯|🇫🇮|🇫🇷|🇬🇫|🇵🇫|🇹🇫|🇬🇦|🇬🇲|🇬🇪|🇩🇪|🇬🇭|🇬🇮|🇬🇷|🇬🇱|🇬🇩|🇬🇵|🇬🇺|🇬🇹|🇬🇬|🇬🇳|🇬🇼|🇬🇾|🇭🇹|🇭🇳|🇭🇰|🇭🇺|🇮🇸|🇮🇳|🇮🇩|🇮🇷|🇮🇶|🇮🇪|🇮🇲|🇮🇱|🇮🇹|🇯🇲|🇯🇵|🎌|🇯🇪|🇯🇴|🇰🇿|🇰🇪|🇰🇮|🇽🇰|🇰🇼|🇰🇬|🇱🇦|🇱🇻|🇱🇧|🇱🇸|🇱🇷|🇱🇾|🇱🇮|🇱🇹|🇱🇺|🇲🇴|🇲🇬|🇲🇼|🇲🇾|🇲🇻|🇲🇱|🇲🇹|🇲🇭|🇲🇶|🇲🇷|🇲🇺|🇾🇹|🇲🇽|🇫🇲|🇲🇩|🇲🇨|🇲🇳|🇲🇪|🇲🇸|🇲🇦|🇲🇿|🇲🇲|🇳🇦|🇳🇷|🇳🇵|🇳🇱|🇳🇨|🇳🇿|🇳🇮|🇳🇪|🇳🇬|🇳🇺|🇳🇫|🇰🇵|🇲🇰|🇲🇵|🇳🇴|🇴🇲|🇵🇰|🇵🇼|🇵🇸|🇵🇦|🇵🇬|🇵🇾|🇵🇪|🇵🇭|🇵🇳|🇵🇱|🇵🇹|🇵🇷|🇶🇦|🇷🇪|🇷🇴|🇷🇺|🇷🇼|🇼🇸|🇸🇲|🇸🇹|🇸🇦|🇸🇳|🇷🇸|🇸🇨|🇸🇱|🇸🇬|🇸🇽|🇸🇰|🇸🇮|🇬🇸|🇸🇧|🇸🇴|🇿🇦|🇰🇷|🇸🇸|🇪🇸|🇱🇰|🇧🇱|🇸🇭|🇰🇳|🇱🇨|🇵🇲|🇻🇨|🇸🇩|🇸🇷|🇸🇪|🇨🇭|🇸🇾|🇹🇼|🇹🇯|🇹🇿|🇹🇭|🇹🇱|🇹🇬|🇹🇰|🇹🇴|🇹🇹|🇹🇳|🇹🇷|🇹🇲|🇹🇨|🇹🇻|🇺🇬|🇺🇦|🇦🇪|🇬🇧|🏴󠁧󠁢󠁥󠁮󠁧󠁿|🏴󠁧󠁢󠁳󠁣󠁴󠁿|🏴󠁧󠁢󠁷󠁬󠁳󠁿|🇺🇸|🇺🇾|🇻🇮|🇺🇿|🇻🇺|🇻🇦|🇻🇪|🇻🇳|🇼🇫|🇪🇭|🇾🇪|🇿🇲|🇿🇼/g)||[];}catch{}return[];}const n={'asia':m('🇦🇫\x20🇦🇲\x20🇦🇿\x20🇧🇭\x20🇧🇩\x20🇧🇳\x20🇲🇲\x20🇨🇳\x20🇨🇾\x20🇬🇪\x20🇭🇰\x20🇮🇳\x20🇮🇩\x20🇮🇷\x20🇮🇶\x20🇮🇱\x20🇯🇵\x20🎌\x20🇯🇴\x20🇰🇿\x20🇰🇭\x20🇰🇼\x20🇰🇬\x20🇱🇦\x20🇱🇧\x20🇲🇴\x20🇲🇾\x20🇲🇻\x20🇲🇳\x20🇳🇵\x20🇰🇵\x20🇰🇷\x20🇴🇲\x20🇵🇰\x20🇵🇸\x20🇵🇭\x20🇶🇦\x20🇸🇦\x20🇸🇬\x20🇱🇰\x20🇸🇾\x20🇹🇼\x20🇹🇯\x20🇹🇭\x20🇹🇷\x20🇹🇲\x20🇦🇪\x20🇺🇿\x20🇻🇳\x20🇾🇪\x20🇧🇹\x20🇹🇱\x20🇷🇺')['sort'](),'europe':m('🇦🇱\x20🇦🇩\x20🇦🇹\x20🇧🇾\x20🇧🇪\x20🇧🇦\x20🇧🇬\x20🇭🇷\x20🇨🇾\x20🇨🇿\x20🇩🇰\x20🇦🇲\x20🇪🇪\x20🇫🇴\x20🇫🇮\x20🇫🇷\x20🇩🇪\x20🇬🇪\x20🇬🇷\x20🇭🇺\x20🇮🇸\x20🇮🇪\x20🇮🇹\x20🇱🇻\x20🇱🇮\x20🇱🇹\x20🇱🇺\x20🇲🇹\x20🇲🇩\x20🇲🇨\x20🇲🇪\x20🇳🇱\x20🇲🇰\x20🇳🇴\x20🇵🇱\x20🇵🇹\x20🇷🇴\x20🇷🇺\x20🇸🇲\x20🇷🇸\x20🇸🇰\x20🇸🇮\x20🇪🇸\x20🇸🇪\x20🇨🇭\x20🇺🇦\x20🇬🇧\x20🇻🇦\x20🇦🇽\x20🇪🇺\x20🇬🇮\x20🇬🇵\x20🇬🇬\x20🇮🇲\x20🇽🇰\x20🇯🇪\x20🇾🇹\x20🇲🇸\x20🇷🇪\x20🇸🇽\x20🇧🇱\x20🇵🇲\x20🏴󠁧󠁢󠁥󠁮󠁧󠁿\x20🇮🇴\x20🇮🇨\x20🇲🇵')['sort'](),'africa':m('🇮🇨\x20🇩🇿\x20🇦🇴\x20🇧🇯\x20🇧🇼\x20🇧🇫\x20🇧🇮\x20🇨🇻\x20🇨🇲\x20🇨🇫\x20🇹🇩\x20🇰🇲\x20🇨🇬\x20🇨🇩\x20🇨🇮\x20🇩🇯\x20🇪🇬\x20🇬🇶\x20🇪🇷\x20🇪🇹\x20🇬🇦\x20🇬🇲\x20🇬🇭\x20🇬🇳\x20🇬🇼\x20🇨🇬\x20🇰🇪\x20🇱🇸\x20🇱🇷\x20🇱🇾\x20🇲🇬\x20🇲🇼\x20🇲🇱\x20🇲🇷\x20🇲🇺\x20🇲🇦\x20🇲🇿\x20🇳🇦\x20🇳🇪\x20🇳🇬\x20🇷🇼\x20🇸🇭\x20🇸🇹\x20🇸🇳\x20🇸🇨\x20🇸🇱\x20🇸🇴\x20🇿🇦\x20🇸🇸\x20🇸🇩\x20🇸🇿\x20🇹🇿\x20🇹🇬\x20🇹🇳\x20🇺🇬\x20🇪🇭\x20🇿🇲\x20🇿🇼\x20🇲🇺\x20🇾🇹\x20🇹🇫')['sort'](),'america':m('🇦🇷\x20🇧🇸\x20🇧🇧\x20🇧🇴\x20🇧🇷\x20🇨🇦\x20🇨🇱\x20🇨🇴\x20🇨🇷\x20🇨🇺\x20🇩🇴\x20🇪🇨\x20🇸🇻\x20🇬🇫\x20🇬🇹\x20🇭🇹\x20🇭🇳\x20🇯🇲\x20🇲🇶\x20🇲🇽\x20🇳🇮\x20🇵🇦\x20🇵🇾\x20🇵🇪\x20🇵🇷\x20🇺🇸\x20🇺🇾\x20🇻🇪\x20🇻🇮\x20🇦🇸\x20🇦🇬\x20🇦🇮\x20🇧🇿\x20🇧🇲\x20🇻🇬\x20🇧🇶\x20🇰🇾\x20🇨🇼\x20🇩🇲\x20🇫🇰\x20🇬🇩\x20🇬🇾\x20🇱🇨\x20🇰🇳\x20🇻🇨\x20🇹🇹\x20🇹🇨\x20🇸🇷\x20🇬🇱\x20🇦🇼')['sort'](),'oceania':m('🇦🇺\x20🇫🇯\x20🇵🇫\x20🇬🇺\x20🇰🇮\x20🇲🇭\x20🇫🇲\x20🇳🇷\x20🇳🇿\x20🇵🇬\x20🇵🇳\x20🇼🇸\x20🇸🇧\x20🇹🇰\x20🇹🇴\x20🇹🇻\x20🇻🇺\x20🇦🇶\x20🇳🇨\x20🇳🇺\x20🇳🇫\x20🇵🇼\x20🇼🇫\x20🇨🇰\x20🇨🇽\x20🇨🇨')['sort']()};function o(Q,R=window['location']['href']){try{const S=new URL(Q,R);return S['href'];}catch(T){return null;}}async function p(Q){try{return new Promise(R=>setTimeout(R,Q));}catch{}}function q(Q){return[...new Set(Q)];}function r(Q){const R={'TIME':0x1,'RATE':0x1,'VIEWERS':0x1,'COINS':0x1,'LEVEL':0x1,'RECEIVERS':0x1,'IS_GOLDEN_BOX':0x1,'IS_BAG':0x1,'IS_BOX':0x1,'HOURS':0x1};function S(W,X={}){try{let Y=''+(W||'');for(const [Z,a0]of Object['entries'](X)){Y=Y['replace'](new RegExp('@'+Z,'g'),a0);}return Y;}catch{}}function T(W){try{return eval(W);}catch(X){return undefined;}}function U(W){try{const X=S((''+(W||''))['toUpperCase']()['replace'](/OR/g,'+')['replace'](/AND/g,'+')['replace'](/[=]+/g,'=')['replace'](/[=]/g,'==')['replace'](/>[=]+/g,'>=')['replace'](/<[=]+/g,'<=')['replace'](/<=/g,'+')['replace'](/>=/g,'+')['replace'](/==/g,'+')['replace'](/===/g,'+')['replace'](/TRUE/g,'true')['replace'](/FALSE/g,'false'),R),Y=eval(X);return![];}catch{return!![];}}let V=(''+(Q||''))['toUpperCase']()['replace'](/OR/g,'||')['replace'](/AND/g,'&&')['replace'](/[=]+/g,'=')['replace'](/[=]/g,'==')['replace'](/>[=]+/g,'>=')['replace'](/<[=]+/g,'<=')['replace'](/TRUE/g,'true')['replace'](/FALSE/g,'false');return!U(Q)&&typeof T(S(V,R))==='boolean';}async function s(Q){const R=await fetch('https://checkip.amazonaws.com'),S=(await R['text']())['trim']();try{const T=await fetch('https://ipinfo.io/'+S+'/json');return await T['json']();}catch(U){console['error'](U);}}let t;setInterval(async()=>{if(!t)t=await s();},0x3e8);function u(){const Q=document['getElementById']('only_regions')['value'];if(Q?.['trim']?.()==='')d('allButton');else{if(m(Q)['sort']()['join']('')===n['asia']['join'](''))d('asiaButton');else m(Q)['sort']()['join']('')===n['europe']['join']('')?d('europeButton'):d('customButton');}}const v=document['getElementById']('use_hang_box'),w=document['getElementById']('use_only_hang_box');v['addEventListener']('change',function(){if(this['checked'])w['checked']=![];}),w['addEventListener']('change',function(){if(this['checked'])v['checked']=![];});let x=![],y,z,A;function B(){document['getElementById']('password-modal')['classList']['add']('show'),document['getElementById']('password')['focus'](),document['getElementById']('wrapper')['style']['display']='none';}function C(){document['getElementById']('password-modal')['classList']['remove']('show'),document['getElementById']('wrapper')['style']['display']='';}async function D({password:Q}={}){if(!Q)return alert('⛔️\x20Truy\x20cập\x20trái\x20phép\x20!');const R=document['getElementById']('loading-overlay'),S=document['getElementById']('loading-message'),T=document['querySelector']('.form-content');S['textContent']='Đang\x20tải\x20dữ\x20liệu\x20...',R['style']['display']='flex',T['style']['display']='none';try{const U=await fetch('https://admin.junb.io.vn/api/bots/info-with-password?access_token='+f+'&sub_bot='+(g||'')+'&password='+Q);a=await U['json']();if(a?.['code']==='invalid_auth'){alert(a?.['message']||'⛔️\x20Không\x20hợp\x20lệ'),z=D,A=()=>{},B();return;}if(!Object['keys'](a)['length']){S['textContent']='Hiện\x20tại\x20không\x20khả\x20dụng,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!',alert('Hiện\x20tại\x20không\x20khả\x20dụng,\x20vui\x20lòng\x20thử\x20lại\x20sau\x20!'),window['location']['href']='https://i.junb.io.vn/price/custom-bot/';return;}if(a?.['bot_status']!=='running'){window['location']['href']=o(a?.['region']!=='VN'?'../payment/en.html':'../payment/index.html')+'?'+new URLSearchParams(window['location']['search'])['toString']();return;}y=!!a?.['has_password'],document['getElementById']('min_coins')['value']=a['MIN_COINS'],document['getElementById']('min_rate')['value']=a['MIN_RATE'],document['getElementById']('min_level')['value']=a['MIN_LEVEL']??'',document['getElementById']('min_secs')['value']=a['MIN_SECS'],document['getElementById']('accounts')['value']=a['USER_IDS'],c(),document['getElementById']('only_regions')['value']=a['ONLY_REGIONS'],document['getElementById']('filter_query')['value']=a['FILTER_QUERY']||(a['MODE']==='BAG'?'@IS_BAG\x20AND\x20@COINS\x20>=\x20'+a['MIN_COINS']+'\x20AND\x20@RATE\x20>=\x20'+a['MIN_RATE']+'\x20AND\x20@TIME\x20<=\x20'+a['MIN_SECS']+'\x20AND\x20@LEVEL\x20<=\x20'+a['MIN_LEVEL']:'@IS_BOX\x20AND\x20@COINS\x20>=\x20'+a['MIN_COINS']+'\x20AND\x20@RATE\x20>=\x20'+a['MIN_RATE']+'\x20AND\x20@TIME\x20<=\x20'+a['MIN_SECS']),document['getElementById']('filter_special_query')['value']=a['FILTER_SPECIAL_QUERY']||(a['MODE']==='BAG'?'@IS_BAG\x20AND\x20@COINS\x20>=\x20'+a['SPECIAL_COINS']+'\x20AND\x20@RATE\x20>=\x20'+a['MIN_RATE']+'\x20AND\x20@TIME\x20<=\x20'+a['MIN_SECS']+'\x20AND\x20@LEVEL\x20<=\x20'+a['MIN_LEVEL']:'@IS_BOX\x20AND\x20@COINS\x20>=\x20'+a['SPECIAL_COINS']+'\x20AND\x20@RATE\x20>=\x20'+a['MIN_RATE']+'\x20AND\x20@TIME\x20<=\x20'+a['MIN_SECS']),document['getElementById']('bot-title')['textContent']=''+a['bot_name'],h=a['MODE']||'BAG_BOX',document['getElementById']('box')['checked']=['BOX','BAG_BOX']['includes'](a['MODE']),document['getElementById']('bag')['checked']=['BAG','BAG_BOX']['includes'](a['MODE']),document['getElementById']('use_only_hang_box')['checked']=!!a?.['use_only_hang_box'],document['getElementById']('use_hang_box')['checked']=!!a?.['use_hang_box'],document['getElementById']('use_golden_box')['checked']=!!a?.['use_golden_box'],document['getElementById']('skip_golden_hang_box')['checked']=!!a?.['skip_golden_hang_box'],i=(''+(a['FILTER_TYPE']||''))['trim']()['toUpperCase'](),maxAccount=a?.['max_ids']??0x32,c(),document['getElementById']('filter_type')['checked']=i==='QUERY',j(),u(),R['style']['display']='none',T['style']['display']='block';}catch(V){console['error']('Lỗi\x20khi\x20gọi\x20API:',V),S['textContent']='Lỗi\x20khi\x20tải\x20dữ\x20liệu.';}}async function E({password:Q}={}){try{const R=document['getElementById']('submitButton'),S=document['getElementById']('loading-overlay'),T=document['getElementById']('loading-message'),U=document['querySelector']('.form-content');document['getElementById']('accounts')['value']=q((document['getElementById']('accounts')['value']||'')['replace'](/[^a-z0-9\._\s\n\t,]/gi,'')['split'](/[\s\n\t,]+/g)['filter'](V=>(''+(V||''))['length']>=0x2)['map'](V=>(''+(V||''))['toLowerCase']()))['join']('\x20')['toLowerCase'](),document['getElementById']('only_regions')['value']=m(document['getElementById']('only_regions')['value']||'')['join']('\x20');!G()&&b('Có\x20ô\x20chưa\x20hợp\x20lệ\x20—\x20kiểm\x20tra\x20dòng\x20chữ\x20đỏ\x20phía\x20trên\x20rồi\x20Lưu\x20lại.','warn');if(G()&&!x){if(y&&!Q){z=E,A=null,B();return;}x=!![],R['disabled']=!![],T['textContent']='Đang\x20gửi\x20dữ\x20liệu\x20...',S['style']['display']='flex',U['style']['display']='none';const V=document['getElementById']('min_coins')['value'],W=document['getElementById']('min_rate')['value'],X=document['getElementById']('min_level')['value'],Y=document['getElementById']('min_secs')['value'],Z=document['getElementById']('accounts')['value']||'',a0=document['getElementById']('use_only_hang_box')['checked']?0x1:'',a1=document['getElementById']('use_hang_box')['checked']?0x1:'',a2=document['getElementById']('use_golden_box')['checked']?0x1:'',a3=document['getElementById']('skip_golden_hang_box')['checked']?0x1:'',a4=document['getElementById']('only_regions')['value']||'',a5=document['getElementById']('filter_query')['value'],a6=document['getElementById']('filter_special_query')['value'];try{const a7=await fetch('https://admin.junb.io.vn/api/bots/config',{'method':'POST','headers':{'Content-Type':'application/json'},'body':JSON['stringify']({'access_token':f,'MIN_COINS':''+V,'MIN_RATE':''+W,'MIN_LEVEL':''+X,'MIN_SECS':''+Y,'USER_IDS':''+(Z||'')['trim'](),'MODE':''+h,'ONLY_REGIONS':''+(a4?k(m(a4))['join']('-'):''),'password':''+(Q||''),'FILTER_TYPE':''+i,'FILTER_QUERY':(''+a5)['trim'](),'FILTER_SPECIAL_QUERY':(''+a6)['trim'](),'use_only_hang_box':''+a0,'use_hang_box':''+a1,'use_golden_box':''+a2,'skip_golden_hang_box':''+a3,'ip_info':''+JSON['stringify'](t||{}),'sub_bot':''+(g||'')})}),a8=await a7['json']();console['log'](a8),a8['success']?b(a8?.['message']||'✅\x20Đã\x20lưu.\x20Bot\x20nhận\x20thông\x20số\x20mới\x20sau\x20khoảng\x201\x20phút.','ok'):b('Có\x20lỗi\x20xảy\x20ra\x20khi\x20cập\x20nhật\x20dữ\x20liệu,\x20chưa\x20lưu\x20được.','fail');}catch(a9){console['error']('Lỗi\x20khi\x20gửi\x20dữ\x20liệu:',a9),b('Không\x20gửi\x20được\x20dữ\x20liệu\x20lên\x20máy\x20chủ,\x20chưa\x20lưu\x20gì\x20cả.','fail');}R['disabled']=![],S['style']['display']='none',U['style']['display']='block',x=![];}}catch(aa){alert(aa);}}function F(Q){const R=document['getElementById'](Q);return!!R&&R['style']['display']!=='none';}function G(){let Q=!![];document['getElementById']('min_coins_error')['innerText']='',document['getElementById']('min_rate_error')['innerText']='',document['getElementById']('min_secs_error')['innerText']='',document['getElementById']('accounts_error')['innerText']='',document['getElementById']('only_regions_error')['innerText']='',document['getElementById']('filter_query_error')['innerText']='',document['getElementById']('filter_special_query_error')['innerText']='';const R=document['getElementById']('min_coins')['value'];F('minCoinsField')&&(R===''||isNaN(R)||parseFloat(R)>0x12c)&&(document['getElementById']('min_coins_error')['innerText']='Vui\x20lòng\x20nhập\x20giá\x20trị\x20hợp\x20lệ\x20cho\x20MIN_COINS\x20(phải\x20nhỏ\x20hơn\x20hoặc\x20bằng\x20300).',Q=![]);const S=document['getElementById']('min_rate')['value'];F('minRateField')&&(S===''||isNaN(S)||parseFloat(S)>0xa)&&(document['getElementById']('min_rate_error')['innerText']='Vui\x20lòng\x20nhập\x20giá\x20trị\x20hợp\x20lệ\x20cho\x20MIN_RATE\x20(phải\x20nhỏ\x20hơn\x20hoặc\x20bằng\x2010).',Q=![]);const T=document['getElementById']('min_level')['value'];F('levelField')&&(T===''||isNaN(T))&&(document['getElementById']('max_level_error')['innerText']='Vui\x20lòng\x20nhập\x20giá\x20trị\x20hợp\x20lệ\x20cho\x20MIN_LEVEL.',Q=![]);const U=document['getElementById']('min_secs')['value'];F('minSecsField')&&(U===''||isNaN(U)||parseFloat(U)<0x23)&&(document['getElementById']('min_secs_error')['innerText']='Vui\x20lòng\x20nhập\x20giá\x20trị\x20hợp\x20lệ\x20cho\x20MIN_SECS\x20(phải\x20lớn\x20hơn\x20hoặc\x20bằng\x2035).',Q=![]);const V=document['getElementById']('accounts')['value'];V&&V['split'](/[\s\n\t,]+/g)['length']>maxAccount&&(document['getElementById']('accounts_error')['innerText']='Tối\x20đa\x20chỉ\x20được\x20'+maxAccount+'\x20tài\x20khoản',Q=![]);const W=document['getElementById']('filter_special_query')['value'];W&&!r(W)&&(document['getElementById']('filter_special_query_error')['innerText']='Câu\x20điều\x20kiện\x20không\x20hợp\x20lệ\x20!',Q=![]);const X=document['getElementById']('filter_query')['value'];return X&&!r(X)&&(document['getElementById']('filter_query_error')['innerText']='Câu\x20điều\x20kiện\x20không\x20hợp\x20lệ\x20!',Q=![]),Q;}function H({password:Q}={}){const R=document['getElementById']('loading-overlay'),S=document['getElementById']('loading-message'),T=document['querySelector']('.form-content');if(y&&!Q){z=H,A=null,B();return;}const U=confirm('Bạn\x20muốn\x20khởi\x20động\x20lại\x20bot?');U&&(S['textContent']='Đang\x20gửi\x20yêu\x20cầu\x20...',R['style']['display']='flex',T['style']['display']='none',fetch('https://admin.junb.io.vn/api/bots/restart?access_token='+f+'&password='+Q+'&ip_info='+encodeURIComponent(JSON['stringify'](t||{})),{'method':'POST'})['then'](async V=>{const W=await V['json']();b(W?.['message']||'✅\x20Đã\x20gửi\x20yêu\x20cầu\x20khởi\x20động\x20lại.','ok');})['catch'](V=>{b('Không\x20thể\x20khởi\x20động\x20lại\x20bot\x20ngay\x20lúc\x20này\x20!','fail');})['finally'](()=>{R['style']['display']='none',T['style']['display']='block';}));}let I;function J(Q){clearTimeout(I),I=setTimeout(()=>{u(),document['getElementById']('only_regions')['value']=m(document['getElementById']('only_regions')['value']||'')['join']('\x20');},0x3e8);}function K(){document['getElementById']('only_regions')['value']='',u();}function L(){document['getElementById']('only_regions')['value']=n['asia']['join']('\x20'),u();}function M(){document['getElementById']('only_regions')['value']=n['europe']['join']('\x20'),u();}function N(){const Q=document['getElementById']('only_regions');Q['focus'](),document['getElementById']('only_regions')['value']=(''+(document['getElementById']('only_regions')['value']||''))['trim']()+'\x20',Q['setSelectionRange'](Q['value']['length'],Q['value']['length']);}document['querySelectorAll']('input[name=\x22mode\x22]')['forEach'](Q=>{Q['addEventListener']('change',R=>{!document['getElementById']('bag')['checked']&&!document['getElementById']('box')['checked']&&(document['getElementById']('bag')['checked']=R['target']['value']==='BOX',document['getElementById']('box')['checked']=R['target']['value']==='BAG');if(document['getElementById']('bag')['checked']&&document['getElementById']('box')['checked'])h='BAG_BOX';else{if(document['getElementById']('bag')['checked'])h='BAG';else document['getElementById']('box')['checked']&&(h='BOX');}j();});});const O=document['getElementById']('filter_type');O['addEventListener']('change',function(){i=O['checked']?'QUERY':'PARAMS',j();}),document['getElementById']('min_rate')['addEventListener']('input',function(){if(this['value']['indexOf'](',')===-0x1)return;const Q=this['selectionStart'];this['value']=this['value']['replace'](/,/g,'.');try{this['setSelectionRange'](Q,Q);}catch{}}),document['getElementById']('password')['value']=localStorage['getItem']('password')||'',document['getElementById']('btn-password-submit')['addEventListener']('click',function(){const Q=document['getElementById']('password')['value']||'';if(!Q){alert('⛔️\x20Vui\x20lòng\x20nhập\x20mật\x20khẩu\x20!');return;}C(),localStorage['setItem']('password',Q),z?.({'password':Q});}),document['getElementById']('btn-password-cancel')['addEventListener']('click',function(){if(A)return;C(),document['getElementById']('password')['value']=localStorage['getItem']('password')||'';}),document['getElementById']('password-modal')['addEventListener']('click',function(Q){const R=document['querySelector']('.password-modal-content');if(!R['contains'](Q['target'])){if(A)return;C(),document['getElementById']('password')['value']=localStorage['getItem']('password')||'';}});async function P(){try{if(!f)return;const Q=await l(f),R=Date['now']();let S;try{S=localStorage['getItem']('last_open_link_at');}catch{}if(!S||R-Number(S)>=0x5*0xea60){try{localStorage['setItem']('last_open_link_at',''+R+'');}catch{}fetch('https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/svtjl515/'+Q+'/'+R,{'method':'POST'});}}catch(T){console['log'](T);}}window['onload']=()=>{P(),z=D,A=()=>{},B();},document['addEventListener']('DOMContentLoaded',()=>{document['getElementById']('allButton')['addEventListener']('click',K),document['getElementById']('asiaButton')['addEventListener']('click',L),document['getElementById']('europeButton')['addEventListener']('click',M),document['getElementById']('customButton')['addEventListener']('click',N),document['getElementById']('submitButton')['addEventListener']('click',E),document['getElementById']('restartButton')['addEventListener']('click',H),document['getElementById']('only_regions')['addEventListener']('input',J),document['getElementById']('accounts')['addEventListener']('input',c);});
+    </script>
+  </body>
+</html>
