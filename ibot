@@ -1,0 +1,14 @@
+#!/bin/sh
+main() {
+    case "$1" in ghp_*|github_pat_*) GIT_PAT="$1"; shift ;; esac
+    CUSTOMER_ID="${1:-sub_node}"
+    [ -n "$GIT_PAT" ] || { echo "Thiếu PAT GitHub (tham số đầu ghp_... hoặc env GIT_PAT) để clone repo config"; exit 1; }
+    [ "$(id -u)" -ne 0 ] || { echo "Chạy dưới user debian (không sudo): curl ... | sh -s ghp_xxx"; exit 1; }
+    DIR="$HOME/config-realtime-treasure-bot"
+
+    sudo apt-get update && sudo apt-get install -y git \
+      && rm -rf "$DIR" \
+      && git clone "https://tranvanduong2483:${GIT_PAT}@github.com/tranvanduong2483/config-realtime-treasure-bot.git" "$DIR" \
+      && sudo sh "$DIR/init-vps-realtime-treasure-bot-config.sh" "$CUSTOMER_ID" config
+}
+main "$@"
